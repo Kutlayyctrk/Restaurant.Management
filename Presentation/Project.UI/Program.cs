@@ -4,6 +4,7 @@ using Project.Persistance.ContextClasses;
 using Project.Persistance.DependencyResolvers;
 using Project.Application.DependencyResolvers;
 using Project.InnerInfrastructure.DependencyResolvers;
+using Project.Validator.DependencyResolvers;
 namespace Project.UI
 {
     public class Program
@@ -29,6 +30,7 @@ namespace Project.UI
             builder.Services.AddRepositoryServices();
             builder.Services.AddMapperService();
             builder.Services.AddManagerService();
+            builder.Services.AddValidationServices();
 
             var app = builder.Build();
 

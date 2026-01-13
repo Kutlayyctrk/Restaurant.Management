@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using FluentValidation.Results;
+using FluentValidation.TestHelper;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Project.Application.DTOs;
 using Project.Application.Managers;
@@ -16,60 +18,107 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 {
     public class BaseManager<TEntity, TDto> : IManager<TEntity, TDto> where TEntity: class,IEntity where TDto : BaseDto
     {
-        private readonly IRepository<TEntity> repository;
+        private readonly IRepository<TEntity> _repository;
         private readonly IMapper _mapper;
         private readonly IValidator<TDto> _validator;
 
         public BaseManager(IRepository<TEntity> repository, IMapper mapper, IValidator<TDto> validator)
         {
-            this.repository = repository;
+            _repository = repository;
             _mapper = mapper;
             _validator = validator;
         }
 
-        public Task<string> CreateAsync(TDto dto)
+        public async Task<string> CreateAsync(TDto dto)
         {
-            throw new NotImplementedException();
+           ValidationResult validationResult= await _validator.ValidateAsync(dto);
+            if(!validationResult.IsValid)
+            {
+                return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            TEntity domainEntity= _mapper.Map<TEntity>(dto);
+            domainEntity.InsertedDate = DateTime.Now;
+            domainEntity.Status = Domain.Enums.DataStatus.Inserted;
+            await _repository.CreateAsync(domainEntity);
+            return "Ekleme işlemi başarılı";
         }
 
         public Task<List<TDto>> GetActives()
         {
-            throw new NotImplementedException();
+           List<TEntity> activeEntities=_repository.Where(x=>x.Status!=Domain.Enums.DataStatus.Deleted).ToList();
+            return Task.FromResult(_mapper.Map<List<TDto>>(activeEntities));
         }
 
-        public Task<List<TDto>> GetAllAsync()
+        public async Task<List<TDto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            List<TEntity> allEntites = await _repository.GetAllAsync();
+            return _mapper.Map<List<TDto>>(allEntites);
         }
 
-        public Task<TDto> GetByIdAsync(int id)
+        public async Task<TDto> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+           TEntity entity= await; _repository.GetByIdAsync(id);
+            return _mapper.Map<TDto>(entity);
         }
 
         public Task<List<TDto>> GetPassives()
         {
-            throw new NotImplementedException();
+            List<TEntity> passiveEntities = _repository.Where(x => x.Status == Domain.Enums.DataStatus.Deleted).ToList();
+            return Task.FromResult(_mapper.Map<List<TDto>>(passiveEntities));
         }
 
-        public Task<string> HardDeleteAsync(int id)
+        public async Task<string> HardDeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            TEntity domainEntity = await _repository.GetByIdAsync(id);
+            if(domainEntity ==null)
+            {
+                return "Silinecek veri bulunamadı";
+            }
+            if(domainEntity.Status!= Domain.Enums.DataStatus.Deleted)
+            {
+                return "Silme işlemi sadece pasif veriler için geçerlidir";
+            }
+            await _repository.HardDeleteAsync(domainEntity);
+            return "Silme işlemi başarılı";
         }
 
-        public Task<string> SoftDeleteAsync(int id)
+        public async Task<string> SoftDeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            TEntity originalEntity= await _repository.GetByIdAsync(id);
+            if(originalEntity==null)
+            {
+                return "Silinecek veri bulunamadı";
+            }
+            originalEntity.Status = Domain.Enums.DataStatus.Deleted;
+            originalEntity.DeletionDate = DateTime.Now;
+            await _repository.UpdateAsync(originalEntity, originalEntity);
+            return "Pasife alma işlemi başarılı";
         }
 
-        public Task<string> UpdateAsync(int id, TDto dto)
+        public async Task<string> UpdateAsync(int id, TDto dto)
         {
-            throw new NotImplementedException();
+            ValidationResult validationResult =  _validator.Validate(dto);
+            if(!validationResult.IsValid)
+            {
+               return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+            TEntity originalEntity= await _repository.GetByIdAsync(id);
+            if(originalEntity==null)
+            {
+                return "Güncellenecek veri bulunamadı";
+            }
+            _mapper.Map(dto, originalEntity);
+            originalEntity.UpdatedDate= DateTime.Now;
+            originalEntity.Status = Domain.Enums.DataStatus.Updated;
+            await _repository.UpdateAsync(originalEntity, originalEntity);
+            return "Güncelleme işlemi başarılı";
         }
 
         public Task<List<TDto>> Where(Expression<Func<TEntity, bool>> expression)
         {
-            throw new NotImplementedException();
+           List<TEntity> entities = _repository.Where(expression).ToList();
+            return Task.FromResult(_mapper.Map<List<TDto>>(entities));
         }
     }
 }
