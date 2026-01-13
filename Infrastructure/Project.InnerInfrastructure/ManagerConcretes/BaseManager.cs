@@ -58,7 +58,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public async Task<TDto> GetByIdAsync(int id)
         {
-           TEntity entity= await; _repository.GetByIdAsync(id);
+           TEntity entity= await _repository.GetByIdAsync(id);
             return _mapper.Map<TDto>(entity);
         }
 

@@ -12,8 +12,8 @@ using Project.Persistance.ContextClasses;
 namespace Project.Persistance.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20260112182544_migration1")]
-    partial class migration1
+    [Migration("20260113164209_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

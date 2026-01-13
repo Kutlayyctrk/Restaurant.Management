@@ -3,8 +3,10 @@ using Project.Domain.Entities.Concretes;
 using Project.Persistance.ContextClasses;
 using Project.Persistance.DependencyResolvers;
 using Project.Application.DependencyResolvers;
+using Project.OuterInfrastructure.DependencyResolvers;
 using Project.InnerInfrastructure.DependencyResolvers;
 using Project.Validator.DependencyResolvers;
+
 namespace Project.UI
 {
     public class Program
@@ -31,6 +33,7 @@ namespace Project.UI
             builder.Services.AddMapperService();
             builder.Services.AddManagerService();
             builder.Services.AddValidationServices();
+            builder.Services.AddMailService(builder.Configuration);
 
             var app = builder.Build();
 
