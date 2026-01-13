@@ -14,8 +14,8 @@ namespace Project.Application.DTOs
 
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
-        public bool IsClosed { get; set; } 
-       
+        public bool IsClosed { get; set; }
+        public IList<OrderDetailDTO> OrderDetails { get; set; } = new List<OrderDetailDTO>();
         public DateTime InsertedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public DateTime? DeletionDate { get; set; }

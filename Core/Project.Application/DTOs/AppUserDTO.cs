@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Project.Application.DTOs
         public string ConfirmedEmail { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public virtual ICollection<AppUserRole> UserRoles { get; set; }
         public DateTime InsertedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public DateTime? DeletionDate { get; set; }
