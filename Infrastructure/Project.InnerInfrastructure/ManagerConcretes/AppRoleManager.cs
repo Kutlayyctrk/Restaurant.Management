@@ -42,7 +42,25 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
 
         }
+        public override async Task<string> HardDeleteAsync(int id)
+        {
+            AppRole role = await _roleManager.FindByIdAsync(id.ToString());
+            if(role==null)
+            {
+                return "Silinecek Rol bulunamadı.";
+            }
+            if(role.Status!= Domain.Enums.DataStatus.Deleted)
+            {
+                return "Sadece silinmiş roller silinebilir.";
+            }
 
+            IdentityResult deleteResult =await _roleManager.DeleteAsync(role);
+            if(!deleteResult.Succeeded)
+            {
+                return string.Join("|", deleteResult.Errors.Select(x => x.Description));
+            }
+            return "Rol başarıyla silindi.";
+        }
         
     }
 }
