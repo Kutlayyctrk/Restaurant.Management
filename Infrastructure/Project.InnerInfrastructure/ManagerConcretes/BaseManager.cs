@@ -29,7 +29,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _validator = validator;
         }
 
-        public async Task<string> CreateAsync(TDto dto)
+        public virtual async Task<string> CreateAsync(TDto dto)
         {
            ValidationResult validationResult= await _validator.ValidateAsync(dto);
             if(!validationResult.IsValid)
@@ -68,7 +68,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return Task.FromResult(_mapper.Map<List<TDto>>(passiveEntities));
         }
 
-        public async Task<string> HardDeleteAsync(int id)
+        public virtual async Task<string> HardDeleteAsync(int id)
         {
             TEntity domainEntity = await _repository.GetByIdAsync(id);
             if(domainEntity ==null)
@@ -83,7 +83,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Silme işlemi başarılı";
         }
 
-        public async Task<string> SoftDeleteAsync(int id)
+        public  virtual async Task<string> SoftDeleteAsync(int id)
         {
             TEntity originalEntity= await _repository.GetByIdAsync(id);
             if(originalEntity==null)
@@ -96,7 +96,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Pasife alma işlemi başarılı";
         }
 
-        public async Task<string> UpdateAsync(int id, TDto dto)
+        public virtual async Task<string> UpdateAsync(int id, TDto dto)
         {
             ValidationResult validationResult =  _validator.Validate(dto);
             if(!validationResult.IsValid)

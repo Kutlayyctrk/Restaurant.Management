@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Core\Project.Application\Project.Application.csproj" />
     <ProjectReference Include="..\..\Core\Project.Contract\Project.Contract.csproj" />
     <ProjectReference Include="..\..\Core\Project.Domain\Project.Domain.csproj" />

@@ -16,7 +16,7 @@ namespace Project.Application.DTOs
         public string ConfirmedEmail { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public virtual ICollection<AppUserRole> UserRoles { get; set; }
+        public IList<int> RoleIds { get; set; } = new List<int>();
         public DateTime InsertedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public DateTime? DeletionDate { get; set; }

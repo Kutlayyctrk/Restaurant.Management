@@ -11,6 +11,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.22" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +20,18 @@
     <ProjectReference Include="..\..\Infrastructure\Project.InnerInfrastructure\Project.InnerInfrastructure.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Project.OuterInfrastructure\Project.OuterInfrastructure.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Project.Persistance\Project.Persistance.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\" />
+    <Folder Include="Areas\Admin\Controllers\" />
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\Manager\Controllers\" />
+    <Folder Include="Areas\Manager\Data\" />
+    <Folder Include="Areas\Manager\Models\" />
+    <Folder Include="Areas\Manager\Views\" />
   </ItemGroup>
 
 </Project>
