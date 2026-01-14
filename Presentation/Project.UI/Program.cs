@@ -17,6 +17,8 @@ namespace Project.UI
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpClient();
+
             builder.Services.AddDbContextInjection(builder.Configuration);
             builder.Services
                .AddIdentity<AppUser, AppRole>(options =>
@@ -45,8 +47,12 @@ namespace Project.UI
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapControllerRoute(
+                  name: "areas",
+                  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",

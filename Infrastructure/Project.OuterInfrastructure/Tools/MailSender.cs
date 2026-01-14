@@ -21,11 +21,12 @@ namespace Project.OuterInfrastructure.Tools
 
         public async Task SendActivationMailAsync(string Email, string ActivationLink, CancellationToken cancellationToken = default)
         {
+          
             string subject = "Hesap Aktivasyonu";
             string body =
                 $"<p>Merhaba,</p>" +
                 $"<p>Hesabınızı aktifleştirmek için lütfen aşağıdaki linke tıklayınız:</p>" +
-                $"<p><a herf=\"{ActivationLink}\">{ActivationLink}</a></p>";
+                $"<p><a href=\"{ActivationLink}\">Aktivasyon linkine tıklayın</a></p>";
 
             using MailMessage messsage = new MailMessage()
             {
@@ -41,7 +42,7 @@ namespace Project.OuterInfrastructure.Tools
             {
                 EnableSsl = _smtp.EnableSSl,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_smtp.UserName, _smtp.UserName),
+                Credentials = new NetworkCredential(_smtp.UserName, _smtp.Password),
             };
             await client.SendMailAsync(messsage, cancellationToken);
         }

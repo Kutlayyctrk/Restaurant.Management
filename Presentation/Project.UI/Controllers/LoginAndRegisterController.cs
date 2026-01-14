@@ -1,16 +1,20 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.UI.Models.LoginVMs;
+using Project.UI.Models.RegisterVms;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Project.UI.Controllers
 {
     public class LoginAndRegisterController : Controller
     {
-      
 
-      private readonly IAppUserManager _appUserManager;
+
+        private readonly IAppUserManager _appUserManager;
 
         public LoginAndRegisterController(IAppUserManager appUserManager)
         {
@@ -25,15 +29,27 @@ namespace Project.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginPageVM vM)
         {
-            string result = await _appUserManager.LoginAsync(vM.User);
+            AppUserDTO loginDTO = new AppUserDTO()
+            {
+                UserName = vM.UserName,
+                Password = vM.Password,
+                RememberMe = vM.RememberMe
+
+            };
+
+            string result = await _appUserManager.LoginAsync(loginDTO);
 
             if (result.StartsWith("Error"))
             {
-                ModelState.AddModelError("", result.Replace("Error|", ""));
+                string[] messages = result.Replace("Error|", "").Split('|');
+                foreach (string message in messages)
+                {
+                    ModelState.AddModelError("", message);
+                }
                 return View(vM);
             }
 
-           
+
             var roles = result.Replace("Success|", "").Split(',');
 
             if (roles.Contains("Admin"))
@@ -62,8 +78,40 @@ namespace Project.UI.Controllers
             }
 
             // Default yönlendirme
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "LoginAndRegister");
         }
 
+        public IActionResult Register()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterVm vM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vM);
+            }
+            AppUserDTO dto = new()
+            {
+                UserName = vM.UserName,
+                Email = vM.Email,
+                ConfirmedEmail = vM.ConfirmedEmail,
+                Password = vM.Password,
+                RoleIds = new List<int> { vM.Role }
+            };
+            string result = await _appUserManager.CreateAsync(dto);
+
+            if (result.StartsWith("Error"))
+            {
+                string[] messages = result.Replace("Error|", "").Split('|');
+                foreach (string message in messages)
+                {
+                    ModelState.AddModelError("", message);
+                }
+                return View(vM);
+            }
+            return RedirectToAction("Login", "LoginAndRegister");
+        }
     }
 }

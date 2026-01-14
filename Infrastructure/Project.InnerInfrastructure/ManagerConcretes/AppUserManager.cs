@@ -98,29 +98,30 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public async Task<string> LoginAsync(AppUserDTO dto)
         {
-          ValidationResult validationResult= await _appUserValidator.ValidateAsync(dto);
-            if(!validationResult.IsValid)
+            ValidationResult validationResult = await _appUserValidator.ValidateAsync(dto,
+         options => options.IncludeRuleSets("Login"));
+            if (!validationResult.IsValid)
             {
-                return string.Join("|", validationResult.Errors.Select(x => x.ErrorMessage));
+                return "Error|"+string.Join("|", validationResult.Errors.Select(x=> x.ErrorMessage));
             }
 
             AppUser user= await _userManager.FindByNameAsync(dto.UserName);
             if(user==null)
             {
-                return "Geçersiz email veya şifre.";
+                return "Error| Geçersiz Kullanıcı Adı veya şifre.";
             }
 
             SignInResult signInResult= await _signInManager.PasswordSignInAsync(user,dto.Password,isPersistent:false,lockoutOnFailure:false);
             if(!signInResult.Succeeded)
             {
-                return "Geçersiz email veya şifre.";
+                return "Error| Geçersiz Kullanıcı Adı veya şifre.";
             }
 
 
             var roles = await _userManager.GetRolesAsync(user);
             if(roles==null || roles.Count==0)
             {
-                return "Kullanıcının rolü bulunmamaktadır.";
+                return "Error| Kullanıcının rolü bulunmamaktadır.";
             }
             return "Giriş başarılı|"+string.Join(",",roles);
         }

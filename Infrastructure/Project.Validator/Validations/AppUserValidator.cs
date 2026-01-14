@@ -12,6 +12,7 @@ namespace Project.Validator.Validations
     {
         public AppUserValidator()
         {
+            //Register ve Update için kurallar
             RuleFor(x => x.UserName)
                 .NotEmpty().WithMessage("Kullanıcı adı zorunludur.")
                 .MinimumLength(5).WithMessage("Kullanıcı adı en az 5 karakter olmalıdır.")
@@ -28,7 +29,20 @@ namespace Project.Validator.Validations
                 .NotEmpty().WithMessage("Email tekrar alanı zorunludur.")
                 .Equal(x => x.Email).WithMessage("Email alanları uyuşmuyor.");
 
+            //Login için kurallar
+            RuleSet("Login", () =>
+            {
+                RuleFor(x => x.UserName)
+                    .NotEmpty().WithMessage("Kullanıcı adı zorunludur.")
+                    .MinimumLength(5).WithMessage("Kullanıcı adı en az 5 karakter olmalıdır.")
+                    .MaximumLength(25).WithMessage("Kullanıcı adı en fazla 25 karakter olmalıdır.")
+                    .Must(name => name != null && name == name.Trim())
+                        .WithMessage("Kullanıcı adı başta veya sonda boşluk içeremez.");
 
+                RuleFor(x => x.Password)
+                    .NotEmpty().WithMessage("Şifre zorunludur.");
+               
+            });
         }
     }
 }

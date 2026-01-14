@@ -13,7 +13,13 @@ namespace Project.OuterInfrastructure.Tools
         public bool EnableSSl { get; set; } = true;
 
         public string UserName { get; set; } = "";
-        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string Email { get; set; } = "";   
+        public string FromEmail   
+        {
+            get => Email;
+            set => Email = value;
+        }
         public string FromName { get; set; } = "";
     }
 }
