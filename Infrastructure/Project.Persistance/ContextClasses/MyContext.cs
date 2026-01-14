@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project.Domain.Entities.Concretes;
 using Project.Persistance.Configuration;
+using Project.Persistance.SeedDatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,17 @@ namespace Project.Persistance.ContextClasses
             builder.ApplyConfiguration(new SupplierConfiguration());
             builder.ApplyConfiguration(new TableConfiguration());
             builder.ApplyConfiguration(new UnitConfiguration());
+
+            builder.AppRoleSeed();
+            builder.AppUserSeed();
+            builder.AppUserProfileSeed();
+            builder.AppUserRoleSeed();
+            builder.CategorySeed();
+            builder.UnitSeed();
+            builder.ProductSeed();
+            builder.SupplierSeed();
+           builder.TableSeed();
+
 
         }
         public DbSet<AppUser> AppUsers { get; set; }
