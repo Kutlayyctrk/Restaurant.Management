@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace Project.Validator.Validations
 {
-    public class AppUserValidator:AbstractValidator<AppUserDTO>
+    public class AppUserValidator : AbstractValidator<AppUserDTO>
     {
         public AppUserValidator()
         {
             RuleFor(x => x.UserName)
-              .NotEmpty().WithMessage("Kullanıcı adı zorunludur.")
-              .MinimumLength(5).WithMessage("Kullanıcı adı en az 5 karakter olmalıdır.")
-              .MaximumLength(25).WithMessage("Kullanıcı adı en fazla 25 karakter olmalıdır.")
-              .Must(name => name == name.Trim()).WithMessage("Kullanıcı adı başta veya sonda boşluk içeremez.");
+                .NotEmpty().WithMessage("Kullanıcı adı zorunludur.")
+                .MinimumLength(5).WithMessage("Kullanıcı adı en az 5 karakter olmalıdır.")
+                .MaximumLength(25).WithMessage("Kullanıcı adı en fazla 25 karakter olmalıdır.")
+                .Must(name => name != null && name == name.Trim())
+        .WithMessage("Kullanıcı adı başta veya sonda boşluk içeremez.");
 
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email alanı zorunludur.")
@@ -27,7 +28,7 @@ namespace Project.Validator.Validations
                 .NotEmpty().WithMessage("Email tekrar alanı zorunludur.")
                 .Equal(x => x.Email).WithMessage("Email alanları uyuşmuyor.");
 
-         
+
         }
     }
 }

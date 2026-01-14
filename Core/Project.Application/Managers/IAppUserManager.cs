@@ -10,5 +10,6 @@ namespace Project.Application.Managers
 {
     public interface IAppUserManager:IManager<AppUser,AppUserDTO>
     {
+        Task<string> LoginAsync(AppUserDTO dto);
     }
 }
