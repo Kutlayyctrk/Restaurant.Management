@@ -1,0 +1,36 @@
+﻿<header class="bg-white border-bottom">
+    <div class="container-fluid d-flex justify-content-between align-items-center py-2">
+        <div>
+            <button class="btn btn-light d-md-none" id="sidebarToggle">☰</button>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <a class="text-dark" asp-area="Manager" asp-controller="Notifications" asp-action="Index">🔔</a>
+            </div>
+
+            <div>
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <div class="dropdown">
+                        <a class="dropdown-toggle text-dark" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            @User.Identity.Name
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item" asp-area="Manager" asp-controller="Account" asp-action="Profile">Profil</a></li>
+                            <li>
+                                <form asp-area="Manager" asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item">Çıkış</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="LoginAndRegister" asp-action="Login">Giriş</a>
+                }
+            </div>
+        </div>
+    </div>
+</header>

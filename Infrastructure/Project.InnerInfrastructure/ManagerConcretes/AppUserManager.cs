@@ -132,7 +132,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             {
                 return "Error| Kullanıcının rolü bulunmamaktadır.";
             }
-            return "Giriş başarılı|"+string.Join(",",roles);
+            return "Success|"+string.Join(",",roles);
         }
         public async Task<string> ConfirmEmailAsync(string encodedUserId, string encodedToken)
         {

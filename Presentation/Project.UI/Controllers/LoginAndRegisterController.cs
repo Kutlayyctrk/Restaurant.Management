@@ -45,6 +45,11 @@ namespace Project.UI.Controllers
 
             string result = await _appUserManager.LoginAsync(loginDTO);
 
+            if (result.Contains("Email adresiniz doğrulanmamış"))
+            {
+                return RedirectToAction("AccessDenied", "LoginAndRegister");
+            }
+
             if (result.StartsWith("Error"))
             {
                 string[] messages = result.Replace("Error|", "").Split('|');
@@ -53,11 +58,6 @@ namespace Project.UI.Controllers
                     ModelState.AddModelError("", message);
                 }
                 return View(vM);
-            }
-
-            if (result.Contains("Email adresiniz doğrulanmamış"))
-            {
-                return RedirectToAction("AccessDenied", "LoginAndRegister");
             }
 
 
@@ -69,7 +69,8 @@ namespace Project.UI.Controllers
             }
             else if (roles.Contains("İnsan Kaynakları Müdürü"))
             {
-                return RedirectToAction("Index", "HR", new { area = "Manager" });
+                return RedirectToAction("DashBoard", "Hr", new { area = "Manager" });
+
             }
             else if (roles.Contains("Restaurant Müdürü"))
             {
@@ -87,9 +88,9 @@ namespace Project.UI.Controllers
             {
                 return RedirectToAction("Index", "Administration", new { area = "Manager" });
             }
+            return RedirectToAction("AccessDenied", "LoginAndRegister");
 
-            // Default yönlendirme
-            return RedirectToAction("Login", "LoginAndRegister");
+
         }
 
         public IActionResult Register()

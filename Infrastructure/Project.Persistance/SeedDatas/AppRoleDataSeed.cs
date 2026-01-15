@@ -31,7 +31,7 @@ namespace Project.Persistance.SeedDatas
             },
             new AppRole
             {
-                Id=2,
+                Id=3,
                 Name="İnsan Kaynakları Müdürü",
                 NormalizedName="İNSAN KAYNAKLARI MÜDÜRÜ",
                 ConcurrencyStamp=Guid.NewGuid().ToString(),
@@ -40,7 +40,7 @@ namespace Project.Persistance.SeedDatas
             },
             new AppRole
             {
-                Id=3,
+                Id=2,
                 Name="Restaurant Müdürü",
                 NormalizedName="RESTAURANT MÜDÜRÜ",
                 ConcurrencyStamp=Guid.NewGuid().ToString(),
