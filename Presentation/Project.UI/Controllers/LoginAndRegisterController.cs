@@ -1,11 +1,15 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Project.Application.DTOs;
 using Project.Application.Managers;
+using Project.Domain.Entities.Concretes;
 using Project.UI.Models.LoginVMs;
 using Project.UI.Models.RegisterVms;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Project.UI.Controllers
@@ -15,10 +19,12 @@ namespace Project.UI.Controllers
 
 
         private readonly IAppUserManager _appUserManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public LoginAndRegisterController(IAppUserManager appUserManager)
+        public LoginAndRegisterController(IAppUserManager appUserManager, UserManager<AppUser> userManager)
         {
             _appUserManager = appUserManager;
+            _userManager = userManager;
         }
 
         public IActionResult Login()
@@ -49,8 +55,13 @@ namespace Project.UI.Controllers
                 return View(vM);
             }
 
+            if (result.Contains("Email adresiniz doğrulanmamış"))
+            {
+                return RedirectToAction("AccessDenied", "LoginAndRegister");
+            }
 
-            var roles = result.Replace("Success|", "").Split(',');
+
+            string[] roles = result.Replace("Success|", "").Split(',');
 
             if (roles.Contains("Admin"))
             {
@@ -96,7 +107,7 @@ namespace Project.UI.Controllers
             {
                 UserName = vM.UserName,
                 Email = vM.Email,
-                ConfirmedEmail = vM.ConfirmedEmail,
+                ConfirmEmail = vM.ConfirmedEmail,
                 Password = vM.Password,
                 RoleIds = new List<int> { vM.Role }
             };
@@ -113,5 +124,17 @@ namespace Project.UI.Controllers
             }
             return RedirectToAction("Login", "LoginAndRegister");
         }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            string result = await _appUserManager.ConfirmEmailAsync(userId, token);
+
+            if (result.StartsWith("Success"))
+                return View("ConfirmEmail");
+            else
+                return View("ConfirmEmailFailed"); 
+        }
+
+
     }
 }

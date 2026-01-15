@@ -70,7 +70,9 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(tokenn)); //Token base64 ile encode ediliyor.
                 string encodedUserId = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Id.ToString())); //UserId base64 ile encode ediliyor. Bozulma durumunu engellemek için encode ettim.
 
-                string activationLink = $"{baseUrl}/api/AppUser/ConfirmEmail?userId={encodedUserId}&token={encodedToken}"; // TODO: Buradaki controller  ve action ismi düzeltilecek Controller yaratıldıktan sonra.
+                string activationLink = $"{baseUrl}/LoginAndRegister/ConfirmEmail?userId={encodedUserId}&token={encodedToken}";
+
+
                 await _mailSender.SendActivationMailAsync(user.Email, activationLink);
             }
             return "Kullanıcı Başarıyla Oluşturuldu.";
@@ -110,8 +112,15 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             {
                 return "Error| Geçersiz Kullanıcı Adı veya şifre.";
             }
+            if (!user.EmailConfirmed)
+            {
+                return "Error|Email adresiniz doğrulanmamış. Lütfen aktivasyon linkine tıklayın.";
+            }
+           
 
-            SignInResult signInResult= await _signInManager.PasswordSignInAsync(user,dto.Password,isPersistent:false,lockoutOnFailure:false);
+
+
+            SignInResult signInResult = await _signInManager.PasswordSignInAsync(user,dto.Password,isPersistent:false,lockoutOnFailure:false);
             if(!signInResult.Succeeded)
             {
                 return "Error| Geçersiz Kullanıcı Adı veya şifre.";
@@ -125,6 +134,22 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             }
             return "Giriş başarılı|"+string.Join(",",roles);
         }
+        public async Task<string> ConfirmEmailAsync(string encodedUserId, string encodedToken)
+        {
+            string decodedUserId = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedUserId));
+            string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
+
+            AppUser user = await _userManager.FindByIdAsync(decodedUserId);
+            if (user == null)
+                return "Error|Kullanıcı bulunamadı.";
+
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            if (result.Succeeded)
+                return "Success|Email doğrulandı.";
+
+            return "Error|Email doğrulama başarısız.";
+        }
+
 
     }
 }
