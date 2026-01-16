@@ -1,19 +1,21 @@
-﻿<aside class="bg-dark text-white" style="width:250px;min-height:100vh;">
+﻿<aside class="manager-sidebar bg-dark text-white">
     <div class="p-3">
         <a class="navbar-brand text-white d-block mb-3" asp-area="Manager" asp-controller="Hr" asp-action="DashBoard" title="RestaurantManagementAPP">RMAPP</a>
 
-        <ul class="nav flex-column">
+        <ul class="nav flex-column sidebar-menu">
             <li class="nav-item">
-                <a class="nav-link text-white" asp-area="Manager" asp-controller="Hr" asp-action="DashBoard">Personel Listesi</a>
+                <a class="nav-link text-white d-block"
+                   asp-area="Manager" asp-controller="Hr" asp-action="PersonelList"
+                   href="@Url.Action("PersonelList", "Hr", new { area = "Manager" })">
+                    Personel Listesi
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white" asp-area="Manager" asp-controller="Hr" asp-action="Edit">Bilgileri Güncelle</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" asp-area="Manager" asp-controller="Hr" asp-action="CompleteProfile">Profil Tamamla</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" asp-area="Manager" asp-controller="Tables" asp-action="Index">Masa Yönetimi</a>
+                <a class="nav-link text-white d-block"
+                   asp-area="Manager" asp-controller="Hr" asp-action="CompleteProfile"
+                   href="@Url.Action("CompleteProfile", "Hr", new { area = "Manager" })">
+                    Profil Tamamla
+                </a>
             </li>
         </ul>
     </div>

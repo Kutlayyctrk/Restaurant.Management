@@ -98,27 +98,32 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public virtual async Task<string> UpdateAsync(int id, TDto dto)
         {
-            ValidationResult validationResult =  _validator.Validate(dto);
-            if(!validationResult.IsValid)
+            ValidationResult validationResult = await _validator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
             {
-               return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
             }
-            TEntity originalEntity= await _repository.GetByIdAsync(id);
-            if(originalEntity==null)
+            TEntity originalEntity = await _repository.GetByIdAsync(id);
+            if (originalEntity == null)
             {
                 return "Güncellenecek veri bulunamadı";
             }
-            _mapper.Map(dto, originalEntity);
-            originalEntity.UpdatedDate= DateTime.Now;
-            originalEntity.Status = Domain.Enums.DataStatus.Updated;
-            await _repository.UpdateAsync(originalEntity, originalEntity);
+
+            TEntity newEntity = _mapper.Map<TEntity>(dto);
+
+            newEntity.Id = originalEntity.Id;
+            newEntity.InsertedDate = originalEntity.InsertedDate;
+
+            newEntity.UpdatedDate = DateTime.Now;
+            newEntity.Status = Domain.Enums.DataStatus.Updated;
+            await _repository.UpdateAsync(originalEntity, newEntity);
             return "Güncelleme işlemi başarılı";
         }
 
-        public Task<List<TDto>> Where(Expression<Func<TEntity, bool>> expression)
+        public Task<List<TEntity>> Where(Expression<Func<TEntity, bool>> expression)
         {
            List<TEntity> entities = _repository.Where(expression).ToList();
-            return Task.FromResult(_mapper.Map<List<TDto>>(entities));
+            return Task.FromResult(_mapper.Map<List<TEntity>>(entities));
         }
     }
 }

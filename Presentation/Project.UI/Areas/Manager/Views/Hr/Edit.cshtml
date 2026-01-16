@@ -1,0 +1,68 @@
+﻿@model Project.UI.Areas.Manager.Models.AppUserVMs.PersonelEditVm
+
+@{
+    ViewData["Title"] = "Personel Düzenle";
+}
+
+<h2>Bilgileri Güncelle</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="row g-3">
+          
+            <input asp-for="Id" type="hidden" />
+
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input asp-for="UserName" class="form-control" value="@Model?.UserName" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" value="@Model?.Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Ad</label>
+                <input asp-for="FirstName" class="form-control" value="@Model?.FirstName" />
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Soyad</label>
+                <input asp-for="LastName" class="form-control" value="@Model?.LastName" />
+            </div>
+
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Maaş</label>
+                <input asp-for="Salary" class="form-control" value="@(Model?.Salary?.ToString() ?? "")" />
+            </div>
+
+            <div class="mb-3 col-md-4">
+                <label class="form-label">İşe Başlama Tarihi</label>
+                <input asp-for="HireDate" class="form-control" type="date" value="@(Model?.HireDate?.ToString("yyyy-MM-dd") ?? "")" />
+            </div>
+
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Doğum Tarihi</label>
+                <input asp-for="BirthDate" class="form-control" type="date" value="@(Model?.BirthDate?.ToString("yyyy-MM-dd") ?? "")" />
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Roller</label>
+                <select asp-for="RoleIds" asp-items="Model.RolesSelectList" multiple class="form-control"></select>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+                <a asp-action="PersonelList" class="btn btn-secondary ms-2">Geri</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

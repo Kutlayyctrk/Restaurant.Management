@@ -98,6 +98,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Kullanıcı başarıyla veritabanından silindi.";
         }
 
+       
+
         public async Task<string> LoginAsync(AppUserDTO dto)
         {
             ValidationResult validationResult = await _appUserValidator.ValidateAsync(dto,
@@ -127,7 +129,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             }
 
 
-            var roles = await _userManager.GetRolesAsync(user);
+            IList<string> roles = await _userManager.GetRolesAsync(user);
             if(roles==null || roles.Count==0)
             {
                 return "Error| Kullanıcının rolü bulunmamaktadır.";

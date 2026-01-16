@@ -15,7 +15,7 @@ namespace Project.Application.Managers
         Task<List<TDto>> GetActives();
         Task<List<TDto>> GetPassives();
         Task<TDto> GetByIdAsync(int id);
-        Task<List<TDto>> Where(Expression<Func<TEntity, bool>> expression); //Burayı IQueryable yapmadım çünkü dışarıya entity sızdırmak istemiyorum. Bunun yerine DTO döndürdüm. Bu ciddi bir güvenlik açığı ve onion mimarisine aykırıydı. Best Pratice ve onion architecture için araştırdıgımda karşıma çıktı.
+        Task<List<TEntity>> Where(Expression<Func<TEntity, bool>> expression); //Burayı IQueryable yapmadım çünkü dışarıya entity sızdırmak istemiyorum. Bunun yerine DTO döndürdüm. Bu ciddi bir güvenlik açığı ve onion mimarisine aykırıydı. Best Pratice ve onion architecture için araştırdıgımda karşıma çıktı.
 
 
         Task<string> CreateAsync(TDto dto);

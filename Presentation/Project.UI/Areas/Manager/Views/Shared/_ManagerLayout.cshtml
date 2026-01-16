@@ -5,28 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - Manager</title>
 
-    <!-- Mevcut proje bootstrap -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
 
-    <!-- Projenizin genel stilleri -->
+    <link rel="stylesheet" href="~/FlatAdmin/css/style.css" asp-append-version="true" />
+
+ 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Project.UI.styles.css" asp-append-version="true" />
 
-    <!-- FlatAdmin template CSS (wwwroot/flatadmin içine koyduğunuz dosyaları referanslayın) -->
-    <link rel="stylesheet" href="~/flatadmin/css/style.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/flatadmin/css/advanced_table.css" asp-append-version="true" /> <!-- varsa -->
     @RenderSection("Head", required: false)
 </head>
 <body>
-    <!-- Topbar -->
     @await Html.PartialAsync("_Topbar")
 
     <div class="d-flex">
-        <!-- Sidebar -->
         @await Html.PartialAsync("_Sidebar")
 
-        <!-- Main content -->
-        <main class="flex-grow-1 p-3">
+        <main class="main-content flex-grow-1 p-3">
             @RenderBody()
         </main>
     </div>
@@ -37,15 +31,8 @@
         </div>
     </footer>
 
-    <!-- Core scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- FlatAdmin template JS -->
-    <script src="~/flatadmin/js/main.js" asp-append-version="true"></script>
-    <script src="~/flatadmin/js/advanced_table.js" asp-append-version="true"></script> <!-- varsa -->
-
-    <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
 </body>
