@@ -1,19 +1,17 @@
 ﻿<aside class="manager-sidebar bg-dark text-white">
     <div class="p-3">
-        <a class="navbar-brand text-white d-block mb-3" asp-area="Manager" asp-controller="Hr" asp-action="DashBoard" title="RestaurantManagementAPP">RMAPP</a>
+        <a class="navbar-brand text-white d-block mb-3" asp-area="Manager" asp-controller="Hr" asp-action="DashBoard">RMAPP</a>
 
         <ul class="nav flex-column sidebar-menu">
             <li class="nav-item">
                 <a class="nav-link text-white d-block"
-                   asp-area="Manager" asp-controller="Hr" asp-action="PersonelList"
-                   href="@Url.Action("PersonelList", "Hr", new { area = "Manager" })">
+                   asp-area="Manager" asp-controller="Hr" asp-action="PersonelList">
                     Personel Listesi
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white d-block"
-                   asp-area="Manager" asp-controller="Hr" asp-action="CompleteProfile"
-                   href="@Url.Action("CompleteProfile", "Hr", new { area = "Manager" })">
+                   asp-area="Manager" asp-controller="Hr" asp-action="CompleteProfile">
                     Profil Tamamla
                 </a>
             </li>

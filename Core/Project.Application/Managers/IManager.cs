@@ -19,7 +19,7 @@ namespace Project.Application.Managers
 
 
         Task<string> CreateAsync(TDto dto);
-        Task<string> UpdateAsync(int id, TDto dto);
+        Task<string> UpdateAsync(TDto originalDto, TDto newDto);
         Task<string> SoftDeleteAsync(int id); //Soft delete bir manager'da tutup repository'e update'le ilettim çünkü bussines logic içerir. Dogurdan repository'de soft delete yapmak istemedim.
         Task<string> HardDeleteAsync(int id);
     }

@@ -1,45 +1,37 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Project.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Project.UI.Areas.Manager.Models.AppUserVMs
 {
     public class PersonelEditVm
     {
-        [Required]
         public int Id { get; set; }
+        public int AppUserId { get; set; } 
 
         [Required]
-        [Display(Name = "Kullanıcı Adı")]
-        public string UserName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-     
-        [Display(Name = "Ad")]
         public string FirstName { get; set; }
-
-        [Display(Name = "Soyad")]
+        [Required]
         public string LastName { get; set; }
 
-        [Display(Name = "Maaş")]
-        public decimal? Salary { get; set; }
+        [Required]
+        [RegularExpression("^[0-9]{11}$", ErrorMessage = "TCKNo 11 rakam olmalıdır.")]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "TCKNo 11 karakter olmalıdır.")]
+        public string TCKNo { get; set; }
 
-        [Display(Name = "İşe Başlama Tarihi")]
-        public DateTime? HireDate { get; set; }
+        public decimal Salary { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        public DateTime BirthDate { get; set; }
 
-        [Display(Name = "Doğum Tarihi")]
-        public DateTime? BirthDate { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        public DateTime HireDate { get; set; }
 
-   
-        [Display(Name = "Roller")]
-        public IList<int> RoleIds { get; set; } = new List<int>();
-
-  
-        public IEnumerable<SelectListItem> RolesSelectList { get; set; } = new List<SelectListItem>();
+       
+        public int SelectedRoleId { get; set; }
+        public List<SelectListItem>? Roles { get; set; }
     }
 }

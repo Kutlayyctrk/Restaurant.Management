@@ -2,12 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Managers;
-using Project.InnerInfrastructure.ManagerConcretes;
+using Project.Domain.Entities.Concretes;
+using Project.Domain.Enums;
 using Project.UI.Areas.Manager.Models.AppUserVMs;
-using System.Reflection.Metadata.Ecma335;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
+
 
 namespace Project.UI.Areas.Manager.Controllers
 {
@@ -17,17 +15,22 @@ namespace Project.UI.Areas.Manager.Controllers
         private readonly IAppUserManager _appUserManager;
         private readonly IAppUserProfileManager _appUserProfileManager;
         private readonly IAppRoleManager _appRoleManager;
+        private readonly IAppUserRoleManager _appUserRoleManager;
 
-        public HrController(IAppUserManager appUserManager, IAppUserProfileManager appUserProfileManager, IAppRoleManager appRoleManager)
+        public HrController(
+            IAppUserManager appUserManager,
+            IAppUserProfileManager appUserProfileManager,
+            IAppRoleManager appRoleManager,
+            IAppUserRoleManager appUserRoleManager)
         {
             _appUserManager = appUserManager;
             _appUserProfileManager = appUserProfileManager;
             _appRoleManager = appRoleManager;
+            _appUserRoleManager = appUserRoleManager;
         }
 
         public IActionResult DashBoard()
         {
-
             return View();
         }
 
@@ -47,126 +50,132 @@ namespace Project.UI.Areas.Manager.Controllers
             return View(vm);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            AppUserDTO dto = await _appUserManager.GetByIdAsync(id);
-            if (dto == null)
+            List<AppUserProfileDTO> allProfiles = await _appUserProfileManager.GetAllAsync();
+            AppUserProfileDTO userProfile = allProfiles.FirstOrDefault(x => x.AppUserId == id);
+
+            if (userProfile == null)
             {
-                return NotFound();
+                return NotFound($"ID'si {id} olan kullanıcıya ait bir profil kaydı bulunamadı.");
             }
+
+           
+            List<AppUserRoleDTO> userRoles = await _appUserRoleManager.GetAllAsync();
+            AppUserRoleDTO userRoleRel = userRoles.FirstOrDefault(x => x.UserId == userProfile.AppUserId && x.Status != DataStatus.Deleted);
+            int selectedRoleId = userRoleRel?.RoleId ?? 0;
+
+        
+            List<AppRoleDTO> roleDtos = await _appRoleManager.GetAllAsync();
+
             PersonelEditVm vm = new PersonelEditVm
             {
-                Id = dto.Id,
-                UserName = dto.UserName,
-                Email = dto.Email,
-                RoleIds = dto.RoleIds ?? new List<int>()
-
-
+                Id = userProfile.Id,
+                AppUserId = userProfile.AppUserId,
+                FirstName = userProfile.FirstName,
+                LastName = userProfile.LastName,
+                TCKNo = userProfile.TCKNo,
+                Salary = userProfile.Salary,
+                BirthDate = userProfile.BirthDate,
+                HireDate = userProfile.HireDate,
+                SelectedRoleId = selectedRoleId,
+                Roles = roleDtos.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name,
+                    Selected = (r.Id == selectedRoleId)
+                }).ToList()
             };
-            List<AppUserProfileDTO> profiles = await _appUserProfileManager.GetAllAsync();
-            AppUserProfileDTO profile = profiles.FirstOrDefault(p => p.AppUserId == dto.Id);
-            if (profile != null)
-            {
-                vm.FirstName = profile.FirstName;
-                vm.LastName = profile.LastName;
-                vm.Salary = profile.Salary;
-                vm.HireDate = profile.HireDate;
-                vm.BirthDate = profile.BirthDate;
-            }
-            await FillRolesSelectList(vm);
 
             return View(vm);
         }
 
         [HttpPost]
-       
-        public async Task<IActionResult> Edit(int id, PersonelEditVm vm)
+        public async Task<IActionResult> Edit(PersonelEditVm vm)
         {
-            if (id != vm.Id)
-            {
-                return BadRequest();
-            }
-
-            
-            await FillRolesSelectList(vm);
-
             if (!ModelState.IsValid)
             {
+                List<AppRoleDTO> rolesForInvalid = await _appRoleManager.GetAllAsync();
+                vm.Roles = rolesForInvalid.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name,
+                    Selected = (r.Id == vm.SelectedRoleId)
+                }).ToList();
                 return View(vm);
             }
 
-            AppUserDTO dto = new AppUserDTO
+            AppUserProfileDTO originalProfileDto = await _appUserProfileManager.GetByIdAsync(vm.Id);
+            if (originalProfileDto == null)
+            {
+                ModelState.AddModelError("", "Güncellenecek profil bulunamadı.");
+                List<AppRoleDTO> rolesForNotFound = await _appRoleManager.GetAllAsync();
+                vm.Roles = rolesForNotFound.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name,
+                    Selected = (r.Id == vm.SelectedRoleId)
+                }).ToList();
+                return View(vm);
+            }
+
+            AppUserProfileDTO newProfileDto = new AppUserProfileDTO
             {
                 Id = vm.Id,
-                UserName = vm.UserName,
-                Email = vm.Email,
-                RoleIds = vm.RoleIds
+                AppUserId = vm.AppUserId,
+                FirstName = vm.FirstName,
+                LastName = vm.LastName,
+                TCKNo = vm.TCKNo,
+                Salary = vm.Salary,
+                BirthDate = vm.BirthDate,
+                HireDate = vm.HireDate
             };
 
-            string result = await _appUserManager.UpdateAsync(id, dto);
+            string result = await _appUserProfileManager.UpdateAsync(originalProfileDto, newProfileDto);
 
-         
-            if (!string.IsNullOrEmpty(result) && result.StartsWith("Error"))
+            if (result != "Success")
             {
-                string[] messages = result.Replace("Error|", "").Split('|', StringSplitOptions.RemoveEmptyEntries);
-                foreach (string m in messages)
-                    ModelState.AddModelError(string.Empty, m);
-
-               
-                await FillRolesSelectList(vm);
+                ModelState.AddModelError("", result);
+                List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
+                vm.Roles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name,
+                    Selected = (r.Id == vm.SelectedRoleId)
+                }).ToList();
                 return View(vm);
             }
 
            
-            List<AppUserProfileDTO> profiles = await _appUserProfileManager.GetAllAsync();
-            AppUserProfileDTO profile = profiles.FirstOrDefault(p => p.AppUserId == dto.Id);
-            if (profile != null)
+            List<AppUserRoleDTO> allUserRoles = await _appUserRoleManager.GetAllAsync();
+            List<AppUserRoleDTO> existingRels = allUserRoles.Where(x => x.UserId == vm.AppUserId && x.Status != DataStatus.Deleted).ToList();
+
+            int currentRoleId = existingRels.FirstOrDefault()?.RoleId ?? 0;
+
+            if (currentRoleId != vm.SelectedRoleId)
             {
-              
-                if (!string.IsNullOrWhiteSpace(vm.FirstName))
-                    profile.FirstName = vm.FirstName;
+               
+                foreach (AppUserRoleDTO rel in existingRels)
+                {
+                    await _appUserRoleManager.RemoveByUserAndRoleAsync(rel.UserId, rel.RoleId);
+                }
 
-                if (!string.IsNullOrWhiteSpace(vm.LastName))
-                    profile.LastName = vm.LastName;
-
-                if (vm.Salary.HasValue)
-                    profile.Salary = vm.Salary.Value;
-
-                if (vm.HireDate.HasValue)
-                    profile.HireDate = vm.HireDate.Value;
-
-                if (vm.BirthDate.HasValue)
-                    profile.BirthDate = vm.BirthDate.Value;
-
-                await _appUserProfileManager.UpdateAsync(profile.Id, profile);
-            }
-            else
-            {
                 
+                if (vm.SelectedRoleId > 0)
+                {
+                    AppUserRoleDTO newRel = new AppUserRoleDTO
+                    {
+                        UserId = vm.AppUserId,
+                        RoleId = vm.SelectedRoleId,
+                        InsertedDate = DateTime.Now,
+                        Status = DataStatus.Inserted
+                    };
+                    await _appUserRoleManager.CreateAsync(newRel);
+                }
             }
 
             return RedirectToAction("PersonelList");
         }
-        private async Task FillRolesSelectList(PersonelEditVm vm)
-        {
-            vm.RolesSelectList = new List<SelectListItem>();
-
-            if (_appRoleManager == null)
-                return;
-
-            var roles = await _appRoleManager.GetAllAsync() ?? new List<AppRoleDTO>();
-            vm.RolesSelectList = roles
-                .Select(r => new SelectListItem
-                {
-                    Text = r.Name,
-                    Value = r.Id.ToString(),
-                    Selected = vm.RoleIds != null && vm.RoleIds.Contains(r.Id)
-                })
-                .ToList();
-        }
-
-
-
-
     }
 }

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Project.Contract.Repositories
 {
-    public interface IAppUserRoleRepository:IRepository<AppUserRole>
+    public interface IAppUserRoleRepository : IRepository<AppUserRole>
     {
+        Task<AppUserRole> GetByUserAndRoleAsync(int userId, int roleId);
+      
+        Task<int> DeleteByUserAndRoleAsync(int userId, int roleId);
     }
 }

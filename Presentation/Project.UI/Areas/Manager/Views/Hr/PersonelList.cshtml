@@ -1,5 +1,6 @@
 ﻿@model Project.UI.Areas.Manager.Models.AppUserVMs.HrListPageVM
 
+
 @{
     ViewData["Title"] = "Personel Listesi";
 }
@@ -30,9 +31,11 @@
                             <td>@p.InsertedDate.ToString("yyyy-MM-dd")</td>
                             <td>
                                 <a class="btn btn-sm btn-primary"
-                                   href="@editHref"
-                                   onclick="location.href='@editHref'; return true;">
-                                    Düzenle
+                                   asp-area="Manager"
+                                   asp-controller="Hr"
+                                   asp-action="Edit"
+                                   asp-route-id="@p.Id">
+                                    <i class="fas fa-edit"></i> Düzenle
                                 </a>
                             </td>
                         </tr>

@@ -56,7 +56,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<List<TDto>>(allEntites);
         }
 
-        public async Task<TDto> GetByIdAsync(int id)
+        public virtual async Task<TDto> GetByIdAsync(int id)
         {
            TEntity entity= await _repository.GetByIdAsync(id);
             return _mapper.Map<TDto>(entity);
@@ -96,29 +96,36 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Pasife alma işlemi başarılı";
         }
 
-        public virtual async Task<string> UpdateAsync(int id, TDto dto)
+        public virtual async Task<string> UpdateAsync(TDto originalDto, TDto newDto)
         {
-            ValidationResult validationResult = await _validator.ValidateAsync(dto);
+          
+            ValidationResult validationResult = await _validator.ValidateAsync(newDto);
             if (!validationResult.IsValid)
             {
                 return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
             }
-            TEntity originalEntity = await _repository.GetByIdAsync(id);
+
+            
+            TEntity originalEntity = await _repository.GetByIdAsync(originalDto.Id);
             if (originalEntity == null)
             {
                 return "Güncellenecek veri bulunamadı";
             }
 
-            TEntity newEntity = _mapper.Map<TEntity>(dto);
+           
+            _mapper.Map(newDto, originalEntity);
 
-            newEntity.Id = originalEntity.Id;
-            newEntity.InsertedDate = originalEntity.InsertedDate;
+          
+            originalEntity.Status = Domain.Enums.DataStatus.Updated;
+            originalEntity.UpdatedDate = DateTime.Now;
 
-            newEntity.UpdatedDate = DateTime.Now;
-            newEntity.Status = Domain.Enums.DataStatus.Updated;
-            await _repository.UpdateAsync(originalEntity, newEntity);
-            return "Güncelleme işlemi başarılı";
+          
+            await _repository.UpdateAsync(originalEntity, originalEntity);
+
+            return "Success";
         }
+
+
 
         public Task<List<TEntity>> Where(Expression<Func<TEntity, bool>> expression)
         {
