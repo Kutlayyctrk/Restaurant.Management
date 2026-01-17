@@ -136,7 +136,6 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
 
         public override async Task<AppUserRoleDTO> GetByIdAsync(int id)
-        {
             List<AppUserRole> list = await _appUserRoleRepository.WhereAsync(x => x.Id == id);
             AppUserRole entity = list.FirstOrDefault();
             if (entity == null) return null;
