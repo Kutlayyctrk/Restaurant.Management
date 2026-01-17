@@ -18,7 +18,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly UserManager<AppUser> _userManager = userManager;
         private readonly RoleManager<AppRole> _roleManager = roleManager;
         private readonly IAppUserRoleRepository _appUserRoleRepository = appUserRoleRepository;
-        private readonly IMapper _mapper = mapper; 
+        private readonly IMapper _mapper = mapper;
 
         public override async Task<string> CreateAsync(AppUserRoleDTO dto)
         {
@@ -34,13 +34,24 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 return "Rol eklenemedi";
             }
 
+         
+            AppRole existingRole = await _roleManager.FindByNameAsync(role.Name);
+            if (existingRole == null)
+            {
+                IdentityResult createRoleResult = await _roleManager.CreateAsync(new AppRole { Name = role.Name });
+                if (!createRoleResult.Succeeded)
+                {
+                    return string.Join("|", createRoleResult.Errors.Select(e => e.Description));
+                }
+            }
+
             IdentityResult result = await _userManager.AddToRoleAsync(user, role.Name);
             if (!result.Succeeded)
             {
                 return string.Join("|", result.Errors.Select(e => e.Description));
             }
 
-           
+
             AppUserRole domainEntity = _mapper.Map<AppUserRole>(dto);
             domainEntity.InsertedDate = DateTime.Now;
             domainEntity.Status = Project.Domain.Enums.DataStatus.Inserted;
@@ -50,7 +61,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Kullanıcı role başarıyla eklendi";
         }
 
-       
+
         public override async Task<string> HardDeleteAsync(int id)
         {
           
@@ -86,10 +97,11 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Kullanıcı rolden başarıyla çıkarıldı";
         }
 
-       
-        public async Task<string> RemoveByUserAndRoleAsync(int userId, int roleId)
+        public override async Task<string> SoftDeleteAsync(int id)
         {
-            AppUserRole entity = await _appUserRoleRepository.GetByUserAndRoleAsync(userId, roleId);
+            List<AppUserRole> list = await _appUserRoleRepository.WhereAsync(x => x.Id == id);
+            AppUserRole entity = list.FirstOrDefault();
+
             if (entity == null)
             {
                 return "Silinecek User-Role ilişkisi bulunamadı.";
@@ -107,24 +119,22 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 return "Rol bulunamadı";
             }
 
-            IdentityResult removeResult = await _userManager.RemoveFromRoleAsync(user, role.Name);
-            if (!removeResult.Succeeded)
+            IdentityResult result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+            if (!result.Succeeded)
             {
-                return string.Join("|", removeResult.Errors.Select(e => e.Description));
+                return string.Join("|", result.Errors.Select(e => e.Description));
             }
 
-          
-            int rowsDeleted = await _appUserRoleRepository.DeleteByUserAndRoleAsync(entity.UserId, entity.RoleId);
-            if (rowsDeleted == 0)
-            {
-              
-                return "İlişki DB'den silinemedi .";
-            }
+            // Soft delete: Status = Deleted, DeletionDate = DateTime.Now
+            entity.Status = Project.Domain.Enums.DataStatus.Deleted;
+            entity.DeletionDate = DateTime.Now;
+            await _appUserRoleRepository.UpdateAsync(entity, entity);
 
             return "Kullanıcı rolden başarıyla çıkarıldı";
         }
 
-       
+
+
         public override async Task<AppUserRoleDTO> GetByIdAsync(int id)
         {
             List<AppUserRole> list = await _appUserRoleRepository.WhereAsync(x => x.Id == id);

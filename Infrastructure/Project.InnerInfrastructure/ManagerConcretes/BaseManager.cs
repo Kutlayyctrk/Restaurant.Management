@@ -41,7 +41,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             domainEntity.InsertedDate = DateTime.Now;
             domainEntity.Status = Domain.Enums.DataStatus.Inserted;
             await _repository.CreateAsync(domainEntity);
-            return "Ekleme işlemi başarılı";
+            return "Success";
         }
 
         public Task<List<TDto>> GetActives()

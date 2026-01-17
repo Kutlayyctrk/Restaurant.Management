@@ -5,6 +5,7 @@ using Project.Application.Managers;
 using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
 using Project.UI.Areas.Manager.Models.AppUserVMs;
+using Project.UI.Areas.Manager.Models.CandidateVms;
 
 
 namespace Project.UI.Areas.Manager.Controllers
@@ -37,6 +38,9 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> PersonelList()
         {
             List<AppUserDTO> users = await _appUserManager.GetAllAsync();
+            List<AppUserRoleDTO> allUserRoles = await _appUserRoleManager.GetAllAsync();
+            List<AppRoleDTO> allRoles = await _appRoleManager.GetAllAsync();
+
             HrListPageVM vm = new HrListPageVM
             {
                 Persons = users.Select(u => new PersonelVm
@@ -44,48 +48,48 @@ namespace Project.UI.Areas.Manager.Controllers
                     Id = u.Id,
                     UserName = u.UserName,
                     Email = u.Email,
-                    InsertedDate = u.InsertedDate
+                    InsertedDate = u.InsertedDate,
+                    Roles = string.Join(", ", allUserRoles.Where(ur => ur.UserId == u.Id)
+                        .Select(ur => allRoles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name ?? "").Where(name => !string.IsNullOrEmpty(name)))
                 }).ToList()
             };
             return View(vm);
         }
-
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
+            AppUserDTO userDto = await _appUserManager.GetByIdAsync(id);
+            if (userDto == null) return NotFound();
+
             List<AppUserProfileDTO> allProfiles = await _appUserProfileManager.GetAllAsync();
-            AppUserProfileDTO userProfile = allProfiles.FirstOrDefault(x => x.AppUserId == id);
+            AppUserProfileDTO profileDto = allProfiles.FirstOrDefault(p => p.AppUserId == id);
+            if (profileDto == null) return NotFound();
 
-            if (userProfile == null)
-            {
-                return NotFound($"ID'si {id} olan kullanıcıya ait bir profil kaydı bulunamadı.");
-            }
+            List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
+            List<SelectListItem> rolesList = roles.Select(r => new SelectListItem { Value = r.Id.ToString(), Text = r.Name }).ToList();
 
-           
-            List<AppUserRoleDTO> userRoles = await _appUserRoleManager.GetAllAsync();
-            AppUserRoleDTO userRoleRel = userRoles.FirstOrDefault(x => x.UserId == userProfile.AppUserId && x.Status != DataStatus.Deleted);
-            int selectedRoleId = userRoleRel?.RoleId ?? 0;
-
-        
-            List<AppRoleDTO> roleDtos = await _appRoleManager.GetAllAsync();
+            List<AppUserRoleDTO> allUserRoles = await _appUserRoleManager.GetAllAsync();
+            int currentRoleId = allUserRoles.FirstOrDefault(ur => ur.UserId == id)?.RoleId ?? 0;
+            List<string> currentRoles = allUserRoles.Where(ur => ur.UserId == id)
+                .Select(ur => roles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name ?? "").Where(name => !string.IsNullOrEmpty(name)).ToList();
+            List<(int RoleId, string RoleName)> roleList = allUserRoles.Where(ur => ur.UserId == id)
+                .Select(ur => (ur.RoleId, roles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name ?? "")).Where(t => !string.IsNullOrEmpty(t.Item2)).ToList();
 
             PersonelEditVm vm = new PersonelEditVm
             {
-                Id = userProfile.Id,
-                AppUserId = userProfile.AppUserId,
-                FirstName = userProfile.FirstName,
-                LastName = userProfile.LastName,
-                TCKNo = userProfile.TCKNo,
-                Salary = userProfile.Salary,
-                BirthDate = userProfile.BirthDate,
-                HireDate = userProfile.HireDate,
-                SelectedRoleId = selectedRoleId,
-                Roles = roleDtos.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name,
-                    Selected = (r.Id == selectedRoleId)
-                }).ToList()
+                Id = userDto.Id,
+                AppUserId = userDto.Id,
+                ProfileId = profileDto.Id,
+                FirstName = profileDto.FirstName,
+                LastName = profileDto.LastName,
+                TCKNo = profileDto.TCKNo,
+                Salary = profileDto.Salary,
+                BirthDate = profileDto.BirthDate,
+                HireDate = profileDto.HireDate,
+                SelectedRoleId = currentRoleId,
+                Roles = rolesList,
+                CurrentRoles = currentRoles,
+                RoleList = roleList
             };
 
             return View(vm);
@@ -94,35 +98,12 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(PersonelEditVm vm)
         {
-            if (!ModelState.IsValid)
-            {
-                List<AppRoleDTO> rolesForInvalid = await _appRoleManager.GetAllAsync();
-                vm.Roles = rolesForInvalid.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name,
-                    Selected = (r.Id == vm.SelectedRoleId)
-                }).ToList();
-                return View(vm);
-            }
+            if (!ModelState.IsValid) return View(vm);
 
-            AppUserProfileDTO originalProfileDto = await _appUserProfileManager.GetByIdAsync(vm.Id);
-            if (originalProfileDto == null)
+            AppUserProfileDTO originalProfile = await _appUserProfileManager.GetByIdAsync(vm.ProfileId);
+            AppUserProfileDTO profileDto = new AppUserProfileDTO
             {
-                ModelState.AddModelError("", "Güncellenecek profil bulunamadı.");
-                List<AppRoleDTO> rolesForNotFound = await _appRoleManager.GetAllAsync();
-                vm.Roles = rolesForNotFound.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name,
-                    Selected = (r.Id == vm.SelectedRoleId)
-                }).ToList();
-                return View(vm);
-            }
-
-            AppUserProfileDTO newProfileDto = new AppUserProfileDTO
-            {
-                Id = vm.Id,
+                Id = vm.ProfileId,
                 AppUserId = vm.AppUserId,
                 FirstName = vm.FirstName,
                 LastName = vm.LastName,
@@ -132,50 +113,80 @@ namespace Project.UI.Areas.Manager.Controllers
                 HireDate = vm.HireDate
             };
 
-            string result = await _appUserProfileManager.UpdateAsync(originalProfileDto, newProfileDto);
-
-            if (result != "Success")
+            string updateResult = await _appUserProfileManager.UpdateAsync(originalProfile, profileDto);
+            if (!string.IsNullOrEmpty(updateResult))
             {
-                ModelState.AddModelError("", result);
-                List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
-                vm.Roles = roles.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name,
-                    Selected = (r.Id == vm.SelectedRoleId)
-                }).ToList();
+                ModelState.AddModelError("", updateResult);
                 return View(vm);
             }
 
-           
+            // Rol ekleme: Mevcut rolleri kontrol et, yeni rolü ekle (aynıysa ekleme)
             List<AppUserRoleDTO> allUserRoles = await _appUserRoleManager.GetAllAsync();
-            List<AppUserRoleDTO> existingRels = allUserRoles.Where(x => x.UserId == vm.AppUserId && x.Status != DataStatus.Deleted).ToList();
+            List<AppUserRoleDTO> currentRoles = allUserRoles.Where(ur => ur.UserId == vm.AppUserId).ToList();
+            bool hasRole = currentRoles.Any(ur => ur.RoleId == vm.SelectedRoleId);
 
-            int currentRoleId = existingRels.FirstOrDefault()?.RoleId ?? 0;
-
-            if (currentRoleId != vm.SelectedRoleId)
+            if (!hasRole && vm.SelectedRoleId > 0)
             {
-               
-                foreach (AppUserRoleDTO rel in existingRels)
+                AppUserRoleDTO newRoleDto = new AppUserRoleDTO { UserId = vm.AppUserId, RoleId = vm.SelectedRoleId };
+                string addResult = await _appUserRoleManager.CreateAsync(newRoleDto);
+                if (!string.IsNullOrEmpty(addResult) && !addResult.Contains("başarıyla"))
                 {
-                    await _appUserRoleManager.RemoveByUserAndRoleAsync(rel.UserId, rel.RoleId);
+                    TempData["Error"] = addResult;
+                    return View(vm);
                 }
-
-                
-                if (vm.SelectedRoleId > 0)
+                else
                 {
-                    AppUserRoleDTO newRel = new AppUserRoleDTO
-                    {
-                        UserId = vm.AppUserId,
-                        RoleId = vm.SelectedRoleId,
-                        InsertedDate = DateTime.Now,
-                        Status = DataStatus.Inserted
-                    };
-                    await _appUserRoleManager.CreateAsync(newRel);
+                    TempData["Success"] = "Rol eklendi.";
                 }
             }
 
             return RedirectToAction("PersonelList");
         }
+        [HttpPost]
+        public async Task<IActionResult> RemoveRoleFromEdit(int userId, int roleId)
+        {
+            List<AppUserRoleDTO> allUserRoles = await _appUserRoleManager.GetAllAsync();
+            AppUserRoleDTO userRole = allUserRoles.FirstOrDefault(ur => ur.UserId == userId && ur.RoleId == roleId);
+            if (userRole != null)
+            {
+                string result = await _appUserRoleManager.SoftDeleteAsync(userRole.Id);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    TempData["Error"] = result;
+                }
+            }
+            return RedirectToAction("Edit", new { id = userId });
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddRoleFromEdit(int userId, int roleId)
+        {
+            List<AppUserRoleDTO> allUserRoles = await _appUserRoleManager.GetAllAsync();
+            bool hasRole = allUserRoles.Any(ur => ur.UserId == userId && ur.RoleId == roleId);
+
+            if (!hasRole && roleId > 0)
+            {
+                AppUserRoleDTO newRoleDto = new AppUserRoleDTO { UserId = userId, RoleId = roleId };
+                string addResult = await _appUserRoleManager.CreateAsync(newRoleDto);
+                if (!string.IsNullOrEmpty(addResult) && !addResult.Contains("başarıyla"))
+                {
+                    TempData["Error"] = addResult;
+                }
+                else
+                {
+                    TempData["Success"] = "Rol eklendi.";
+                }
+            }
+            else if (hasRole)
+            {
+                TempData["Error"] = "Bu rol zaten mevcut.";
+            }
+            else
+            {
+                TempData["Error"] = "Geçerli bir rol seçiniz.";
+            }
+
+            return RedirectToAction("Edit", new { id = userId });
+        }
+
     }
 }

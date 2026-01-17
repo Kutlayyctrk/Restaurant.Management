@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Project.Validator\Project.Validator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Utilities\" />
+  </ItemGroup>
+
 </Project>

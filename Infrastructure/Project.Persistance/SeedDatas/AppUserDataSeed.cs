@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Project.Domain.Entities.Concretes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.Persistance.SeedDatas
 {
@@ -15,7 +12,7 @@ namespace Project.Persistance.SeedDatas
         {
             PasswordHasher<AppUser> passwordHasher = new PasswordHasher<AppUser>();
 
-            List<AppUser> appUsers = new ()
+            List<AppUser> appUsers = new()
             {
                 new AppUser
                 {
@@ -33,8 +30,8 @@ namespace Project.Persistance.SeedDatas
                 new AppUser
                 {
                     Id=2,
-                    UserName="müdür",
-                    NormalizedUserName="MÜDÜR",
+                    UserName="mudur",
+                    NormalizedUserName="MUDUR",
                     Email="mudur@restaurantmanagement.com",
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
@@ -52,29 +49,29 @@ namespace Project.Persistance.SeedDatas
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
                     ConcurrencyStamp=Guid.NewGuid().ToString(),
-                   InsertedDate =new DateTime(2026,01,14),
+                    InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                     PasswordHash=passwordHasher.HashPassword(null,"ik123")
                 },
                 new AppUser
                 {
                     Id=4,
-                    UserName="mutfakşef",
-                    NormalizedUserName="MUTFAKŞEF",
-                    Email="mutfakşef@restaurantmanagement.com",
+                    UserName="mutfaksef",
+                    NormalizedUserName="MUTFAKSEF",
+                    Email="mutfaksef@restaurantmanagement.com",
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
                     ConcurrencyStamp=Guid.NewGuid().ToString(),
-                     InsertedDate =new DateTime(2026,01,14),
+                    InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                     PasswordHash=passwordHasher.HashPassword(null,"mutfak123")
                 },
                 new AppUser
                 {
                     Id=5,
-                    UserName="barşef",
-                    NormalizedUserName="BARŞEF",
-                    Email="barşef@restaurantmanagement.com",
+                    UserName="barsef",
+                    NormalizedUserName="BARSEF",
+                    Email="barsef@restaurantmanagement.com",
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
                     ConcurrencyStamp=Guid.NewGuid().ToString(),
@@ -85,16 +82,15 @@ namespace Project.Persistance.SeedDatas
                 new AppUser
                 {
                     Id=6,
-                    UserName="aşçı",
-                    NormalizedUserName="AŞÇI",
-                    Email="aşçı@restaurantmanagement.com",
+                    UserName="asci",
+                    NormalizedUserName="ASCI",
+                    Email="asci@restaurantmanagement.com",
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
                     ConcurrencyStamp=Guid.NewGuid().ToString(),
                     InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                     PasswordHash=passwordHasher.HashPassword(null,"asci123")
-
                 },
                 new AppUser
                 {
@@ -105,7 +101,7 @@ namespace Project.Persistance.SeedDatas
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
                     ConcurrencyStamp=Guid.NewGuid().ToString(),
-                     InsertedDate =new DateTime(2026,01,14),
+                    InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                     PasswordHash=passwordHasher.HashPassword(null,"barmen123")
                 },
@@ -118,58 +114,52 @@ namespace Project.Persistance.SeedDatas
                     EmailConfirmed=true,
                     SecurityStamp=Guid.NewGuid().ToString(),
                     ConcurrencyStamp=Guid.NewGuid().ToString(),
-                     InsertedDate =new DateTime(2026,01,14),
+                    InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                     PasswordHash=passwordHasher.HashPassword(null,"garson123")
                 },
-                 new AppUser
-                 {
-                     Id=9,
-                     UserName="idaripersonel",
-                     NormalizedUserName="IDARIPERSONEL",
-                     Email="idaripersonel@restaurantmanagement.com",
-                     EmailConfirmed=true,
-                     SecurityStamp=Guid.NewGuid().ToString(),
-                     ConcurrencyStamp=Guid.NewGuid().ToString(),
-                      InsertedDate =new DateTime(2026,01,14),
-                     Status=Domain.Enums.DataStatus.Inserted,
-                     PasswordHash=passwordHasher.HashPassword(null,"idari123")
-
-                 },
-                 new AppUser
-                 {
-                     Id=10,
-                     UserName="hizmetpersoneli",
-                     NormalizedUserName="HIZMETPERSONELI",
-                     Email="hizmetpersoneli@restaurantmanagement.com",
-                     EmailConfirmed=true,
-                     SecurityStamp=Guid.NewGuid().ToString(),
-                     ConcurrencyStamp=Guid.NewGuid().ToString(),
-                      InsertedDate =new DateTime(2026,01,14),
-                     Status=Domain.Enums.DataStatus.Inserted,
-                     PasswordHash=passwordHasher.HashPassword(null,"hizmet123")
-                 },
-                 new AppUser
-                 {
-                     Id=11,
-                     UserName="stajyer",
-                     NormalizedUserName="STAJYER",
-                     Email="stajyer@restaurantmanagement.com",
-                     EmailConfirmed=true,
-                     SecurityStamp=Guid.NewGuid().ToString(),
-                     ConcurrencyStamp= Guid.NewGuid().ToString(),
-                      InsertedDate =new DateTime(2026,01,14),
-                     Status=Domain.Enums.DataStatus.Inserted,
-                     PasswordHash=passwordHasher.HashPassword(null,"stajyer123")
-
-                 }
-
-
+                new AppUser
+                {
+                    Id=9,
+                    UserName="idaripersonel",
+                    NormalizedUserName="IDARIPERSONEL",
+                    Email="idaripersonel@restaurantmanagement.com",
+                    EmailConfirmed=true,
+                    SecurityStamp=Guid.NewGuid().ToString(),
+                    ConcurrencyStamp=Guid.NewGuid().ToString(),
+                    InsertedDate =new DateTime(2026,01,14),
+                    Status=Domain.Enums.DataStatus.Inserted,
+                    PasswordHash=passwordHasher.HashPassword(null,"idari123")
+                },
+                new AppUser
+                {
+                    Id=10,
+                    UserName="hizmetpersoneli",
+                    NormalizedUserName="HIZMETPERSONELI",
+                    Email="hizmetpersoneli@restaurantmanagement.com",
+                    EmailConfirmed=true,
+                    SecurityStamp=Guid.NewGuid().ToString(),
+                    ConcurrencyStamp=Guid.NewGuid().ToString(),
+                    InsertedDate =new DateTime(2026,01,14),
+                    Status=Domain.Enums.DataStatus.Inserted,
+                    PasswordHash=passwordHasher.HashPassword(null,"hizmet123")
+                },
+                new AppUser
+                {
+                    Id=11,
+                    UserName="stajyer",
+                    NormalizedUserName="STAJYER",
+                    Email="stajyer@restaurantmanagement.com",
+                    EmailConfirmed=true,
+                    SecurityStamp=Guid.NewGuid().ToString(),
+                    ConcurrencyStamp= Guid.NewGuid().ToString(),
+                    InsertedDate =new DateTime(2026,01,14),
+                    Status=Domain.Enums.DataStatus.Inserted,
+                    PasswordHash=passwordHasher.HashPassword(null,"stajyer123")
+                }
             };
 
             modelBuilder.Entity<AppUser>().HasData(appUsers);
         }
-        
     }
-    
 }
