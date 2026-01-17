@@ -9,8 +9,10 @@ namespace Project.Contract.Repositories
 {
     public interface IAppUserRoleRepository : IRepository<AppUserRole>
     {
-        Task<AppUserRole> GetByUserAndRoleAsync(int userId, int roleId);
-      
+       
+        Task<AppUserRole> GetByCompositeKeyAsync(int userId, int roleId);
         Task<int> DeleteByUserAndRoleAsync(int userId, int roleId);
+        AppUserRole GetLocalTrackedEntity(int userId, int roleId);
+
     }
 }

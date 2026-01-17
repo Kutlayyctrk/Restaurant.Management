@@ -78,7 +78,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Kullanıcı Başarıyla Oluşturuldu.";
         }
 
-        public override async Task<string> HardDeleteAsync(int id)
+        public override async Task<string> HardDeleteByIdAsync(int id)
         {
             AppUser user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)

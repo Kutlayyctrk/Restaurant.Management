@@ -67,8 +67,12 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             List<TEntity> passiveEntities = _repository.Where(x => x.Status == Domain.Enums.DataStatus.Deleted).ToList();
             return Task.FromResult(_mapper.Map<List<TDto>>(passiveEntities));
         }
+        public virtual Task<string> HardDeleteAsync(int userId, int roleId)
+        {
+            throw new NotImplementedException();
+        }
 
-        public virtual async Task<string> HardDeleteAsync(int id)
+        public virtual async Task<string> HardDeleteByIdAsync(int id)
         {
             TEntity domainEntity = await _repository.GetByIdAsync(id);
             if(domainEntity ==null)
@@ -83,7 +87,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return "Silme işlemi başarılı";
         }
 
-        public  virtual async Task<string> SoftDeleteAsync(int id)
+        public  virtual async Task<string> SoftDeleteByIdAsync(int id)
         {
             TEntity originalEntity= await _repository.GetByIdAsync(id);
             if(originalEntity==null)

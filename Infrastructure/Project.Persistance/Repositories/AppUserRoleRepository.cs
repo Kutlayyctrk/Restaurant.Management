@@ -30,12 +30,25 @@ namespace Project.Persistance.Repositories
             return list.FirstOrDefault();
         }
 
-        // Server-side delete avoids EF tracked-entity concurrency checks
+
         public async Task<int> DeleteByUserAndRoleAsync(int userId, int roleId)
         {
             return await _myContext.Set<AppUserRole>()
                                    .Where(x => x.UserId == userId && x.RoleId == roleId)
                                    .ExecuteDeleteAsync();
         }
+
+        public async Task<AppUserRole> GetByCompositeKeyAsync(int userId, int roleId)
+        {
+            return await _myContext.AppUserRoles
+                                   .FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
+        }
+        public AppUserRole GetLocalTrackedEntity(int userId, int roleId)
+        {
+            return _myContext.AppUserRoles.Local
+                .FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
+        }
+
+
     }
 }

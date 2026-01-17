@@ -67,20 +67,20 @@ namespace Project.UI.Controllers
             {
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             }
-            else if (roles.Contains("İnsan Kaynakları Müdürü"))
+            else if (roles.Contains("Insan Kaynaklari Muduru"))
             {
                 return RedirectToAction("DashBoard", "Hr", new { area = "Manager" });
 
             }
-            else if (roles.Contains("Restaurant Müdürü"))
+            else if (roles.Contains("Restaurant Muduru\""))
             {
                 return RedirectToAction("Index", "Restaurant", new { area = "Manager" });
             }
-            else if (roles.Contains("Mutfak Şefi"))
+            else if (roles.Contains("Mutfak Sefi"))
             {
                 return RedirectToAction("Index", "Kitchen", new { area = "Manager" });
             }
-            else if (roles.Contains("Bar Şefi"))
+            else if (roles.Contains("Bar Sefi"))
             {
                 return RedirectToAction("Index", "Bar", new { area = "Manager" });
             }

@@ -12,6 +12,7 @@ namespace Project.Domain.Entities.Concretes
     public class AppUserRole : IdentityUserRole<int>, IEntity
     {
 
+       
         public int Id { get; set; }
         public DateTime InsertedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -22,6 +23,5 @@ namespace Project.Domain.Entities.Concretes
 
         public virtual AppUser User { get; set; }
         public virtual AppRole Role { get; set; }
-
     }
 }

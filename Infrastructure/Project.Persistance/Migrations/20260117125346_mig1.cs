@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -223,7 +223,8 @@ namespace Project.Persistance.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -505,17 +506,17 @@ namespace Project.Persistance.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "DeletionDate", "InsertedDate", "Name", "NormalizedName", "Status", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, "82114f04-5a5c-42ce-a741-514e6f38d608", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", "ADMIN", 1, null },
-                    { 2, "0974ee48-9708-470b-8395-133d7afa9f03", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Restaurant Müdürü", "RESTAURANT MUDURU", 1, null },
-                    { 3, "d419dd7d-6ea8-4b37-b52c-c854678c8d0a", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "İnsan Kaynakları Müdürü", "INSAN KAYNAKLARI MUDURU", 1, null },
-                    { 4, "07906e25-3e45-4186-8f01-5f998ab56e63", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mutfak Şefi", "MUTFAK SEFI", 1, null },
-                    { 5, "cb7f31ae-ec93-4fee-b8d3-187dd7321556", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bar Şefi", "BAR SEFI", 1, null },
-                    { 6, "bc0eea53-0afe-4498-b247-7ca19b68034c", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Aşçı", "ASCI", 1, null },
-                    { 7, "67b79ceb-3181-4eec-8c8e-849139ec5537", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Barmen", "BARMEN", 1, null },
-                    { 8, "e3ead61d-4000-4609-80e3-1fec4a7a4387", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Garson", "GARSON", 1, null },
-                    { 9, "889f00b7-8de8-4ed3-ab3d-3875c698e5f5", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hizmet Personeli", "HIZMET PERSONELI", 1, null },
-                    { 10, "63dad844-7e0c-4292-9cca-f660f53d400e", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "İdari Personel", "IDARI PERSONEL", 1, null },
-                    { 11, "fef88cf5-4c89-47ec-8aa6-b0dbcf15ebe3", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stajyer", "STAJYER", 1, null }
+                    { 1, "d0ad15f8-d4b3-4e2a-bed5-ce8534611c1f", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", "ADMIN", 1, null },
+                    { 2, "b56aa9b8-94f7-4e24-b2bb-45bc71dc5258", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Restaurant Muduru", "RESTAURANT MUDURU", 1, null },
+                    { 3, "4406ebb8-a023-4c0c-9df0-a0e3b08fc739", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Insan Kaynaklari Muduru", "INSAN KAYNAKLARI MUDURU", 1, null },
+                    { 4, "f2da7a97-63e5-4cea-b9ef-eb59c7638e72", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mutfak Sefi", "MUTFAK SEFI", 1, null },
+                    { 5, "192143a9-50b1-429e-b401-e462a69200cf", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bar Sefi", "BAR SEFI", 1, null },
+                    { 6, "38d7280b-0adc-4ccb-8c19-ea9270a17699", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Asci", "ASCI", 1, null },
+                    { 7, "4866e7c4-7be2-418c-a1f9-acb261438cec", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Barmen", "BARMEN", 1, null },
+                    { 8, "6e3a5856-4474-4395-b3ce-cbb3e7c3bbdd", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Garson", "GARSON", 1, null },
+                    { 9, "99b49382-29dd-4647-ba24-56ea66eae765", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hizmet Personeli", "HIZMET PERSONELI", 1, null },
+                    { 10, "7bc7b526-fed1-4e0a-a9bc-ee392ad9a415", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Idari Personel", "IDARI PERSONEL", 1, null },
+                    { 11, "7a8b7fc5-8ec7-4020-9af3-6fea909d7b0f", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stajyer", "STAJYER", 1, null }
                 });
 
             migrationBuilder.InsertData(
@@ -523,17 +524,17 @@ namespace Project.Persistance.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DeletionDate", "Email", "EmailConfirmed", "InsertedDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Status", "TwoFactorEnabled", "UpdatedDate", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "bd8c3ee7-0d5f-46d3-9833-b378faf45a41", null, "admin@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ADMIN", "AQAAAAIAAYagAAAAENa5c5aD2lntnDoxSjN/epsXrDWvaRNJzaR2M833WuAKrOL4rC0mnccNdREPi1gKXw==", null, false, "fdd3c817-1082-4182-a8dc-f011939469b2", 1, false, null, "admin" },
-                    { 2, 0, "5377dd55-4fa6-40d5-97f8-13f59b88da2e", null, "mudur@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUDUR", "AQAAAAIAAYagAAAAECQYtgxEXlUHADind8NPnb7is7Gk5vejRMnRbOfWLGc9cccib7gAqNMg3gx6y3RUnw==", null, false, "3067dfee-5c94-43aa-ae4d-7660e3959e70", 1, false, null, "mudur" },
-                    { 3, 0, "f73d8ed1-7d99-4e26-aff1-36fa7d8bf41d", null, "insankaynaklari@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "INSANKAYNAKLARI", "AQAAAAIAAYagAAAAEPa8uPTWFkceb65ld/c/qj6Ekqd5MhXC8wLcx4v9U8H84nLUqN/+6okW0GF37ycwgA==", null, false, "ab36d832-f96a-4e87-bcb8-326665d8002d", 1, false, null, "insankaynaklari" },
-                    { 4, 0, "6dced77a-f748-46f6-8cec-5c125fecaaf3", null, "mutfaksef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUTFAKSEF", "AQAAAAIAAYagAAAAEGEdsoN2QuMJbcU1SfOqQJRQBipd3bo0TGCDVSMkhhaO4WKWlk51ZXw75driZaMqRA==", null, false, "01e61470-8495-47af-b5fa-fa8cf4f07b38", 1, false, null, "mutfaksef" },
-                    { 5, 0, "2274ea59-5bf2-4032-b723-de376f4917e2", null, "barsef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARSEF", "AQAAAAIAAYagAAAAEIB+15uSY+xbytMyd7iRUPgDrLEbb0++GEHWe0+byE4boKrlrhxwYY0A9m6QNVo/6g==", null, false, "b1c6c86c-7cfa-46db-b4a9-8859ce9eda26", 1, false, null, "barsef" },
-                    { 6, 0, "bd8aa3ed-d6a5-48c9-bf84-13680a5bb175", null, "asci@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ASCI", "AQAAAAIAAYagAAAAEJhXK5oZ+HrvmxBhKzju6RyBhd9YlhdwJBS0vnnKvV+ggS1aFxDU/J0y8St+zLJTiQ==", null, false, "e0aa02f7-45b3-4bac-a4f1-509b585a969f", 1, false, null, "asci" },
-                    { 7, 0, "f2acc476-4b6f-4f1c-9fdb-246a01dfbef7", null, "barmen@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARMEN", "AQAAAAIAAYagAAAAEM687xYknfnuGVjDeDUAYalmD2ddMET26XL4Cqqz+OCuvZ3Kk1+iX8X2Kn2eJaMOuQ==", null, false, "4243af94-cd4f-4038-9922-083d62524e91", 1, false, null, "barmen" },
-                    { 8, 0, "71505719-7aa1-4373-bde1-35781a745fc8", null, "garson@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "GARSON", "AQAAAAIAAYagAAAAEEXwfkzlULdtjvBnzehw7USBrVBpAt28xDz4OqHbarWlEo1fAa70xqhlKQ33Kinj6A==", null, false, "f0a6161d-cd57-4c49-997a-1b567b29d802", 1, false, null, "garson" },
-                    { 9, 0, "587a678f-8658-4577-bab3-111191c13a3f", null, "idaripersonel@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "IDARIPERSONEL", "AQAAAAIAAYagAAAAEOxB5QggTWeTBJ0wnGGDOBuPDp9J9B6jNSdqBqnVleHP7k6Nl+Xj2onFq8Si3ZxQqg==", null, false, "52c5c9b3-127d-4e62-8926-e6f86be89f1d", 1, false, null, "idaripersonel" },
-                    { 10, 0, "4bbc00d6-639b-4147-b77e-36e80f648fd5", null, "hizmetpersoneli@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "HIZMETPERSONELI", "AQAAAAIAAYagAAAAEPo3Eo8CHxiFKZKva2izPp0J6s/+9KJwtuWm1GNi1VF41Ju+4Xez9ZO4ynPI4An4mA==", null, false, "eb04d6bf-f400-455f-9f13-acb8f4f942a0", 1, false, null, "hizmetpersoneli" },
-                    { 11, 0, "f0cf5b0f-9411-4540-88f0-70fdab2450d5", null, "stajyer@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "STAJYER", "AQAAAAIAAYagAAAAECaLFJrxCoLdS86Miy+gubxuILNh9A1I+/0nBg1KyUYuEMCAyCviYRuNqSFPhAz4ag==", null, false, "f24c17ce-c55f-4365-813c-d0552178c2fb", 1, false, null, "stajyer" }
+                    { 1, 0, "16455da2-4b6f-4e80-9519-ef752da1c24f", null, "admin@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ADMIN", "AQAAAAIAAYagAAAAENLz30jLRxw5Ez9YXgjxPn8p6fVqRQSyIqa+no1NpoxNbyD5fCgxYL4DBOtqg85mtw==", null, false, "73975c54-421e-48bf-8237-f92eb335f12d", 1, false, null, "admin" },
+                    { 2, 0, "64765485-cd1e-4b37-bed2-4a953bf0bac9", null, "mudur@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUDUR", "AQAAAAIAAYagAAAAEIEBh2ZPE7xezEG5jzgdJ3aR0acE6r/cnSdNu9JZfdQHHz2ikWpFKZUiHdElnCBicQ==", null, false, "72b4f59a-39d8-45a7-844b-b28845a3e1b1", 1, false, null, "mudur" },
+                    { 3, 0, "65cca01c-05cd-4b07-ad6f-0cac29455143", null, "insankaynaklari@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "INSANKAYNAKLARI", "AQAAAAIAAYagAAAAEDJk0IDdgfwFwaatU4Zz9ETGXKtcWEFa24tFYvE6p6k+UA0GnN7KvkbANjQo1Js7jA==", null, false, "fb84f3ef-2bf3-4671-befe-21ea3e6a3814", 1, false, null, "insankaynaklari" },
+                    { 4, 0, "6bf6c373-bab6-43b4-874a-66db6ee97ebe", null, "mutfaksef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUTFAKSEF", "AQAAAAIAAYagAAAAEAHxi1FffMlxasVb+DCeO1DxhgoVfj0+O5X9DvLmcCeoP9i6PnZ9vZs7boSxvY4jeg==", null, false, "21357545-f653-4b13-abd0-e3ae38cf5897", 1, false, null, "mutfaksef" },
+                    { 5, 0, "f485ed3a-8905-42fe-85c3-b7cf05c167ac", null, "barsef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARSEF", "AQAAAAIAAYagAAAAEBubs9HJ7HNwXxY+XuZhYLtOZiZNRTIPJ9IXmL8NyrIxswoDEgFE2NBQqx5N4BfYXg==", null, false, "09744f81-ecc8-4bcf-aff0-3e0368d4499f", 1, false, null, "barsef" },
+                    { 6, 0, "b167b8a2-d6f7-4ac2-85cc-5c58a9332630", null, "asci@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ASCI", "AQAAAAIAAYagAAAAEFuMpHY0s7XUz9AXP4xEWY6RXswjoPS9gGi/mTy2fh9O4RGJnI4T3uY4N+7M/LzMdQ==", null, false, "f28d41ff-1e66-41ee-86ca-d1e27aacb4ed", 1, false, null, "asci" },
+                    { 7, 0, "ab225ef3-7c93-4334-a89c-faed544a3b8b", null, "barmen@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARMEN", "AQAAAAIAAYagAAAAELyyiPkNJv4pnvQl9MF0nCy9z5lUMQJC6UqFk1eQVYFSVb715/+uTCFT5FbVlXVLZQ==", null, false, "65b0aa3b-b7c2-4743-8197-1c86363ce846", 1, false, null, "barmen" },
+                    { 8, 0, "3c366a4a-d42b-41f8-a6f2-a299c1e36578", null, "garson@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "GARSON", "AQAAAAIAAYagAAAAEESzNAdRwmhn6eELT9/kL4DDdQ7XNAySaXXatKGqeJHQc/RDBMsEO2fVxvqNON69dA==", null, false, "54b8852c-c8ff-4149-9949-95f5b314e9a2", 1, false, null, "garson" },
+                    { 9, 0, "d6c3a879-5108-452b-9d4f-0afa43cf5bff", null, "idaripersonel@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "IDARIPERSONEL", "AQAAAAIAAYagAAAAEAhirCKQKb7Siyo9jvgcgnfRE8YYNYUiaRJFFFg3ueZ7dyfK0OvhVGyCknPhEQ0OGA==", null, false, "b349ecaf-9594-4f84-b838-8df6dce2ce2f", 1, false, null, "idaripersonel" },
+                    { 10, 0, "88089605-1f41-4e86-8cec-924ac61971fa", null, "hizmetpersoneli@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "HIZMETPERSONELI", "AQAAAAIAAYagAAAAEPI4AzZWUDnqocskvLVq93CrjGNGB6bRIhO8qsHV+dHO8FSEs9Dr6A+l+bIKP+eepg==", null, false, "55602628-1d27-4edf-8d94-514f7ac86ba9", 1, false, null, "hizmetpersoneli" },
+                    { 11, 0, "c3bdf339-1dab-45ff-96a1-4d88769c486e", null, "stajyer@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "STAJYER", "AQAAAAIAAYagAAAAEHvG9Obv1fR334ee0Gau0KZBnEbYdv4LtbvdSSjRuVpgiTyYZtlPvMeDFUZsN7HoXQ==", null, false, "16c6a294-3e6f-4b7f-baa4-9fb534c188b3", 1, false, null, "stajyer" }
                 });
 
             migrationBuilder.InsertData(
@@ -641,10 +642,10 @@ namespace Project.Persistance.Migrations
                 columns: new[] { "Id", "CanBeProduced", "CategoryId", "DeletionDate", "InsertedDate", "IsSellable", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, false, 5, null, new DateTime(2026, 1, 17, 3, 37, 40, 947, DateTimeKind.Local).AddTicks(9943), true, "Dana Bonfile", 1, 1, 500m, null },
-                    { 2, false, 5, null, new DateTime(2026, 1, 17, 3, 37, 40, 947, DateTimeKind.Local).AddTicks(9977), true, "Tavuk Göğsü", 1, 1, 150m, null },
-                    { 3, false, 6, null, new DateTime(2026, 1, 17, 3, 37, 40, 947, DateTimeKind.Local).AddTicks(9982), true, "Marul", 1, 2, 20m, null },
-                    { 4, false, 6, null, new DateTime(2026, 1, 17, 3, 37, 40, 947, DateTimeKind.Local).AddTicks(9986), true, "Domates", 1, 1, 25m, null },
+                    { 1, false, 5, null, new DateTime(2026, 1, 17, 15, 53, 44, 481, DateTimeKind.Local).AddTicks(2915), true, "Dana Bonfile", 1, 1, 500m, null },
+                    { 2, false, 5, null, new DateTime(2026, 1, 17, 15, 53, 44, 481, DateTimeKind.Local).AddTicks(2969), true, "Tavuk Göğsü", 1, 1, 150m, null },
+                    { 3, false, 6, null, new DateTime(2026, 1, 17, 15, 53, 44, 481, DateTimeKind.Local).AddTicks(2976), true, "Marul", 1, 2, 20m, null },
+                    { 4, false, 6, null, new DateTime(2026, 1, 17, 15, 53, 44, 481, DateTimeKind.Local).AddTicks(2983), true, "Domates", 1, 1, 25m, null },
                     { 5, false, 7, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Elma", 1, 1, 30m, null },
                     { 6, false, 7, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Muz", 1, 1, 40m, null },
                     { 7, false, 8, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Kola", 1, 3, 15m, null },

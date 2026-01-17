@@ -15,8 +15,11 @@ namespace Project.Persistance.Configuration
         {
             base.Configure(builder);
 
-          
+
             builder.HasKey(x => new { x.UserId, x.RoleId });
+
+            builder.Property(x => x.Id)
+                   .ValueGeneratedOnAdd();
 
             builder.HasOne(x => x.User)
                    .WithMany(x => x.UserRoles)
@@ -30,7 +33,7 @@ namespace Project.Persistance.Configuration
                    .IsRequired()
                    .OnDelete(DeleteBehavior.Restrict);
 
-      
+
             builder.HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         }
     }

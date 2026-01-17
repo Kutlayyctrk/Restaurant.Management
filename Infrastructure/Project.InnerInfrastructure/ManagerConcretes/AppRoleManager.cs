@@ -42,7 +42,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
 
         }
-        public override async Task<string> HardDeleteAsync(int id)
+        public override async Task<string> HardDeleteByIdAsync(int id)
         {
             AppRole role = await _roleManager.FindByIdAsync(id.ToString());
             if(role==null)
