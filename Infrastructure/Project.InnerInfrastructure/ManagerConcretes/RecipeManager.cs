@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Project.Application.DTOs;
+using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
@@ -23,7 +24,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _mapper = mapper;
         }
 
-       
+
         public override async Task<List<RecipeDTO>> GetAllAsync()
         {
             List<Recipe> recipes = await _recipeRepository.GetAllAsync();
@@ -34,20 +35,22 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 Name = r.Name,
                 Description = r.Description,
                 ProductId = r.ProductId,
-                ProductName = r.Product?.ProductName,
                 CategoryId = r.CategoryId,
-                CategoryName = r.Category?.CategoryName,
-                InsertedDate = r.InsertedDate,
-                Status = r.Status,
                 RecipeItem = r.RecipeItems.Select(ri => new RecipeItemDTO
                 {
                     ProductId = ri.ProductId,
-                    ProductName = ri.Product?.ProductName,
                     Quantity = ri.Quantity,
-                    UnitId = ri.UnitId,
-                    UnitName = ri.Unit?.UnitName
+                    UnitId = ri.UnitId
                 }).ToList()
             }).ToList();
         }
+        public async Task<OperationStatus> UpdateAsync(RecipeDTO dto)
+        {
+            Recipe entity = _mapper.Map<Recipe>(dto);
+            await _recipeRepository.UpdateAsync(entity);
+            return OperationStatus.Success;
+        }
+
+
     }
 }

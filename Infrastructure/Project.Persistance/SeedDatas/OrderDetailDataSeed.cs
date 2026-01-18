@@ -39,7 +39,7 @@ namespace Project.Persistance.SeedDatas
                     ProductId = 6,
                     Quantity = 2,
                     UnitPrice = 90m,
-                    DetailState = OrderDetailStatus.Preparing,
+                    DetailState = OrderDetailStatus.Waiting,
                     InsertedDate = DateTime.Now,
                     Status = DataStatus.Inserted
                 }

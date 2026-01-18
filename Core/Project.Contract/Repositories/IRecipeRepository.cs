@@ -9,5 +9,6 @@ namespace Project.Contract.Repositories
 {
     public interface IRecipeRepository:IRepository<Recipe>
     {
+        Task UpdateAsync(Recipe entity); //Tek Entity ile güncelleme yapmam gerekiyordu o yüzden  Recipe için ayrı bir ekleme metodu yaptım.
     }
 }

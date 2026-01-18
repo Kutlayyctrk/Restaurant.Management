@@ -12,5 +12,6 @@ namespace Project.UI.Areas.Manager.Models.KitchenVMs
         public DateTime InsertedDate { get; set; }
         public string Status { get; set; }
 
+
     }
 }

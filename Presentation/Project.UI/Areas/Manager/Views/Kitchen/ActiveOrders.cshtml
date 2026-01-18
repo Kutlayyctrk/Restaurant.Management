@@ -23,8 +23,8 @@
                     </ul>
                 </div>
                 <div class="card-footer text-end">
-                    <form asp-action="SendToChef" asp-route-orderId="@order.OrderId" method="post">
-                        <button type="submit" class="btn btn-success">Gönderildi</button>
+                    <form asp-action="CompleteOrder" asp-route-orderId="@order.OrderId" method="post">
+                        <button type="submit" class="btn btn-success">Tamamlandı</button>
                     </form>
                 </div>
             </div>

@@ -20,9 +20,9 @@ namespace Project.Persistance.Repositories
             if (detail != null)
             {
                 detail.DetailState = newState;
-                _context.Update(detail);
                 await _context.SaveChangesAsync();
             }
+
         }
 
     }

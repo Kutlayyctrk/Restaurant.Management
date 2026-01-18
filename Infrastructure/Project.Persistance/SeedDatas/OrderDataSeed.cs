@@ -17,7 +17,7 @@ namespace Project.Persistance.SeedDatas
                     WaiterId = 2, 
                     TotalPrice = 250m,
                     OrderDate = new DateTime(2026,01,18,20,30,00),
-                    OrderState = OrderStatus.Pending,
+                    OrderState = OrderStatus.SentToKitchen,
                     InsertedDate = DateTime.Now,
                     Status = DataStatus.Inserted
                 },

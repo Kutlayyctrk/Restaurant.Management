@@ -18,10 +18,13 @@ namespace Project.Persistance.Repositories
         public async Task<List<Order>> GetActiveOrdersAsync()
         {
             return await _context.Set<Order>()
-             .Include(o => o.OrderDetails)
-                 .ThenInclude(od => od.Product) 
-             .Where(o => o.OrderState == OrderStatus.Pending || o.OrderState == OrderStatus.SentToKitchen)
-             .ToListAsync();
+      .Include(o => o.OrderDetails)
+          .ThenInclude(od => od.Product)
+      .Where(o => o.OrderState == OrderStatus.Pending
+               || o.OrderState == OrderStatus.SentToKitchen
+               || o.OrderState == OrderStatus.Ready)
+      .ToListAsync();
+
 
 
         }
@@ -32,9 +35,9 @@ namespace Project.Persistance.Repositories
             if (order != null)
             {
                 order.OrderState = newState;
-                _context.Update(order);
                 await _context.SaveChangesAsync();
             }
+
 
         }
     }

@@ -21,7 +21,7 @@ namespace Project.Persistance.Repositories
             _myContext = myContext;
         }
 
-        public async Task CreateAsync(T entity)
+        public virtual async Task CreateAsync(T entity)
         {
             _myContext.Set<T>().Add(entity);
             await _myContext.SaveChangesAsync();
@@ -43,7 +43,7 @@ namespace Project.Persistance.Repositories
             await _myContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(T originalEntity, T newEntity)
+        public virtual async Task UpdateAsync(T originalEntity, T newEntity)
         {
             _myContext.Set<T>().Entry(originalEntity).CurrentValues.SetValues(newEntity);
             await _myContext.SaveChangesAsync();

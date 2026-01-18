@@ -1,4 +1,5 @@
 ﻿using Project.Application.DTOs;
+using Project.Application.Enums;
 using Project.Domain.Entities.Concretes;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,6 @@ namespace Project.Application.Managers
     public interface IRecipeManager:IManager<Recipe,RecipeDTO>
     {
         Task<List<RecipeDTO>> GetAllAsync();
+        Task<OperationStatus> UpdateAsync(RecipeDTO dto); //Tek entity ile güncelleme gerekiyordu o yüzden IManager'daki metodu kullanmadım.
     }
 }

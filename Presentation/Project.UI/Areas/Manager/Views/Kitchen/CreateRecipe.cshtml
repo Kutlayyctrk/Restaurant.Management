@@ -1,4 +1,12 @@
 ﻿@model Project.Application.DTOs.RecipeDTO
+@if (TempData["DebugInfo"] != null)
+{
+    <div class="alert alert-info">@TempData["DebugInfo"]</div>
+}
+@if (TempData["ValidationErrors"] != null)
+{
+    <div class="alert alert-danger">@TempData["ValidationErrors"]</div>
+}
 
 <h2>Yeni Reçete Oluştur</h2>
 
