@@ -3,64 +3,74 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Project.Application.DTOs;
+using Project.Application.Enums;   
 using Project.Application.Managers;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class AppRoleManager(IAppRoleRepository appRoleRepository,IMapper mapper, IValidator<AppRoleDTO> appRoleValidator,RoleManager<AppRole> roleManager):BaseManager<AppRole,AppRoleDTO>(appRoleRepository,mapper,appRoleValidator),IAppRoleManager
+    public class AppRoleManager : BaseManager<AppRole, AppRoleDTO>, IAppRoleManager
     {
-        private readonly IValidator<AppRoleDTO> _appRoleValidator = appRoleValidator;
-        private readonly IMapper _mapper = mapper;
-        private readonly RoleManager<AppRole> _roleManager=roleManager;
+        private readonly IValidator<AppRoleDTO> _appRoleValidator;
+        private readonly IMapper _mapper;
+        private readonly RoleManager<AppRole> _roleManager;
 
-        public override async Task<string> CreateAsync(AppRoleDTO dto)
+        public AppRoleManager(
+            IAppRoleRepository appRoleRepository,
+            IMapper mapper,
+            IValidator<AppRoleDTO> appRoleValidator,
+            RoleManager<AppRole> roleManager
+        ) : base(appRoleRepository, mapper, appRoleValidator)
+        {
+            _appRoleValidator = appRoleValidator;
+            _mapper = mapper;
+            _roleManager = roleManager;
+        }
+
+        public override async Task<OperationStatus> CreateAsync(AppRoleDTO dto)
         {
             ValidationResult validationResult = await _appRoleValidator.ValidateAsync(dto);
-            if(!validationResult.IsValid)
+            if (!validationResult.IsValid)
             {
-                return string.Join("|", validationResult.Errors.Select(x => x.ErrorMessage));
+                return OperationStatus.ValidationError;
             }
 
-            AppRole role=_mapper.Map<AppRole>(dto);
+            AppRole role = _mapper.Map<AppRole>(dto);
             role.InsertedDate = DateTime.Now;
-            role.Status= Domain.Enums.DataStatus.Inserted;
+            role.Status = Project.Domain.Enums.DataStatus.Inserted;
 
             IdentityResult createResult = await _roleManager.CreateAsync(role);
-            if(!createResult.Succeeded)
+            if (!createResult.Succeeded)
             {
-                return string.Join ("|", createResult.Errors.Select(x => x.Description));
+                return OperationStatus.Failed;
             }
-            return "Rol başarıyla oluşturuldu.";
 
-
+            return OperationStatus.Success;
         }
-        public override async Task<string> HardDeleteByIdAsync(int id)
+
+        public override async Task<OperationStatus> HardDeleteByIdAsync(int id)
         {
             AppRole role = await _roleManager.FindByIdAsync(id.ToString());
-            if(role==null)
+            if (role == null)
             {
-                return "Silinecek Rol bulunamadı.";
-            }
-            if(role.Status!= Domain.Enums.DataStatus.Deleted)
-            {
-                return "Sadece silinmiş roller silinebilir.";
+                return OperationStatus.NotFound;
             }
 
-            IdentityResult deleteResult =await _roleManager.DeleteAsync(role);
-            if(!deleteResult.Succeeded)
+            if (role.Status != Project.Domain.Enums.DataStatus.Deleted)
             {
-                return string.Join("|", deleteResult.Errors.Select(x => x.Description));
+                return OperationStatus.Failed;
             }
-            return "Rol başarıyla silindi.";
+
+            IdentityResult deleteResult = await _roleManager.DeleteAsync(role);
+            if (!deleteResult.Succeeded)
+            {
+                return OperationStatus.Failed;
+            }
+
+            return OperationStatus.Success;
         }
-        
     }
 }

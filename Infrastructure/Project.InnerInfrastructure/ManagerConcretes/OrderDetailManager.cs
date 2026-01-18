@@ -4,6 +4,7 @@ using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
+using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,13 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class OrderDetailManager(IOrderDetailRepository orderDetailRepository,IMapper mapper,IValidator<OrderDetailDTO> orderDetailValidator):BaseManager<OrderDetail,OrderDetailDTO>(orderDetailRepository,mapper,orderDetailValidator),IOrderDetailManager
+    public class OrderDetailManager(IOrderDetailRepository orderDetailRepository, IMapper mapper, IValidator<OrderDetailDTO> orderDetailValidator) : BaseManager<OrderDetail, OrderDetailDTO>(orderDetailRepository, mapper, orderDetailValidator), IOrderDetailManager
     {
+        private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
+        public async Task UpdateDetailStateAsync(int detailId, OrderDetailStatus newState)
+        {
+            await _orderDetailRepository.UpdateDetailStateAsync(detailId, newState);
+
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Project.Application.DTOs
     {
         public decimal Quantity { get; set; }
         public int ProductId { get; set; }
+
         public int UnitId { get; set; }
 
 

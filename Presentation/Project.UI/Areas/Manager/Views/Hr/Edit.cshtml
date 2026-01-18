@@ -18,7 +18,7 @@
                     <h4 class="mb-0"><i class="fas fa-user-edit mr-2"></i> Personel Bilgilerini Güncelle</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Ana form: sadece personel bilgileri -->
+                   
                     <form asp-action="Edit" method="post" asp-area="Manager" asp-controller="Hr">
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="AppUserId" />
@@ -86,7 +86,7 @@
                         </div>
                     </form>
 
-                    <!-- Roller için ayrı formlar -->
+                  
                     <div class="row mt-4">
                         <div class="col-md-6 mb-3">
                             <label class="form-label font-weight-bold">Mevcut Roller</label>

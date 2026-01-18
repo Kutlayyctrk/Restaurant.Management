@@ -27,7 +27,7 @@ namespace Project.Persistance.Repositories
             await _myContext.SaveChangesAsync();
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public virtual async Task<List<T>> GetAllAsync()
         {
             return await _myContext.Set<T>().ToListAsync();
         }

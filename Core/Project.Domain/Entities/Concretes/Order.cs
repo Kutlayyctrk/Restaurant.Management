@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Project.Domain.Entities.Abstract;
+using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,10 @@ namespace Project.Domain.Entities.Concretes
 
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
-        public bool IsClosed { get; set; } //Hesap ödeme kontrolü
+
+        public OrderStatus OrderState { get; set; }
+
+
 
         //Relational Properties
 

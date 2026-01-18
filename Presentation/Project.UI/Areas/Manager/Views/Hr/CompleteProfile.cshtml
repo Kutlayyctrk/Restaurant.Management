@@ -1,53 +1,54 @@
-﻿
-@model CandidatePageVm
+﻿@model ProfileCompleteVm
 
-@{
-    ViewData["Title"] = "Profil Tamamla - Bekleyen Kişiler";
-}
+<h2>Profil Tamamlama</h2>
 
-<h2>Profil Tamamla</h2>
+<form asp-action="CompleteProfile" method="post">
+    <input type="hidden" asp-for="AppUserId" />
 
-<div class="card">
-    <div class="card-body">
-        @if (!Model.Candidates.Any())
-        {
-            <div class="alert alert-info">Tamamlanacak profil bulunmamaktadır.</div>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Kullanıcı</th>
-                            <th>Email</th>
-                            <th>Eklenme</th>
-                            <th>İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var c in Model.Candidates)
-                        {
-                            <tr>
-                                <td>@c.AppUserId</td>
-                                <td>@c.UserName</td>
-                                <td>@c.Email</td>
-                                <td>@c.InsertedDate.ToString("yyyy-MM-dd")</td>
-                                <td>
-                                    <a class="btn btn-sm btn-primary"
-                                       asp-area="Manager"
-                                       asp-controller="Hr"
-                                       asp-action="Complete"
-                                       asp-route-userId="@c.AppUserId">
-                                        <i class="fas fa-user-plus"></i> Tamamla
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
+    <div class="form-group">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" readonly />
     </div>
-</div>
+
+    <div class="form-group">
+        <label>Kullanıcı Adı</label>
+        <input asp-for="UserName" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Ad</label>
+        <input asp-for="FirstName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Soyad</label>
+        <input asp-for="LastName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>TCKNo</label>
+        <input asp-for="TCKNo" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Maaş</label>
+        <input asp-for="Salary" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Doğum Tarihi</label>
+        <input asp-for="BirthDate" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>İşe Başlama Tarihi</label>
+        <input asp-for="HireDate" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Rol</label>
+        <select asp-for="SelectedRoleId" asp-items="Model.Roles" class="form-control"></select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+</form>

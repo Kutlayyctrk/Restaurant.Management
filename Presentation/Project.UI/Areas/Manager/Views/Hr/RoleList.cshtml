@@ -1,0 +1,23 @@
+﻿@model RoleListVM
+
+<h2>Roller</h2>
+
+<a asp-action="CreateRole" class="btn btn-success mb-3">Yeni Rol Ekle</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Rol Adı</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model.Roles)
+        {
+            <tr>
+                <td>@role.Id</td>
+                <td>@role.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>

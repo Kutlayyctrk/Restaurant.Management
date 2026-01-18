@@ -1,4 +1,5 @@
 ﻿using Project.Application.DTOs;
+using Project.Application.Enums;
 using Project.Domain.Entities.Concretes;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,9 @@ namespace Project.Application.Managers
 {
     public interface IAppUserManager:IManager<AppUser,AppUserDTO>
     {
-        Task<string> LoginAsync(AppUserDTO dto);
-        Task<string> ConfirmEmailAsync(string userId, string token);
+        Task<OperationStatus> LoginAsync(AppUserDTO dto);
+        Task<OperationStatus> ConfirmEmailAsync(string userId, string token);
+        Task<List<AppUserDTO>> GetConfirmedUsersAsync();
 
     }
 }

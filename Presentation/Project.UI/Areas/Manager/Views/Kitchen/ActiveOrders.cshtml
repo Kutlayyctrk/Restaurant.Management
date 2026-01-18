@@ -1,0 +1,33 @@
+﻿@model List<KitchenOrderVm>
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">Aktif sipariş bulunamadı.</div>
+}
+
+<div class="row">
+    @foreach (var order in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    @order.TableName - @order.TotalPrice ₺
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        @foreach (var item in order.OrderDetails)
+                        {
+                            <li class="list-group-item">
+                                @item.ProductName - @item.Quantity x @item.UnitPrice ₺ (@item.DetailState)
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer text-end">
+                    <form asp-action="SendToChef" asp-route-orderId="@order.OrderId" method="post">
+                        <button type="submit" class="btn btn-success">Gönderildi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

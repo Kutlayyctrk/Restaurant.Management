@@ -1,4 +1,5 @@
 ﻿using Project.Application.DTOs;
+using Project.Application.Enums;
 using Project.Domain.Entities.Abstract;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,10 @@ namespace Project.Application.Managers
        
         Task<List<TEntity>> Where(Expression<Func<TEntity, bool>> expression);
 
-        Task<string> CreateAsync(TDto dto);
-        Task<string> UpdateAsync(TDto originalDto, TDto newDto);
+        Task<OperationStatus> CreateAsync(TDto dto);
+        Task<OperationStatus> UpdateAsync(TDto originalDto, TDto newDto);
 
-        Task<string> SoftDeleteByIdAsync(int id);
-        Task<string> HardDeleteByIdAsync(int id);
+        Task<OperationStatus> SoftDeleteByIdAsync(int id);
+        Task<OperationStatus> HardDeleteByIdAsync(int id);
     }
 }

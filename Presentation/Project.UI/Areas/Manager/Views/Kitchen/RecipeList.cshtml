@@ -1,0 +1,42 @@
+﻿@model List<RecipeListVm>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Reçete Listesi</h2>
+    <a asp-area="Manager" asp-controller="Kitchen" asp-action="CreateRecipe" class="btn btn-success">
+        + Yeni Reçete Oluştur
+    </a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Reçete Adı</th>  
+            <th>Açıklama</th>
+            <th>Ürün</th>
+            <th>Kategori</th>
+            <th>Eklenme Tarihi</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var recipe in Model)
+        {
+            <tr>
+                <td>@recipe.Id</td>
+                <td>@recipe.Name</td>
+                <td>@recipe.Description</td>
+                <td>@recipe.ProductName</td>
+                <td>@recipe.CategoryName</td>
+                <td>@recipe.InsertedDate.ToShortDateString()</td>
+                <td>@recipe.Status</td>
+                <td>
+                    <a asp-area="Manager" asp-controller="Kitchen" asp-action="EditRecipe" asp-route-id="@recipe.Id" class="btn btn-sm btn-warning">
+                        Düzenle
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

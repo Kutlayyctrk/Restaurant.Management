@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
 using Project.Application.DTOs;
 using Project.Domain.Entities.Concretes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.Application.Mapping
 {
-    public class MapProfile:Profile
+    public class MapProfile : Profile
     {
         public MapProfile()
         {
@@ -21,8 +16,16 @@ namespace Project.Application.Mapping
             CreateMap<AppUserRoleDTO, AppUserRole>().ReverseMap();
             CreateMap<AppUserProfileDTO, AppUserProfile>().ReverseMap();
             CreateMap<CategoryDTO, Category>().ReverseMap();
+
+            // Order mapping
             CreateMap<OrderDTO, Order>().ReverseMap();
-            CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
+
+            // OrderDetail mapping (ProductName navigation’dan geliyor)
+            CreateMap<OrderDetailDTO, OrderDetail>()
+                .ForMember(dest => dest.Product, opt => opt.Ignore()) // DTO'dan Product entity'ye map etmiyoruz
+                .ReverseMap()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName));
+
             CreateMap<StockTransActionDTO, StockTransAction>().ReverseMap();
             CreateMap<TableDTO, Table>().ReverseMap();
             CreateMap<SupplierDTO, Supplier>().ReverseMap();

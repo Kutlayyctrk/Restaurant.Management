@@ -10,5 +10,6 @@ namespace Project.Application.Managers
 {
     public interface IRecipeManager:IManager<Recipe,RecipeDTO>
     {
+        Task<List<RecipeDTO>> GetAllAsync();
     }
 }

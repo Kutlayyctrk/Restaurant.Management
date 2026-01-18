@@ -4,6 +4,7 @@ using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
+using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,23 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class OrderManager(IOrderRepository orderRepository,IMapper mapper,IValidator<OrderDTO> orderValidator):BaseManager<Order,OrderDTO>(orderRepository,mapper,orderValidator),IOrderManager
+    public class OrderManager(IOrderRepository orderRepository, IMapper mapper, IValidator<OrderDTO> orderValidator) : BaseManager<Order, OrderDTO>(orderRepository, mapper, orderValidator), IOrderManager
     {
+        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IMapper _mapper = mapper;
+        public async Task ChangeOrderStateAsync(int orderId, OrderStatus newState)
+        {
+            await _orderRepository.UpdateOrderStateAsync(orderId, newState);
+
+
+        }
+
+        public async Task<List<OrderDTO>> GetActiveOrdersAsync()
+        {
+            List<Order> orders = await _orderRepository.GetActiveOrdersAsync();
+            return _mapper.Map<List<OrderDTO>>(orders);
+
+
+        }
     }
 }

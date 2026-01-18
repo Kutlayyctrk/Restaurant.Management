@@ -1,23 +1,19 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Project.Application.DTOs;
+using Project.Application.Enums;   
 using Project.Application.Managers;
 using Project.Domain.Entities.Concretes;
 using Project.UI.Models.LoginVMs;
 using Project.UI.Models.RegisterVms;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Project.UI.Controllers
 {
     public class LoginAndRegisterController : Controller
     {
-
-
         private readonly IAppUserManager _appUserManager;
         private readonly UserManager<AppUser> _userManager;
 
@@ -35,68 +31,58 @@ namespace Project.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginPageVM vM)
         {
-            AppUserDTO loginDTO = new AppUserDTO()
+            AppUserDTO loginDTO = new AppUserDTO
             {
                 UserName = vM.UserName,
                 Password = vM.Password,
                 RememberMe = vM.RememberMe
-
             };
 
-            string result = await _appUserManager.LoginAsync(loginDTO);
+            OperationStatus result = await _appUserManager.LoginAsync(loginDTO);
 
-            if (result.Contains("Email adresiniz doğrulanmamış"))
+            if (result == OperationStatus.Failed)
             {
-                return RedirectToAction("AccessDenied", "LoginAndRegister");
-            }
-
-            if (result.StartsWith("Error"))
-            {
-                string[] messages = result.Replace("Error|", "").Split('|');
-                foreach (string message in messages)
-                {
-                    ModelState.AddModelError("", message);
-                }
+                ModelState.AddModelError("", "Invalid username or password, or email not confirmed.");
                 return View(vM);
             }
 
+            if (result == OperationStatus.ValidationError)
+            {
+                ModelState.AddModelError("", "Validation failed.");
+                return View(vM);
+            }
 
-            string[] roles = result.Replace("Success|", "").Split(',');
+            if (result == OperationStatus.NotFound)
+            {
+                ModelState.AddModelError("", "User not found.");
+                return View(vM);
+            }
+
+           
+            AppUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
+            IList<string> roles = await _userManager.GetRolesAsync(user);
 
             if (roles.Contains("Admin"))
-            {
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
-            }
             else if (roles.Contains("Insan Kaynaklari Muduru"))
-            {
                 return RedirectToAction("DashBoard", "Hr", new { area = "Manager" });
-
-            }
-            else if (roles.Contains("Restaurant Muduru\""))
-            {
-                return RedirectToAction("Index", "Restaurant", new { area = "Manager" });
-            }
+            else if (roles.Contains("Restaurant Muduru"))
+                return RedirectToAction("DashBoard", "Restaurant", new { area = "Manager" });
             else if (roles.Contains("Mutfak Sefi"))
-            {
-                return RedirectToAction("Index", "Kitchen", new { area = "Manager" });
-            }
+                return RedirectToAction("DashBoard", "Kitchen", new { area = "Manager" });
             else if (roles.Contains("Bar Sefi"))
-            {
-                return RedirectToAction("Index", "Bar", new { area = "Manager" });
-            }
+                return RedirectToAction("DashBoard", "Bar", new { area = "Manager" });
             else if (roles.Contains("İdari Personel"))
-            {
                 return RedirectToAction("Index", "Administration", new { area = "Manager" });
-            }
+
             return RedirectToAction("AccessDenied", "LoginAndRegister");
-
-
         }
 
         public IActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterVm vM)
         {
@@ -104,6 +90,7 @@ namespace Project.UI.Controllers
             {
                 return View(vM);
             }
+
             AppUserDTO dto = new()
             {
                 UserName = vM.UserName,
@@ -112,30 +99,27 @@ namespace Project.UI.Controllers
                 Password = vM.Password,
                 RoleIds = new List<int> { vM.Role }
             };
-            string result = await _appUserManager.CreateAsync(dto);
 
-            if (result.StartsWith("Error"))
+            OperationStatus result = await _appUserManager.CreateAsync(dto);
+
+            if (result != OperationStatus.Success)
             {
-                string[] messages = result.Replace("Error|", "").Split('|');
-                foreach (string message in messages)
-                {
-                    ModelState.AddModelError("", message);
-                }
+                ModelState.AddModelError("", "Registration failed.");
                 return View(vM);
             }
+
             return RedirectToAction("Login", "LoginAndRegister");
         }
+
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            string result = await _appUserManager.ConfirmEmailAsync(userId, token);
+            OperationStatus result = await _appUserManager.ConfirmEmailAsync(userId, token);
 
-            if (result.StartsWith("Success"))
+            if (result == OperationStatus.Success)
                 return View("ConfirmEmail");
             else
-                return View("ConfirmEmailFailed"); 
+                return View("ConfirmEmailFailed");
         }
-
-
     }
 }

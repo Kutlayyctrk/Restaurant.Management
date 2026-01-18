@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using FluentValidation.TestHelper;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Project.Application.DTOs;
+using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Abstract;
@@ -29,19 +30,21 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _validator = validator;
         }
 
-        public virtual async Task<string> CreateAsync(TDto dto)
+        public virtual async Task<OperationStatus> CreateAsync(TDto dto)
         {
            ValidationResult validationResult= await _validator.ValidateAsync(dto);
             if(!validationResult.IsValid)
             {
-                return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                return OperationStatus.ValidationError;
+
             }
 
             TEntity domainEntity= _mapper.Map<TEntity>(dto);
             domainEntity.InsertedDate = DateTime.Now;
             domainEntity.Status = Domain.Enums.DataStatus.Inserted;
             await _repository.CreateAsync(domainEntity);
-            return "Success";
+            return OperationStatus.Success;
+
         }
 
         public Task<List<TDto>> GetActives()
@@ -50,7 +53,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return Task.FromResult(_mapper.Map<List<TDto>>(activeEntities));
         }
 
-        public async Task<List<TDto>> GetAllAsync()
+        public virtual async Task<List<TDto>> GetAllAsync()
         {
             List<TEntity> allEntites = await _repository.GetAllAsync();
             return _mapper.Map<List<TDto>>(allEntites);
@@ -72,48 +75,48 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             throw new NotImplementedException();
         }
 
-        public virtual async Task<string> HardDeleteByIdAsync(int id)
+        public virtual async Task<OperationStatus> HardDeleteByIdAsync(int id)
         {
             TEntity domainEntity = await _repository.GetByIdAsync(id);
             if(domainEntity ==null)
             {
-                return "Silinecek veri bulunamadı";
+                return OperationStatus.NotFound;
             }
             if(domainEntity.Status!= Domain.Enums.DataStatus.Deleted)
             {
-                return "Silme işlemi sadece pasif veriler için geçerlidir";
+                return OperationStatus.Failed;
             }
             await _repository.HardDeleteAsync(domainEntity);
-            return "Silme işlemi başarılı";
+            return OperationStatus.Success;
         }
 
-        public  virtual async Task<string> SoftDeleteByIdAsync(int id)
+        public  virtual async Task<OperationStatus> SoftDeleteByIdAsync(int id)
         {
             TEntity originalEntity= await _repository.GetByIdAsync(id);
             if(originalEntity==null)
             {
-                return "Silinecek veri bulunamadı";
+                return OperationStatus.NotFound;
             }
             originalEntity.Status = Domain.Enums.DataStatus.Deleted;
             originalEntity.DeletionDate = DateTime.Now;
             await _repository.UpdateAsync(originalEntity, originalEntity);
-            return "Pasife alma işlemi başarılı";
+            return OperationStatus.Success;
         }
 
-        public virtual async Task<string> UpdateAsync(TDto originalDto, TDto newDto)
+        public virtual async Task<OperationStatus> UpdateAsync(TDto originalDto, TDto newDto)
         {
           
             ValidationResult validationResult = await _validator.ValidateAsync(newDto);
             if (!validationResult.IsValid)
             {
-                return string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                return OperationStatus.ValidationError;
             }
 
             
             TEntity originalEntity = await _repository.GetByIdAsync(originalDto.Id);
             if (originalEntity == null)
             {
-                return "Güncellenecek veri bulunamadı";
+                return OperationStatus.NotFound;
             }
 
            
@@ -126,7 +129,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
           
             await _repository.UpdateAsync(originalEntity, originalEntity);
 
-            return "Success";
+            return OperationStatus.Success;
         }
 
 

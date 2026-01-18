@@ -1,20 +1,85 @@
 ﻿<aside class="manager-sidebar bg-dark text-white">
     <div class="p-3">
-        <a class="navbar-brand text-white d-block mb-3" asp-area="Manager" asp-controller="Hr" asp-action="DashBoard">RMAPP</a>
+        <a class="navbar-brand text-white d-block mb-3"
+           asp-area="Manager" asp-controller="Hr" asp-action="DashBoard">
+            RMAPP
+        </a>
 
         <ul class="nav flex-column sidebar-menu">
-            <li class="nav-item">
-                <a class="nav-link text-white d-block"
-                   asp-area="Manager" asp-controller="Hr" asp-action="PersonelList">
-                    Personel Listesi
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white d-block"
-                   asp-area="Manager" asp-controller="Hr" asp-action="CompleteProfile">
-                    Profil Tamamla
-                </a>
-            </li>
+            @if (User.IsInRole("Insan Kaynaklari Muduru"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Hr" asp-action="PersonelList">
+                        Personel Listesi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Hr" asp-action="CompleteProfileList">
+                        Profil Tamamla
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Hr" asp-action="RoleList">
+                        Rol Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Hr" asp-action="Reports">
+                        Raporlar
+                    </a>
+                </li>
+            }
+            else if (User.IsInRole("Mutfak Sefi"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Kitchen" asp-action="RecipeList">
+                        Reçeteler
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Kitchen" asp-action="ActiveOrders">
+                        Mevcut Siparişler
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Kitchen" asp-action="MenuManagement">
+                        Menü Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Kitchen" asp-action="Reports">
+                        Raporlar
+                    </a>
+                </li>
+
+            }
+            else if (User.IsInRole("Bar"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Bar" asp-action="DashBoard">
+                        Bar Paneli
+                    </a>
+                </li>
+            }
+            else if (User.IsInRole("Restaurant"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Restaurant" asp-action="DashBoard">
+                        Restaurant Paneli
+                    </a>
+                </li>
+            }
         </ul>
     </div>
 </aside>
