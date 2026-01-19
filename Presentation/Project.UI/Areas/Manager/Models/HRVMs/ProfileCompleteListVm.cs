@@ -1,6 +1,6 @@
 ﻿using Project.Application.DTOs;
 
-namespace Project.UI.Areas.Manager.Models.AppUserProfileVms
+namespace Project.UI.Areas.Manager.Models.HRVMs
 {
     public class ProfileCompleteListVm
     {

@@ -1,6 +1,6 @@
 ﻿namespace Project.UI.Areas.Manager.Models.KitchenVMs
 {
-    public class MenuProductListVm
+    public class MenuProductListPageVm
 
     {
         public int Id { get; set; }

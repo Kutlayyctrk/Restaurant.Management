@@ -1,4 +1,4 @@
-﻿namespace Project.UI.Areas.Manager.Models.AppUserVMs
+﻿namespace Project.UI.Areas.Manager.Models.HRVMs
 {
     public class HrListPageVM
     {

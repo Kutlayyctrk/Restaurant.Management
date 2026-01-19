@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Project.UI.Areas.Manager.Models.AppUserVMs
+namespace Project.UI.Areas.Manager.Models.HRVMs
 {
     public class PersonelEditVm
     {

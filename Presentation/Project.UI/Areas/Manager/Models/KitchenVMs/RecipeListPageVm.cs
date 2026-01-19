@@ -2,7 +2,7 @@
 
 namespace Project.UI.Areas.Manager.Models.KitchenVMs
 {
-    public class RecipeListVm
+    public class RecipeListPageVm
     {
         public int Id { get; set; }
         public string? Name { get; set; }

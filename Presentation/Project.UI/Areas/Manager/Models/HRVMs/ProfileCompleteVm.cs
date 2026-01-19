@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace Project.UI.Areas.Manager.Models.AppUserProfileVms
+namespace Project.UI.Areas.Manager.Models.HRVMs
 {
     public class ProfileCompleteVm
     {

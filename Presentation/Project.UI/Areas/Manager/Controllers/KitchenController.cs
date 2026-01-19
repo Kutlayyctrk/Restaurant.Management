@@ -44,14 +44,14 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> RecipeList()
         {
             List<RecipeDTO> recipes = await _recipeManager.GetAllAsync();
-            List<RecipeListVm> vmList = new List<RecipeListVm>();
+            List<RecipeListPageVm> vmList = new List<RecipeListPageVm>();
 
             foreach (RecipeDTO r in recipes)
             {
                 ProductDTO product = await _productManager.GetByIdAsync(r.ProductId);
                 CategoryDTO category = await _categoryManager.GetByIdAsync(r.CategoryId);
 
-                vmList.Add(new RecipeListVm
+                vmList.Add(new RecipeListPageVm
                 {
                     Id = r.Id,
                     Name = r.Name,
@@ -66,72 +66,52 @@ namespace Project.UI.Areas.Manager.Controllers
             return View(vmList);
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> CreateRecipe()
+        private async Task SetViewBagsAsync()
         {
             List<ProductDTO> products = await _productManager.GetAllAsync();
             List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
             List<UnitDTO> units = await _unitManager.GetAllAsync();
+            List<CategoryDTO> foodCategories = categories.Where(c => c.Id == 1 || c.ParentCategoryId == 1).ToList();
 
             ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-            ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
+            ViewBag.CategoryList = new SelectList(foodCategories, "Id", "CategoryName");
             ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
+        }
 
-            EditRecipeVm vm = new EditRecipeVm
+        [HttpGet]
+        public async Task<IActionResult> CreateRecipe()
+        {
+            await SetViewBagsAsync();
+
+            RecipeEditPageVm vm = new RecipeEditPageVm
             {
-                RecipeItems = new List<RecipeItemDTO> { new RecipeItemDTO() }
+                Items = new List<RecipeItemDTO> { new RecipeItemDTO() }
             };
 
             return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRecipe(EditRecipeVm vm)
+        public async Task<IActionResult> CreateRecipe(RecipeEditPageVm vm)
         {
             if (!ModelState.IsValid)
             {
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
-            // Ana ürün ile malzeme olarak eklenen ürünlerin aynı olmasını engelle
-            if (vm.RecipeItems.Any(x => x.ProductId == vm.ProductId))
+            if (vm.Items.Any(x => x.ProductId == vm.ProductId))
             {
                 ModelState.AddModelError("", "Reçetenin ana ürünü ile malzeme olarak eklenen ürünler aynı olamaz.");
-
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
-           
             RecipeDTO existingRecipe = await _recipeManager.GetByProductIdAsync(vm.ProductId);
             if (existingRecipe != null)
             {
                 ModelState.AddModelError("", "Bu ürüne ait bir reçete zaten mevcut. Aynı ürüne ikinci bir reçete ekleyemezsiniz.");
-
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
@@ -141,7 +121,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 Description = vm.Description,
                 ProductId = vm.ProductId,
                 CategoryId = vm.CategoryId,
-                RecipeItems = vm.RecipeItems
+                RecipeItems = vm.Items
             };
 
             OperationStatus result = await _recipeManager.CreateAsync(dto);
@@ -149,15 +129,7 @@ namespace Project.UI.Areas.Manager.Controllers
             if (result != OperationStatus.Success)
             {
                 ModelState.AddModelError("", "Reçete eklenemedi.");
-
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
@@ -170,56 +142,34 @@ namespace Project.UI.Areas.Manager.Controllers
             RecipeDTO recipe = await _recipeManager.GetByIdWithItemsAsync(id);
             if (recipe == null) return NotFound();
 
-            List<ProductDTO> products = await _productManager.GetAllAsync();
-            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-            List<UnitDTO> units = await _unitManager.GetAllAsync();
+            await SetViewBagsAsync();
 
-            ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-            ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-            ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
-            EditRecipeVm vm = new EditRecipeVm
+            RecipeEditPageVm vm = new RecipeEditPageVm
             {
                 Id = recipe.Id,
                 Name = recipe.Name,
                 Description = recipe.Description,
                 ProductId = recipe.ProductId,
                 CategoryId = recipe.CategoryId,
-                RecipeItems = recipe.RecipeItems.ToList()
+                Items = recipe.RecipeItems.ToList()
             };
 
             return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditRecipe(EditRecipeVm vm)
+        public async Task<IActionResult> EditRecipe(RecipeEditPageVm vm)
         {
             if (!ModelState.IsValid)
             {
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
-           
-            if (vm.RecipeItems.Any(x => x.ProductId == vm.ProductId))
+            if (vm.Items.Any(x => x.ProductId == vm.ProductId))
             {
                 ModelState.AddModelError("", "Reçetenin ana ürünü ile malzeme olarak eklenen ürünler aynı olamaz.");
-
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
@@ -233,7 +183,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 Description = vm.Description,
                 ProductId = vm.ProductId,
                 CategoryId = vm.CategoryId,
-                RecipeItems = vm.RecipeItems
+                RecipeItems = vm.Items
             };
 
             OperationStatus result = await _recipeManager.UpdateAsync(existingDto, newDto);
@@ -241,24 +191,12 @@ namespace Project.UI.Areas.Manager.Controllers
             if (result != OperationStatus.Success)
             {
                 ModelState.AddModelError("", "Reçete güncellenemedi.");
-
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
-                List<UnitDTO> units = await _unitManager.GetAllAsync();
-
-                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
-                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
-
+                await SetViewBagsAsync();
                 return View(vm);
             }
 
             return RedirectToAction("RecipeList");
         }
-
-
-
-
 
         [HttpGet]
         public async Task<IActionResult> ActiveOrders()
@@ -271,7 +209,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 TableName = $"Masa {o.TableId}",
                 TotalPrice = o.TotalPrice,
                 OrderState = o.OrderState,
-                OrderDetails = o.OrderDetails.Select(d => new KitchenOrderDetailVm
+                OrderDetails = o.OrderDetails.Select(d => new OrderDetailPureVm
                 {
                     ProductName = d.ProductName,
                     Quantity = d.Quantity,
@@ -302,7 +240,7 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> MenuProducts()
         {
             List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
-            List<MenuProductListVm> vmList = new List<MenuProductListVm>();
+            List<MenuProductListPageVm> vmList = new List<MenuProductListPageVm>();
 
             foreach (MenuProductDTO mp in menuProducts)
             {
@@ -310,7 +248,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 MenuDTO menu = await _menuManager.GetByIdAsync(mp.MenuId);
                 CategoryDTO category = await _categoryManager.GetByIdAsync(product.CategoryId);
 
-                vmList.Add(new MenuProductListVm
+                vmList.Add(new MenuProductListPageVm
                 {
                     Id = mp.Id,
                     MenuName = menu?.MenuName,
@@ -331,12 +269,11 @@ namespace Project.UI.Areas.Manager.Controllers
             List<ProductDTO> products = await _productManager.GetAllAsync();
             ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
             ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-            return View(new CreateMenuProductVm());
+            return View(new MenuProductCreatePageVm());
         }
 
         [HttpPost]
-        
-        public async Task<IActionResult> CreateMenuProduct(CreateMenuProductVm vm)
+        public async Task<IActionResult> CreateMenuProduct(MenuProductCreatePageVm vm)
         {
             if (!ModelState.IsValid)
             {
@@ -358,7 +295,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 IsActive = vm.IsActive,
                 MenuName = menu?.MenuName,
                 ProductName = product?.ProductName,
-                CategoryName = product?.CategoryName   
+                CategoryName = product?.CategoryName
             };
 
             OperationStatus result = await _menuProductManager.CreateAsync(dto);
@@ -375,9 +312,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("MenuProducts");
         }
 
-
         [HttpPost]
-    
         public async Task<IActionResult> DeactivateMenuProduct(int id)
         {
             MenuProductDTO existingDto = await _menuProductManager.GetByIdAsync(id);
@@ -402,7 +337,6 @@ namespace Project.UI.Areas.Manager.Controllers
         }
 
         [HttpPost]
-      
         public async Task<IActionResult> ActivateMenuProduct(int id)
         {
             MenuProductDTO existingDto = await _menuProductManager.GetByIdAsync(id);
@@ -426,10 +360,6 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("MenuProducts");
         }
 
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> RemoveMenuProduct(int id)
         {
@@ -446,10 +376,10 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return RedirectToAction("MenuProducts");
         }
+
         [HttpGet]
         public async Task<IActionResult> Reports()
         {
-           
             List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
             int menuProductCount = menuProducts.Count(mp => mp.IsActive);
 

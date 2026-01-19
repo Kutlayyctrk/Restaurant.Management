@@ -6,5 +6,5 @@ public class KitchenOrderVm
     public string TableName { get; set; }
     public decimal TotalPrice { get; set; }
     public OrderStatus OrderState { get; set; }
-    public List<KitchenOrderDetailVm> OrderDetails { get; set; }
+    public List<OrderDetailPureVm> OrderDetails { get; set; }
 }
