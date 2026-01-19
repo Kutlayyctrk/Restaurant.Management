@@ -1,0 +1,39 @@
+﻿@model MenuProductCreatePageVm
+
+<form asp-action="CreateMenuProduct" method="post">
+
+    <div class="form-group">
+        <label>Menü</label>
+        <select asp-for="MenuId" asp-items="ViewBag.MenuList" class="form-control">
+            <option value="">-- Menü seçin --</option>
+        </select>
+        <span asp-validation-for="MenuId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Ürün</label>
+        <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-control">
+            <option value="">-- Ürün seçin --</option>
+        </select>
+        <span asp-validation-for="ProductId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Fiyat</label>
+        <input asp-for="UnitPrice" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="UnitPrice" class="text-danger"></span>
+    </div>
+
+    <div class="form-group form-check">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label class="form-check-label">Aktif mi?</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

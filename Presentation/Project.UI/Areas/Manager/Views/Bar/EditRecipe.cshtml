@@ -1,0 +1,117 @@
+﻿@model RecipeEditPageVm
+
+@{
+    ViewData["Title"] = "Reçete Düzenle";
+}
+
+<h2>Reçete Düzenle</h2>
+
+<form asp-action="EditRecipe" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ProductId" class="form-label"></label>
+        <select asp-for="ProductId" class="form-select" asp-items="ViewBag.ProductList"></select>
+        <span asp-validation-for="ProductId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <h4>Reçete Kalemleri</h4>
+    <table class="table" id="recipeItemsTable">
+        <thead>
+            <tr>
+                <th>Ürün</th>
+                <th>Miktar</th>
+                <th>Birim</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <select asp-for="Items[@i].ProductId" class="form-select" asp-items="ViewBag.ProductList"></select>
+                        <span asp-validation-for="Items[@i].ProductId" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="Items[@i].Quantity" class="form-control" />
+                        <span asp-validation-for="Items[@i].Quantity" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <select asp-for="Items[@i].UnitId" class="form-select" asp-items="ViewBag.UnitList"></select>
+                        <span asp-validation-for="Items[@i].UnitId" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-row">Sil</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="button" id="addRow" class="btn btn-success mb-3">Malzeme Ekle</button>
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a asp-action="RecipeList" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('addRow').addEventListener('click', function () {
+            var tableBody = document.querySelector('#recipeItemsTable tbody');
+            var rowCount = tableBody.children.length;
+
+            var productOptions = `@Html.Raw(string.Join("", ((SelectList)ViewBag.ProductList).Select(p => $"<option value='{p.Value}'>{p.Text}</option>")))`;
+            var unitOptions = `@Html.Raw(string.Join("", ((SelectList)ViewBag.UnitList).Select(u => $"<option value='{u.Value}'>{u.Text}</option>")))`;
+
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <select name="RecipeItems[${rowCount}].ProductId" class="form-select">
+                        ${productOptions}
+                    </select>
+                </td>
+                <td>
+                    <input name="RecipeItems[${rowCount}].Quantity" class="form-control" />
+                </td>
+                <td>
+                    <select name="RecipeItems[${rowCount}].UnitId" class="form-select">
+                        ${unitOptions}
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-row">Sil</button>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-row')) {
+                var row = e.target.closest('tr');
+                row.parentNode.removeChild(row);
+            }
+        });
+    </script>
+}

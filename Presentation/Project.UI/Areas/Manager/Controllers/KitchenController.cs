@@ -203,7 +203,7 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             List<OrderDTO> orders = await _orderManager.GetActiveOrdersAsync();
 
-            List<KitchenOrderVm> vmList = orders.Select(o => new KitchenOrderVm
+            List<OrderVm> vmList = orders.Select(o => new OrderVm
             {
                 OrderId = o.Id,
                 TableName = $"Masa {o.TableId}",

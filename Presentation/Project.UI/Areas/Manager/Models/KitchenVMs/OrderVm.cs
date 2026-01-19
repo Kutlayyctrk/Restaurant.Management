@@ -1,6 +1,6 @@
 ﻿using Project.Domain.Enums;
 
-public class KitchenOrderVm
+public class OrderVm
 {
     public int OrderId { get; set; }
     public string TableName { get; set; }
