@@ -1,4 +1,4 @@
-﻿using Humanizer;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
@@ -20,6 +20,7 @@ namespace Project.UI.Areas.Manager.Controllers
         private readonly IOrderManager _orderManager;
         private readonly IMenuManager _menuManager;
         private readonly IMenuProductManager _menuProductManager;
+        private const int FoodCategoryId = 1; //Kategorilerde yiyecekleri filtrelemek için Yiyecekler AnaKategori Id'sini tutuyorumm
 
         public KitchenController(IRecipeManager recipeManager, ICategoryManager categoryManager,
                                  IProductManager productManager, IUnitManager unitManager,
@@ -34,6 +35,24 @@ namespace Project.UI.Areas.Manager.Controllers
             _menuManager = menuManager;
             _menuProductManager = menuProductManager;
         }
+        private async Task<bool> IsFoodCategoryAsync(int categoryId) //Kategori yiyecek kategorisi mi diye kontrol ediyorum
+        {
+            CategoryDTO category = await _categoryManager.GetByIdAsync(categoryId);
+            return category != null && (category.Id == FoodCategoryId || category.ParentCategoryId == FoodCategoryId);
+        }
+        private async Task<List<CategoryDTO>> GetFoodCategoriesAsync()//Yiyecek kategorilerini getiriyorum
+        {
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            return categories.Where(c => c.Id == FoodCategoryId || c.ParentCategoryId == FoodCategoryId).ToList();
+        }
+
+        private async Task<List<ProductDTO>> GetFoodProductAsync() //Yiyecek kategorisine ait ürünleri getiriyorum
+        {
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            HashSet<int> foodCategoriesIds = categories.Where(x => x.Id == FoodCategoryId || x.ParentCategoryId == FoodCategoryId).Select(x => x.Id).ToHashSet();
+            return products.Where(p => foodCategoriesIds.Contains(p.CategoryId)).ToList();
+        }
 
         public IActionResult DashBoard()
         {
@@ -44,13 +63,18 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> RecipeList()
         {
             List<RecipeDTO> recipes = await _recipeManager.GetAllAsync();
-            List<RecipeListPageVm> vmList = new List<RecipeListPageVm>();
+            List<RecipeDTO> filteredRecipes = new List<RecipeDTO>();
+            foreach (RecipeDTO item in recipes)
+            {
+                if (await IsFoodCategoryAsync(item.CategoryId))
+                    filteredRecipes.Add(item);
+            }
 
-            foreach (RecipeDTO r in recipes)
+            List<RecipeListPageVm> vmList = new List<RecipeListPageVm>();
+            foreach (RecipeDTO r in filteredRecipes)
             {
                 ProductDTO product = await _productManager.GetByIdAsync(r.ProductId);
                 CategoryDTO category = await _categoryManager.GetByIdAsync(r.CategoryId);
-
                 vmList.Add(new RecipeListPageVm
                 {
                     Id = r.Id,
@@ -62,19 +86,21 @@ namespace Project.UI.Areas.Manager.Controllers
                     Status = r.Status.ToString()
                 });
             }
-
             return View(vmList);
         }
 
+
+
+
         private async Task SetViewBagsAsync()
         {
-            List<ProductDTO> products = await _productManager.GetAllAsync();
-            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            List<ProductDTO> products = await GetFoodProductAsync();
+            List<CategoryDTO> categories = await GetFoodCategoriesAsync();
             List<UnitDTO> units = await _unitManager.GetAllAsync();
-            List<CategoryDTO> foodCategories = categories.Where(c => c.Id == 1 || c.ParentCategoryId == 1).ToList();
+
 
             ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-            ViewBag.CategoryList = new SelectList(foodCategories, "Id", "CategoryName");
+            ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
             ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
         }
 
@@ -96,6 +122,12 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             if (!ModelState.IsValid)
             {
+                await SetViewBagsAsync();
+                return View(vm);
+            }
+            if (!await IsFoodCategoryAsync(vm.CategoryId))
+            {
+                ModelState.AddModelError("", "Sadece yemek kategorisine ait ürünler seçilebilir.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -140,7 +172,8 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> EditRecipe(int id)
         {
             RecipeDTO recipe = await _recipeManager.GetByIdWithItemsAsync(id);
-            if (recipe == null) return NotFound();
+            
+            if (recipe == null || !await IsFoodCategoryAsync(recipe.CategoryId)) return NotFound();
 
             await SetViewBagsAsync();
 
@@ -162,6 +195,12 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             if (!ModelState.IsValid)
             {
+                await SetViewBagsAsync();
+                return View(vm);
+            }
+            if (!await IsFoodCategoryAsync(vm.CategoryId))
+            {
+                ModelState.AddModelError("", "Sadece yemek kategorisine ait ürünler seçilebilir.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -240,24 +279,37 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> MenuProducts()
         {
             List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
-            List<MenuProductListPageVm> vmList = new List<MenuProductListPageVm>();
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            HashSet<int> foodCategoryIds = categories
+                .Where(c => c.Id == FoodCategoryId || c.ParentCategoryId == FoodCategoryId)
+                .Select(c => c.Id)
+                .ToHashSet();
 
-            foreach (MenuProductDTO mp in menuProducts)
+            List<MenuProductDTO> filteredMenuProduct = new List<MenuProductDTO>();
+            foreach (MenuProductDTO item in menuProducts)
             {
-                ProductDTO product = await _productManager.GetByIdAsync(mp.ProductId);
-                MenuDTO menu = await _menuManager.GetByIdAsync(mp.MenuId);
+                ProductDTO product = await _productManager.GetByIdAsync(item.ProductId);
+                if (product != null && foodCategoryIds.Contains(product.CategoryId))
+                    filteredMenuProduct.Add(item);
+            }
+            List<MenuProductListPageVm> vmList = new List<MenuProductListPageVm>();
+            foreach (MenuProductDTO item in filteredMenuProduct)
+            {
+                ProductDTO product = await _productManager.GetByIdAsync(item.ProductId);
+                MenuDTO menu = await _menuManager.GetByIdAsync(item.MenuId);
                 CategoryDTO category = await _categoryManager.GetByIdAsync(product.CategoryId);
-
                 vmList.Add(new MenuProductListPageVm
                 {
-                    Id = mp.Id,
-                    MenuName = menu?.MenuName,
-                    ProductName = product?.ProductName,
-                    CategoryName = category?.CategoryName,
-                    UnitPrice = mp.UnitPrice,
-                    IsActive = mp.IsActive
+                    Id = item.Id,
+                    MenuName = menu.MenuName,
+                    ProductName = product.ProductName,
+                    CategoryName = category.CategoryName,
+                    UnitPrice = item.UnitPrice,
+                    IsActive = item.IsActive
                 });
+
             }
+
 
             return View(vmList);
         }
@@ -266,7 +318,7 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> CreateMenuProduct()
         {
             List<MenuDTO> menus = await _menuManager.GetAllAsync();
-            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<ProductDTO> products = await GetFoodProductAsync();
             ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
             ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
             return View(new MenuProductCreatePageVm());
@@ -278,7 +330,7 @@ namespace Project.UI.Areas.Manager.Controllers
             if (!ModelState.IsValid)
             {
                 List<MenuDTO> menus = await _menuManager.GetAllAsync();
-                List<ProductDTO> products = await _productManager.GetAllAsync();
+                List<ProductDTO> products = await GetFoodProductAsync();
                 ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
                 ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
                 return View(vm);
@@ -286,7 +338,15 @@ namespace Project.UI.Areas.Manager.Controllers
 
             MenuDTO menu = await _menuManager.GetByIdAsync(vm.MenuId);
             ProductDTO product = await _productManager.GetByIdAsync(vm.ProductId);
-
+            if (product == null || !await IsFoodCategoryAsync(product.CategoryId))
+            {
+                ModelState.AddModelError("", "Sadece yemek kategorisine ait ürünler seçilebilir.");
+                List<MenuDTO> menus = await _menuManager.GetAllAsync();
+                List<ProductDTO> products = await GetFoodProductAsync();
+                ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
+                ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
+                return View(vm);
+            }
             MenuProductDTO dto = new MenuProductDTO
             {
                 MenuId = vm.MenuId,
@@ -303,7 +363,7 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 ModelState.AddModelError("", "Ürün eklenemedi.");
                 List<MenuDTO> menus = await _menuManager.GetAllAsync();
-                List<ProductDTO> products = await _productManager.GetAllAsync();
+                List<ProductDTO> products = await GetFoodProductAsync();
                 ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
                 ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
                 return View(vm);
@@ -317,6 +377,10 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             MenuProductDTO existingDto = await _menuProductManager.GetByIdAsync(id);
             if (existingDto == null)
+                return NotFound();
+
+            ProductDTO product = await _productManager.GetByIdAsync(existingDto.ProductId);
+            if (product == null || !await IsFoodCategoryAsync(product.CategoryId))
                 return NotFound();
 
             if (!existingDto.IsActive)
@@ -343,6 +407,10 @@ namespace Project.UI.Areas.Manager.Controllers
             if (existingDto == null)
                 return NotFound();
 
+            ProductDTO product = await _productManager.GetByIdAsync(existingDto.ProductId);
+            if (product == null || !await IsFoodCategoryAsync(product.CategoryId))
+                return NotFound();
+
             if (existingDto.IsActive)
                 return RedirectToAction("MenuProducts");
 
@@ -367,6 +435,10 @@ namespace Project.UI.Areas.Manager.Controllers
             if (dto == null)
                 return NotFound();
 
+            ProductDTO product = await _productManager.GetByIdAsync(dto.ProductId);
+            if (product == null || !await IsFoodCategoryAsync(product.CategoryId))
+                return NotFound();
+
             dto.IsActive = false;
 
             OperationStatus result = await _menuProductManager.UpdateAsync(dto, dto);
@@ -381,7 +453,19 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> Reports()
         {
             List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
-            int menuProductCount = menuProducts.Count(mp => mp.IsActive);
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            HashSet<int> foodCategoryIds = categories
+                .Where(c => c.Id == FoodCategoryId || c.ParentCategoryId == FoodCategoryId)
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            int menuProductCount = 0;
+            foreach (MenuProductDTO mp in menuProducts)
+            {
+                ProductDTO product = await _productManager.GetByIdAsync(mp.ProductId);
+                if (product != null && foodCategoryIds.Contains(product.CategoryId) && mp.IsActive)
+                    menuProductCount++;
+            }
 
             ViewBag.MenuProductCount = menuProductCount;
             return View();

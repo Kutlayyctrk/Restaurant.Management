@@ -17,6 +17,8 @@ public class BarController : Controller
     private readonly IMenuManager _menuManager;
     private readonly IMenuProductManager _menuProductManager;
 
+    private const int DrinkCategoryId = 2;
+
     public BarController(IRecipeManager recipeManager, ICategoryManager categoryManager, IProductManager productManager, IUnitManager unitManager, IOrderManager orderManager, IMenuManager menuManager, IMenuProductManager menuProductManager)
     {
         _recipeManager = recipeManager;
@@ -28,6 +30,28 @@ public class BarController : Controller
         _menuProductManager = menuProductManager;
     }
 
+    private async Task<bool> IsDrinkCategoryAsync(int categoryId)
+    {
+        CategoryDTO category = await _categoryManager.GetByIdAsync(categoryId);
+        return category != null && (category.Id == DrinkCategoryId || category.ParentCategoryId == DrinkCategoryId);
+    }
+
+    private async Task<List<ProductDTO>> GetDrinkProductsAsync()
+    {
+        List<ProductDTO> products = await _productManager.GetAllAsync();
+        List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+        HashSet<int> drinkCategoryIds = categories
+            .Where(c => c.Id == DrinkCategoryId || c.ParentCategoryId == DrinkCategoryId)
+            .Select(c => c.Id)
+            .ToHashSet();
+        return products.Where(p => drinkCategoryIds.Contains(p.CategoryId)).ToList();
+    }
+
+    private async Task<List<CategoryDTO>> GetDrinkCategoriesAsync()
+    {
+        List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+        return categories.Where(c => c.Id == DrinkCategoryId || c.ParentCategoryId == DrinkCategoryId).ToList();
+    }
 
     public IActionResult DashBoard()
     {
@@ -38,13 +62,18 @@ public class BarController : Controller
     public async Task<IActionResult> RecipeList()
     {
         List<RecipeDTO> recipes = await _recipeManager.GetAllAsync();
-        List<RecipeListPageVm> vmList = new List<RecipeListPageVm>();
-
+        List<RecipeDTO> filteredRecipes = new List<RecipeDTO>();
         foreach (RecipeDTO r in recipes)
+        {
+            if (await IsDrinkCategoryAsync(r.CategoryId))
+                filteredRecipes.Add(r);
+        }
+
+        List<RecipeListPageVm> vmList = new List<RecipeListPageVm>();
+        foreach (RecipeDTO r in filteredRecipes)
         {
             ProductDTO product = await _productManager.GetByIdAsync(r.ProductId);
             CategoryDTO category = await _categoryManager.GetByIdAsync(r.CategoryId);
-
             vmList.Add(new RecipeListPageVm
             {
                 Id = r.Id,
@@ -59,15 +88,15 @@ public class BarController : Controller
 
         return View(vmList);
     }
+
     private async Task SetViewBagsAsync()
     {
-        List<ProductDTO> products = await _productManager.GetAllAsync();
-        List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+        List<ProductDTO> products = await GetDrinkProductsAsync();
+        List<CategoryDTO> categories = await GetDrinkCategoriesAsync();
         List<UnitDTO> units = await _unitManager.GetAllAsync();
-        List<CategoryDTO> drinkCategories = categories.Where(c => c.Id == 2 || c.ParentCategoryId == 2).ToList();
 
         ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
-        ViewBag.CategoryList = new SelectList(drinkCategories, "Id", "CategoryName");
+        ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
         ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
     }
 
@@ -83,11 +112,19 @@ public class BarController : Controller
 
         return View(vm);
     }
+
     [HttpPost]
     public async Task<IActionResult> CreateRecipe(RecipeEditPageVm vm)
     {
         if (!ModelState.IsValid)
         {
+            await SetViewBagsAsync();
+            return View(vm);
+        }
+
+        if (!await IsDrinkCategoryAsync(vm.CategoryId))
+        {
+            ModelState.AddModelError("", "Sadece içecek kategorisine ait ürünler seçilebilir.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -127,11 +164,12 @@ public class BarController : Controller
 
         return RedirectToAction("RecipeList");
     }
+
     [HttpGet]
     public async Task<IActionResult> EditRecipe(int id)
     {
         RecipeDTO recipe = await _recipeManager.GetByIdWithItemsAsync(id);
-        if (recipe == null) return NotFound();
+        if (recipe == null || !await IsDrinkCategoryAsync(recipe.CategoryId)) return NotFound();
 
         await SetViewBagsAsync();
 
@@ -153,6 +191,13 @@ public class BarController : Controller
     {
         if (!ModelState.IsValid)
         {
+            await SetViewBagsAsync();
+            return View(vm);
+        }
+
+        if (!await IsDrinkCategoryAsync(vm.CategoryId))
+        {
+            ModelState.AddModelError("", "Sadece içecek kategorisine ait ürünler seçilebilir.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -189,13 +234,12 @@ public class BarController : Controller
         return RedirectToAction("RecipeList");
     }
 
-
     [HttpGet]
     public async Task<IActionResult> ActiveOrders()
     {
         List<OrderDTO> orders = await _orderManager.GetActiveOrdersAsync();
 
-        List<OrderVm> vmList = orders.Select(o => new OrderVm
+          List<OrderVm> vmList = orders.Select(o => new OrderVm
         {
             OrderId = o.Id,
             TableName = $"Masa {o.TableId}",
@@ -212,6 +256,7 @@ public class BarController : Controller
 
         return View(vmList);
     }
+
     [HttpPost]
     public async Task<IActionResult> CompleteOrder(int orderId)
     {
@@ -231,9 +276,22 @@ public class BarController : Controller
     public async Task<IActionResult> MenuProducts()
     {
         List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
-        List<MenuProductListPageVm> vmList = new List<MenuProductListPageVm>();
+        List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+        HashSet<int> drinkCategoryIds = categories
+            .Where(c => c.Id == DrinkCategoryId || c.ParentCategoryId == DrinkCategoryId)
+            .Select(c => c.Id)
+            .ToHashSet();
 
+        List<MenuProductDTO> filteredMenuProducts = new List<MenuProductDTO>();
         foreach (MenuProductDTO mp in menuProducts)
+        {
+            ProductDTO product = await _productManager.GetByIdAsync(mp.ProductId);
+            if (product != null && drinkCategoryIds.Contains(product.CategoryId))
+                filteredMenuProducts.Add(mp);
+        }
+
+        List<MenuProductListPageVm> vmList = new List<MenuProductListPageVm>();
+        foreach (MenuProductDTO mp in filteredMenuProducts)
         {
             ProductDTO product = await _productManager.GetByIdAsync(mp.ProductId);
             MenuDTO menu = await _menuManager.GetByIdAsync(mp.MenuId);
@@ -252,11 +310,12 @@ public class BarController : Controller
 
         return View(vmList);
     }
+
     [HttpGet]
     public async Task<IActionResult> CreateMenuProduct()
     {
         List<MenuDTO> menus = await _menuManager.GetAllAsync();
-        List<ProductDTO> products = await _productManager.GetAllAsync();
+        List<ProductDTO> products = await GetDrinkProductsAsync();
         ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
         ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
         return View(new MenuProductCreatePageVm());
@@ -268,7 +327,7 @@ public class BarController : Controller
         if (!ModelState.IsValid)
         {
             List<MenuDTO> menus = await _menuManager.GetAllAsync();
-            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<ProductDTO> products = await GetDrinkProductsAsync();
             ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
             ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
             return View(vm);
@@ -276,6 +335,16 @@ public class BarController : Controller
 
         MenuDTO menu = await _menuManager.GetByIdAsync(vm.MenuId);
         ProductDTO product = await _productManager.GetByIdAsync(vm.ProductId);
+
+        if (product == null || !await IsDrinkCategoryAsync(product.CategoryId))
+        {
+            ModelState.AddModelError("", "Sadece içecek kategorisine ait ürünler seçilebilir.");
+            List<MenuDTO> menus = await _menuManager.GetAllAsync();
+            List<ProductDTO> products = await GetDrinkProductsAsync();
+            ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
+            ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
+            return View(vm);
+        }
 
         MenuProductDTO dto = new MenuProductDTO
         {
@@ -293,7 +362,7 @@ public class BarController : Controller
         {
             ModelState.AddModelError("", "Ürün eklenemedi.");
             List<MenuDTO> menus = await _menuManager.GetAllAsync();
-            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<ProductDTO> products = await GetDrinkProductsAsync();
             ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
             ViewBag.ProductList = new SelectList(products, "Id", "ProductName");
             return View(vm);
@@ -301,11 +370,16 @@ public class BarController : Controller
 
         return RedirectToAction("MenuProducts");
     }
+
     [HttpPost]
     public async Task<IActionResult> DeactivateMenuProduct(int id)
     {
         MenuProductDTO existingDto = await _menuProductManager.GetByIdAsync(id);
         if (existingDto == null)
+            return NotFound();
+
+        ProductDTO product = await _productManager.GetByIdAsync(existingDto.ProductId);
+        if (product == null || !await IsDrinkCategoryAsync(product.CategoryId))
             return NotFound();
 
         if (!existingDto.IsActive)
@@ -332,6 +406,10 @@ public class BarController : Controller
         if (existingDto == null)
             return NotFound();
 
+        ProductDTO product = await _productManager.GetByIdAsync(existingDto.ProductId);
+        if (product == null || !await IsDrinkCategoryAsync(product.CategoryId))
+            return NotFound();
+
         if (existingDto.IsActive)
             return RedirectToAction("MenuProducts");
 
@@ -348,11 +426,16 @@ public class BarController : Controller
 
         return RedirectToAction("MenuProducts");
     }
+
     [HttpPost]
     public async Task<IActionResult> RemoveMenuProduct(int id)
     {
         MenuProductDTO dto = await _menuProductManager.GetByIdAsync(id);
         if (dto == null)
+            return NotFound();
+
+        ProductDTO product = await _productManager.GetByIdAsync(dto.ProductId);
+        if (product == null || !await IsDrinkCategoryAsync(product.CategoryId))
             return NotFound();
 
         dto.IsActive = false;
@@ -368,9 +451,20 @@ public class BarController : Controller
     [HttpGet]
     public async Task<IActionResult> Reports()
     {
-
         List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
-        int menuProductCount = menuProducts.Count(mp => mp.IsActive);
+        List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+        HashSet<int> drinkCategoryIds = categories
+            .Where(c => c.Id == DrinkCategoryId || c.ParentCategoryId == DrinkCategoryId)
+            .Select(c => c.Id)
+            .ToHashSet();
+
+        int menuProductCount = 0;
+        foreach (MenuProductDTO mp in menuProducts)
+        {
+            ProductDTO product = await _productManager.GetByIdAsync(mp.ProductId);
+            if (product != null && drinkCategoryIds.Contains(product.CategoryId) && mp.IsActive)
+                menuProductCount++;
+        }
 
         ViewBag.MenuProductCount = menuProductCount;
         return View();
