@@ -27,7 +27,10 @@ namespace Project.InnerInfrastructure.DependencyResolvers
             services.AddScoped<IUnitManager, UnitManager>();
             services.AddScoped<ITableManager, TableManager>();
             services.AddScoped<ISupplierManager, SupplierManager>();
+            services.AddScoped<IMenuManager, MenuManager>();
+            services.AddScoped<IMenuProductManager, MenuProductManager>();
             
+
 
 
 

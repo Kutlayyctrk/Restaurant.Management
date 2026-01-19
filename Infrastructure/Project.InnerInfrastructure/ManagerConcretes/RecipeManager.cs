@@ -24,7 +24,6 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _mapper = mapper;
         }
 
-
         public override async Task<List<RecipeDTO>> GetAllAsync()
         {
             List<Recipe> recipes = await _recipeRepository.GetAllAsync();
@@ -36,7 +35,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 Description = r.Description,
                 ProductId = r.ProductId,
                 CategoryId = r.CategoryId,
-                RecipeItem = r.RecipeItems.Select(ri => new RecipeItemDTO
+                RecipeItems = r.RecipeItems.Select(ri => new RecipeItemDTO
                 {
                     ProductId = ri.ProductId,
                     Quantity = ri.Quantity,
@@ -44,13 +43,68 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 }).ToList()
             }).ToList();
         }
-        public async Task<OperationStatus> UpdateAsync(RecipeDTO dto)
+
+        public async Task<RecipeDTO?> GetByIdWithItemsAsync(int id)
         {
-            Recipe entity = _mapper.Map<Recipe>(dto);
-            await _recipeRepository.UpdateAsync(entity);
-            return OperationStatus.Success;
+           Recipe? recipe = await _recipeRepository.GetByIdWithItemsAsync(id);
+           if (recipe == null)
+               return null;
+
+           return new RecipeDTO
+           {
+               Id = recipe.Id,
+               Name = recipe.Name,
+               Description = recipe.Description,
+               ProductId = recipe.ProductId,
+               CategoryId = recipe.CategoryId,
+               RecipeItems = recipe.RecipeItems.Select(ri => new RecipeItemDTO
+               {
+                   ProductId = ri.ProductId,
+                   Quantity = ri.Quantity,
+                   UnitId = ri.UnitId
+               }).ToList()
+           };
         }
 
+        public async Task<RecipeDTO?> GetByProductIdAsync(int productId)
+        {
+            Recipe recipe = await _recipeRepository.GetByProductIdAsync(productId);
 
+            if (recipe == null)
+                return null;
+
+            
+            return new RecipeDTO
+            {
+                Id = recipe.Id,
+                Name = recipe.Name,
+                Description = recipe.Description,
+                ProductId = recipe.ProductId,
+                CategoryId = recipe.CategoryId,
+                RecipeItems = recipe.RecipeItems.Select(ri => new RecipeItemDTO
+                {
+                    ProductId = ri.ProductId,
+                    Quantity = ri.Quantity,
+                    UnitId = ri.UnitId
+                }).ToList()
+            };
+        }
+
+        public override async Task<OperationStatus> UpdateAsync(RecipeDTO originalDto, RecipeDTO newDto)
+        {
+           
+            Recipe originalEntity = await _recipeRepository.GetByIdAsync(originalDto.Id);
+            if (originalEntity == null)
+                return OperationStatus.NotFound;
+
+           
+            _mapper.Map(newDto, originalEntity);
+
+            originalEntity.Status = Project.Domain.Enums.DataStatus.Updated;
+            originalEntity.UpdatedDate = System.DateTime.Now;
+
+            await _recipeRepository.UpdateAsync(originalEntity);
+            return OperationStatus.Success;
+        }
     }
 }

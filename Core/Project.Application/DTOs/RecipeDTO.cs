@@ -14,12 +14,9 @@ namespace Project.Application.DTOs
         public int ProductId { get; set; }
         public int CategoryId { get; set; }
 
-        public IList<RecipeItemDTO> RecipeItem { get; set; } = new List<RecipeItemDTO>();
+        public IList<RecipeItemDTO> RecipeItems { get; set; } = new List<RecipeItemDTO>();
 
 
-        public DateTime InsertedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public DateTime? DeletionDate { get; set; }
-        public DataStatus Status { get; set; }
+     
     }
 }

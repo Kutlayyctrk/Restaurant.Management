@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 
 namespace Project.Application.Managers
 {
-    public interface IRecipeManager:IManager<Recipe,RecipeDTO>
+    public interface IRecipeManager : IManager<Recipe, RecipeDTO>
     {
         Task<List<RecipeDTO>> GetAllAsync();
-        Task<OperationStatus> UpdateAsync(RecipeDTO dto); //Tek entity ile güncelleme gerekiyordu o yüzden IManager'daki metodu kullanmadım.
+        Task<RecipeDTO?> GetByProductIdAsync(int productId);
+        Task<RecipeDTO?> GetByIdWithItemsAsync(int id);
+
     }
 }

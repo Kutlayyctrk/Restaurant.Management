@@ -1,33 +1,24 @@
 ﻿@model List<KitchenOrderVm>
-@if (!Model.Any())
-{
-    <div class="alert alert-warning">Aktif sipariş bulunamadı.</div>
-}
 
-<div class="row">
-    @foreach (var order in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header bg-dark text-white">
-                    @order.TableName - @order.TotalPrice ₺
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        @foreach (var item in order.OrderDetails)
-                        {
-                            <li class="list-group-item">
-                                @item.ProductName - @item.Quantity x @item.UnitPrice ₺ (@item.DetailState)
-                            </li>
-                        }
-                    </ul>
-                </div>
-                <div class="card-footer text-end">
-                    <form asp-action="CompleteOrder" asp-route-orderId="@order.OrderId" method="post">
-                        <button type="submit" class="btn btn-success">Tamamlandı</button>
-                    </form>
-                </div>
-            </div>
+<h2>Aktif Siparişler</h2>
+
+@foreach (var order in Model)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>@order.TableName</strong> - Toplam: @order.TotalPrice ₺
         </div>
-    }
-</div>
+        <div class="card-body">
+            <ul>
+                @foreach (var detail in order.OrderDetails)
+                {
+                    <li>@detail.ProductName - @detail.Quantity x @detail.UnitPrice ₺ (@detail.DetailState)</li>
+                }
+            </ul>
+            <form asp-action="CompleteOrder" method="post">
+                <input type="hidden" name="orderId" value="@order.OrderId" />
+                <button type="submit" class="btn btn-success">Tamamla</button>
+            </form>
+        </div>
+    </div>
+}

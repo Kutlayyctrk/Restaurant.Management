@@ -13,9 +13,6 @@ namespace Project.Application.DTOs
         public string Description { get; set; }
 
         public int? ParentCategoryId { get; set; }
-        public DateTime InsertedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public DateTime? DeletionDate { get; set; }
-        public DataStatus Status { get; set; }
+      
     }
 }

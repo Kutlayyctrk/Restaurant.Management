@@ -17,9 +17,6 @@ namespace Project.Application.DTOs
 
         public IList<OrderDetailDTO> OrderDetails { get; set; } = new List<OrderDetailDTO>();
 
-        public DateTime InsertedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public DateTime? DeletionDate { get; set; }
-        public DataStatus DataStatus { get; set; }
+      
     }
 }

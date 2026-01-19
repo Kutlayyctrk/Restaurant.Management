@@ -15,9 +15,6 @@ namespace Project.Application.DTOs
         public OrderDetailStatus DetailState { get; set; }
 
 
-        public DateTime InsertedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public DateTime? DeletionDate { get; set; }
-        public DataStatus DataStatus { get; set; }
+      
     }
 }

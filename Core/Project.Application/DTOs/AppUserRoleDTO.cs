@@ -11,9 +11,6 @@ namespace Project.Application.DTOs
     {
         public int UserId { get; set; }
         public int RoleId { get; set; }
-        public DateTime InsertedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public DateTime? DeletionDate { get; set; }
-        public DataStatus Status { get; set; }
+        
     }
 }

@@ -15,5 +15,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 {
     public class ProductManager(IProductRepository productRepository,IMapper mapper,IValidator<ProductDTO>productValidator):BaseManager<Product,ProductDTO>(productRepository,mapper,productValidator),IProductManager
     {
+        private readonly IProductRepository _productRepository = productRepository;
+        private readonly IMapper _mapper = mapper;
+        public async Task<List<ProductDTO>> GetSellableProductsAsync()
+        {
+            var products = await _productRepository.GetSellableProductsAsync();
+            return _mapper.Map<List<ProductDTO>>(products);
+        }
+
     }
 }

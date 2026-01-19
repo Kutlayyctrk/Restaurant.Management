@@ -28,7 +28,8 @@ namespace Project.Persistance.DependencyResolvers
             services.AddScoped<ISupplierRepository, SupplierRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
             services.AddScoped<IUnitRepository, UnitRepository>();
-           
+            services.AddScoped<IMenuRepository, MenuRepository>();
+            services.AddScoped<IMenuProductRepository, MenuProductRepository>();
         }
     }
 }

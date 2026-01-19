@@ -11,8 +11,8 @@ namespace Project.Application.Managers
 {
     public interface IOrderManager:IManager<Order,OrderDTO>
     {
-        Task<List<OrderDTO>> GetActiveOrdersAsync(); 
-        Task ChangeOrderStateAsync(int orderId, OrderStatus newState);
+        Task<List<OrderDTO>> GetActiveOrdersAsync(); //Mutfak ekranında aktif durumdaki metotları tanımlamak için yazıldı
+        Task ChangeOrderStateAsync(int orderId, OrderStatus newState); //Order durumunu güncellemek için yazıldı
     }
 
 }

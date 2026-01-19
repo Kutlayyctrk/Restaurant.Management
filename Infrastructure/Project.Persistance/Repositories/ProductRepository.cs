@@ -1,4 +1,5 @@
-﻿using Project.Contract.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
 using Project.Persistance.ContextClasses;
 using System;
@@ -11,5 +12,17 @@ namespace Project.Persistance.Repositories
 {
     public class  ProductRepository(MyContext myContext):BaseRepository<Product>(myContext),IProductRepository
     {
+        private readonly MyContext _context = myContext;
+
+      
+        
+
+        public async Task<List<Product>> GetSellableProductsAsync()
+        {
+            return await _context.Products
+                .Where(p => p.IsSellable)
+                .ToListAsync();
+        }
+
     }
 }

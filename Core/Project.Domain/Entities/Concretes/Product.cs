@@ -11,19 +11,23 @@ namespace Project.Domain.Entities.Concretes
     {
         public string ProductName { get; set; }
         public bool IsSellable { get; set; }
+        public bool IsExtra { get; set; }
         public bool CanBeProduced { get; set; }
+        public bool IsReadyMade { get; set; }
 
         public decimal UnitPrice { get; set; }
         public int UnitId { get; set; }
         public int CategoryId { get; set; }
 
-        //Relational Property
         public virtual Category Category { get; set; }
         public virtual Unit Unit { get; set; }
+
+        public virtual ICollection<MenuProduct> MenuProducts { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual Recipe Recipe { get; set; }
+        public virtual Recipe? Recipe { get; set; }
         public virtual ICollection<RecipeItem> RecipeItems { get; set; }
         public virtual ICollection<StockTransAction> StockTransActions { get; set; }
+
 
 
     }

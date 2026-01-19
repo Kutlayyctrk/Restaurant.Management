@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project.Domain.Entities.Concretes;
 using Project.Persistance.Configuration;
+using Project.Persistance.Configurations;
 using Project.Persistance.SeedDatas;
 using System;
 using System.Collections.Generic;
@@ -36,18 +37,31 @@ namespace Project.Persistance.ContextClasses
             builder.ApplyConfiguration(new SupplierConfiguration());
             builder.ApplyConfiguration(new TableConfiguration());
             builder.ApplyConfiguration(new UnitConfiguration());
+            builder.ApplyConfiguration(new MenuConfiguration());
+            builder.ApplyConfiguration(new MenuProductConfiguration());
 
             builder.AppRoleSeed();
             builder.AppUserSeed();
-            builder.AppUserProfileSeed();
             builder.AppUserRoleSeed();
+            builder.AppUserProfileSeed();
+
             builder.CategorySeed();
             builder.UnitSeed();
             builder.ProductSeed();
-            builder.SupplierSeed();
+
+            builder.MenuSeed();
+            builder.MenuProductSeed();
+
+            builder.RecipeSeed();
+            builder.RecipeItemSeed();
+
             builder.TableSeed();
-            builder.OrderDetailSeed();
+            builder.SupplierSeed();
+
             builder.OrderSeed();
+            builder.OrderDetailSeed();
+
+
 
 
         }
@@ -65,5 +79,7 @@ namespace Project.Persistance.ContextClasses
         public DbSet<Table> Tables { get; set; }
         public DbSet<Unit> Units { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<MenuProduct> MenuProducts { get; set; }
     }
 }

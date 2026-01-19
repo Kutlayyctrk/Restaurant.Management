@@ -43,16 +43,32 @@ namespace Project.Persistance.Repositories
            
             _context.Entry(existingRecipe).CurrentValues.SetValues(entity);
 
-            _context.RecipeItems.RemoveRange(existingRecipe.RecipeItems);
 
-            
+
             foreach (RecipeItem item in entity.RecipeItems)
             {
-                existingRecipe.RecipeItems.Add(item);
+            bool exists = existingRecipe.RecipeItems.Any(ri =>
+           ri.ProductId == item.ProductId && ri.UnitId == item.UnitId);
+                if(!exists)
+                {
+                    existingRecipe.RecipeItems.Add(item);
+                }
+
             }
 
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Recipe?> GetByProductIdAsync(int productId)
+        {
+            return await _context.Recipes
+       .Include(r => r.RecipeItems)
+       .FirstOrDefaultAsync(r => r.ProductId == productId);
+        }
+
+        public async Task<Recipe?> GetByIdWithItemsAsync(int id)
+        {
+            return await _context.Recipes.Include(r => r.RecipeItems).FirstOrDefaultAsync(r => r.Id == id);
+        }
     }
 }

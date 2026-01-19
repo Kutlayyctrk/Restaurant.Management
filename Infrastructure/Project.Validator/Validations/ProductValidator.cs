@@ -1,18 +1,12 @@
 ﻿using FluentValidation;
 using Project.Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.Validator.Validations
 {
-    public class ProductValidator:AbstractValidator<ProductDTO>
+    public class ProductValidator : AbstractValidator<ProductDTO>
     {
         public ProductValidator()
         {
-
             RuleFor(x => x.ProductName)
                .NotEmpty().WithMessage("Ürün adı zorunludur.")
                .MinimumLength(3).WithMessage("Ürün adı en az 3 karakter olmalıdır.")
@@ -23,10 +17,19 @@ namespace Project.Validator.Validations
                 .GreaterThanOrEqualTo(0m).WithMessage("Birim fiyat negatif olamaz.");
 
             RuleFor(x => x.UnitId)
-                .GreaterThan(0).WithMessage("Birim Id pozitif bir değer olmalıdır.");
+                .GreaterThan(0).WithMessage("Geçerli bir birim seçilmelidir.");
 
             RuleFor(x => x.CategoryId)
-                .GreaterThan(0).WithMessage("Kategori Id pozitif bir değer olmalıdır.");
+                .GreaterThan(0).WithMessage("Geçerli bir kategori seçilmelidir.");
+
+            // İş kuralları:
+            RuleFor(x => x.IsSellable)
+                .Equal(true).When(x => x.IsExtra)
+                .WithMessage("Extra ürünler satılabilir olmalıdır.");
+
+            RuleFor(x => x.CanBeProduced)
+                .Equal(false).When(x => x.IsReadyMade)
+                .WithMessage("Hazır ürünler üretilemez.");
         }
     }
 }

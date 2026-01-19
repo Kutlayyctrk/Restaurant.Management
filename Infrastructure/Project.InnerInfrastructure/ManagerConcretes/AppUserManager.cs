@@ -93,7 +93,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         public async Task<List<AppUserDTO>> GetConfirmedUsersAsync()
         {
           
-            List<AppUser> confirmedUsers = await _appUserRepository.Where(u => u.EmailConfirmed).ToListAsync();
+            List<AppUser> confirmedUsers = await _appUserRepository.WhereAsync(u => u.EmailConfirmed);
 
         
             return _mapper.Map<List<AppUserDTO>>(confirmedUsers);

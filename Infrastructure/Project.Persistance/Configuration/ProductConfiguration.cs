@@ -1,30 +1,47 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Project.Domain.Entities.Concretes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Project.Persistance.Configuration
+namespace Project.Persistance.Configurations
 {
-    public class ProductConfiguration : BaseConfiguration<Product>
+    public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
-        public override void Configure(EntityTypeBuilder<Product> builder)
+        public void Configure(EntityTypeBuilder<Product> builder)
         {
-            base.Configure(builder);
+            builder.HasKey(p => p.Id);
 
-            builder.Property(x => x.UnitPrice).HasColumnType("money");
+            builder.Property(p => p.ProductName)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-            builder.HasOne(x => x.Category).WithMany(x => x.Products).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict); //Bir category'de ürün varsa sildirmiyoruz.
+            builder.Property(p => p.UnitPrice)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
 
-            builder.HasOne(x => x.Unit).WithMany(x => x.Products).HasForeignKey(x => x.UnitId).OnDelete(DeleteBehavior.Restrict); //Bir birim'de ürün varsa sildirmiyoruz
+            // Boolean alanlar için default değerler
+            builder.Property(p => p.IsSellable).HasDefaultValue(true);
+            builder.Property(p => p.IsExtra).HasDefaultValue(false);
+            builder.Property(p => p.CanBeProduced).HasDefaultValue(false);
+            builder.Property(p => p.IsReadyMade).HasDefaultValue(false);
 
-            builder.HasOne(x => x.Recipe).WithOne(x => x.Product).HasForeignKey<Recipe>(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);//Bir ürün silinirse reçetesinide siliyoruz.
+            // İlişkiler
+            builder.HasOne(p => p.Category)
+                   .WithMany(c => c.Products)
+                   .HasForeignKey(p => p.CategoryId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(x => x.RecipeItems).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);//Bir ürün bir reçete'de varsa sildirmiyoruz.
-            builder.HasMany(x => x.StockTransActions).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);//Bir ürün stock kaydına girdiyse sildirmiyoruz.
+            builder.HasOne(p => p.Unit)
+                   .WithMany(u => u.Products)
+                   .HasForeignKey(p => p.UnitId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Opsiyonel Recipe
+            builder.HasOne(p => p.Recipe)
+                   .WithOne(r => r.Product)
+                   .HasForeignKey<Recipe>(r => r.ProductId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.ToTable("Products");
         }
     }
 }

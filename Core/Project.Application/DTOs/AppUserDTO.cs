@@ -22,9 +22,6 @@ namespace Project.Application.DTOs
         public string Password { get; set; }
         public bool? RememberMe { get; set; }
         public IList<int> RoleIds { get; set; } = new List<int>();
-        public DateTime InsertedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public DateTime? DeletionDate { get; set; }
-        public DataStatus Status { get; set; }
+       
     }
 }

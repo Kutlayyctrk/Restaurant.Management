@@ -50,7 +50,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link text-white d-block"
-                       asp-area="Manager" asp-controller="Kitchen" asp-action="MenuManagement">
+                       asp-area="Manager" asp-controller="Kitchen" asp-action="MenuProducts">
                         Menü Yönetimi
                     </a>
                 </li>
@@ -62,12 +62,30 @@
                 </li>
 
             }
-            else if (User.IsInRole("Bar"))
+            else if (User.IsInRole("Bar Sefi"))
             {
                 <li class="nav-item">
                     <a class="nav-link text-white d-block"
-                       asp-area="Manager" asp-controller="Bar" asp-action="DashBoard">
-                        Bar Paneli
+                       asp-area="Manager" asp-controller="Bar" asp-action="RecipeList">
+                        Reçeteler
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Bar" asp-action="ActiveOrders">
+                        Mevcut Siparişler
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Bar" asp-action="MenuProducts">
+                        Menü Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Bar" asp-action="Reports">
+                        Raporlar
                     </a>
                 </li>
             }

@@ -1,14 +1,40 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Project.UI.Areas.Manager.Controllers
+[Area("Manager")]
+public class BarController : Controller
 {
-    [Area("Manager")]
+  
 
-    public class BarController : Controller
+    public IActionResult DashBoard()
     {
-        public IActionResult DashBoard()
-        {
-            return View();
-        }
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> RecipeList()
+    {
+     
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ActiveOrders()
+    {
+      
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MenuProducts()
+    {
+     
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Reports()
+    {
+      
+        return View();
     }
 }

@@ -11,7 +11,7 @@ namespace Project.Application.Managers
 {
     public interface IOrderDetailManager:IManager<OrderDetail,OrderDetailDTO>
     {
-        Task UpdateDetailStateAsync(int detailId, OrderDetailStatus newState);
+        Task UpdateDetailStateAsync(int detailId, OrderDetailStatus newState); //OrderDetail durumunu güncellemek için yazıldı
 
     }
 }

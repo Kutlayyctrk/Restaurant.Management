@@ -17,8 +17,7 @@ namespace Project.Application.Managers
         Task<List<TDto>> GetPassives();
         Task<TDto> GetByIdAsync(int id);
 
-       
-        Task<List<TEntity>> Where(Expression<Func<TEntity, bool>> expression);
+        Task<List<TDto>> WhereAsync(Expression<Func<TEntity, bool>> expression);
 
         Task<OperationStatus> CreateAsync(TDto dto);
         Task<OperationStatus> UpdateAsync(TDto originalDto, TDto newDto);

@@ -25,13 +25,13 @@ namespace Project.Validator.Validations
                 .MaximumLength(1000).When(x => !string.IsNullOrWhiteSpace(x.Description))
                 .WithMessage("Açıklama en fazla 1000 karakter olabilir.");
 
-            RuleFor(x => x.RecipeItem)
+            RuleFor(x => x.RecipeItems)
                 .NotNull().WithMessage("Reçete içeriği boş olamaz.")
                 .Must(list => list != null && list.Count > 0).WithMessage("En az bir reçete maddesi eklemelisiniz.")
                 .Must(list => list == null || list.Select(i => i.ProductId).Distinct().Count() == list.Count)
                 .WithMessage("Reçete maddeleri içinde aynı üründen yalnızca bir kere olmalıdır.");
 
-            RuleForEach(x => x.RecipeItem)
+            RuleForEach(x => x.RecipeItems)
                 .NotNull()
                 .SetValidator(itemValidator);
         }

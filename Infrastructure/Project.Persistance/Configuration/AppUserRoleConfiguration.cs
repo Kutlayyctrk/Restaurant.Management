@@ -15,26 +15,24 @@ namespace Project.Persistance.Configuration
         {
             base.Configure(builder);
 
+           
+            builder.Ignore(x => x.Id);
 
+           
             builder.HasKey(x => new { x.UserId, x.RoleId });
 
-            builder.Property(x => x.Id)
-                   .ValueGeneratedOnAdd();
-
             builder.HasOne(x => x.User)
-                   .WithMany(x => x.UserRoles)
+                   .WithMany(u => u.UserRoles)
                    .HasForeignKey(x => x.UserId)
                    .IsRequired()
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Role)
-                   .WithMany(x => x.UserRoles)
+                   .WithMany(r => r.UserRoles)
                    .HasForeignKey(x => x.RoleId)
                    .IsRequired()
                    .OnDelete(DeleteBehavior.Restrict);
 
-
-            builder.HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         }
     }
 }
