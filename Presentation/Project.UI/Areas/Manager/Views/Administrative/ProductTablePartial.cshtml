@@ -1,0 +1,18 @@
+﻿@model ProductListVm
+<tbody>
+    @foreach (var product in Model.Products)
+    {
+        <tr>
+            <td>@product.ProductName</td>
+            <td>@product.CategoryName</td>
+            <td>@product.UnitPrice.ToString("C2")</td>
+            <td>@product.Status</td>
+            <td>
+                <div class="d-flex gap-3 justify-content-start">
+                    <a asp-action="ProductDetail" asp-route-id="@product.Id" class="btn btn-outline-info btn-sm px-4">Detay</a>
+                    <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm px-4">Düzenle</a>
+                </div>
+            </td>
+        </tr>
+    }
+</tbody>

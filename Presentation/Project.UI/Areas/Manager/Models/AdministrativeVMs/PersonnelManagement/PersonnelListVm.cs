@@ -1,7 +1,7 @@
 ﻿using Project.Application.Enums;
 using Project.UI.Areas.Manager.Models.HRVMs;
 
-namespace Project.UI.Areas.Manager.Models.AdministrativeVMs
+namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement
 {
     public class PersonnelListVm
     {

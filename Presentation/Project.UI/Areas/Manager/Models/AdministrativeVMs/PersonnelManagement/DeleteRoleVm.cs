@@ -1,4 +1,4 @@
-﻿namespace Project.UI.Areas.Manager.Models.AdministrativeVMs
+﻿namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement
 {
     public class DeleteRoleVm
     {

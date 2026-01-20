@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
-using Project.UI.Areas.Manager.Models.AdministrativeVMs;
+using Project.InnerInfrastructure.ManagerConcretes;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace Project.UI.Areas.Manager.Controllers
 {
@@ -18,17 +19,19 @@ namespace Project.UI.Areas.Manager.Controllers
         private readonly IAppUserProfileManager _appUserProfileManager;
         private readonly IAppUserRoleManager _appUserRoleManager;
         private readonly IAppRoleManager _appRoleManager;
+        private readonly IUnitManager _unitManager;
+        private readonly ICategoryManager _categoryManager;
+        private readonly IProductManager _productManager;
 
-        public AdministrativeController(
-            IAppUserManager appUserManager,
-            IAppUserProfileManager appUserProfileManager,
-            IAppUserRoleManager appUserRoleManager,
-            IAppRoleManager appRoleManager)
+        public AdministrativeController(IAppUserManager appUserManager, IAppUserProfileManager appUserProfileManager, IAppUserRoleManager appUserRoleManager, IAppRoleManager appRoleManager, IUnitManager unitManager, ICategoryManager categoryManager, IProductManager productManager)
         {
             _appUserManager = appUserManager;
             _appUserProfileManager = appUserProfileManager;
             _appUserRoleManager = appUserRoleManager;
             _appRoleManager = appRoleManager;
+            _unitManager = unitManager;
+            _categoryManager = categoryManager;
+            _productManager = productManager;
         }
 
         public IActionResult DashBoard()
@@ -51,7 +54,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             string[] filterRoles = filter switch
             {
-                PersonnelFilterType.Mutfak => new[] { "Mutfak Sefi", "Aşçı", "Aşçı Yardımcısı" },
+                PersonnelFilterType.Mutfak => new[] { "Mutfak Sefi", "Ascı", "Ascı Yardımcısı" },
                 PersonnelFilterType.Salon => new[] { "Garson", "Komi" },
                 PersonnelFilterType.Yönetim => new[] { "Insan Kaynaklari Muduru", "Restaurant Muduru", "Idari Personel" },
                 PersonnelFilterType.Hizmet => new[] { "Temizlikçi", "Bulaşıkçı" },
@@ -351,12 +354,319 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return View(vm);
         }
+        private List<int> GetAllCategoryIdsRecursive(List<CategoryDTO> categories, int parentId)
+        {
+            List<int> ids = new List<int> { parentId };
+            List<int> children = categories.Where(c => c.ParentCategoryId == parentId).Select(c => c.Id).ToList();
+            foreach (int childId in children)
+            {
+                ids.AddRange(GetAllCategoryIdsRecursive(categories, childId));
+            }
+            return ids;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProductManagement(
+     int? categoryId = null,
+     string searchTerm = null,
+     bool? isSellable = null,
+     bool? isExtra = null,
+     bool? canBeProduced = null,
+     bool? isReadyMade = null)
+        {
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+
+          
+            List<int> categoryIds = new();
+            if (categoryId.HasValue)
+            {
+                categoryIds = GetAllCategoryIdsRecursive(categories, categoryId.Value);
+            }
+
+         
+            ViewBag.SellableValues = products.Select(p => p.IsSellable).Distinct().ToList();
+            ViewBag.ExtraValues = products.Select(p => p.IsExtra).Distinct().ToList();
+            ViewBag.CanBeProducedValues = products.Select(p => p.CanBeProduced).Distinct().ToList();
+            ViewBag.IsReadyMadeValues = products.Select(p => p.IsReadyMade).Distinct().ToList();
+
+    
+            if (categoryId.HasValue)
+                products = products.Where(p => categoryIds.Contains(p.CategoryId)).ToList();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                products = products.Where(p => p.ProductName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (isSellable.HasValue)
+                products = products.Where(p => p.IsSellable == isSellable.Value).ToList();
+            if (isExtra.HasValue)
+                products = products.Where(p => p.IsExtra == isExtra.Value).ToList();
+            if (canBeProduced.HasValue)
+                products = products.Where(p => p.CanBeProduced == canBeProduced.Value).ToList();
+            if (isReadyMade.HasValue)
+                products = products.Where(p => p.IsReadyMade == isReadyMade.Value).ToList();
+
+            ProductListVm vm = new ProductListVm
+            {
+                Products = products,
+                Categories = categories,
+                SelectedCategoryId = categoryId,
+                SearchTerm = searchTerm,
+                IsSellable = isSellable,
+                IsExtra = isExtra,
+                CanBeProduced = canBeProduced,
+                IsReadyMade = isReadyMade
+            };
+
+            ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
+            return View(vm);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ProductTablePartial(
+            int? categoryId = null,
+            string searchTerm = null,
+            bool? isSellable = null,
+            bool? isExtra = null,
+            bool? canBeProduced = null,
+            bool? isReadyMade = null)
+        {
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+
+            List<int> categoryIds = new();
+            if (categoryId.HasValue)
+            {
+                categoryIds = GetAllCategoryIdsRecursive(categories, categoryId.Value);
+            }
+
+            if (categoryId.HasValue)
+                products = products.Where(p => categoryIds.Contains(p.CategoryId)).ToList();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                products = products.Where(p => p.ProductName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (isSellable.HasValue)
+                products = products.Where(p => p.IsSellable == isSellable.Value).ToList();
+            if (isExtra.HasValue)
+                products = products.Where(p => p.IsExtra == isExtra.Value).ToList();
+            if (canBeProduced.HasValue)
+                products = products.Where(p => p.CanBeProduced == canBeProduced.Value).ToList();
+            if (isReadyMade.HasValue)
+                products = products.Where(p => p.IsReadyMade == isReadyMade.Value).ToList();
+
+            ProductListVm vm = new ProductListVm
+            {
+                Products = products
+            };
+
+            return PartialView("ProductTablePartial", vm);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ProductDetail(int id)
+        {
+            ProductDTO product = await _productManager.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+
+            ProductDetailVm vm = new ProductDetailVm
+            {
+                Id = product.Id,
+                ProductName = product.ProductName,
+                IsSellable = product.IsSellable,
+                IsExtra = product.IsExtra,
+                CanBeProduced = product.CanBeProduced,
+                IsReadyMade = product.IsReadyMade,
+                UnitPrice = product.UnitPrice,
+                UnitId = product.UnitId,
+                UnitName = product.UnitName,
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName,
+                InsertedDate = product.InsertedDate,
+                UpdatedDate = product.UpdatedDate,
+                DeletionDate = product.DeletionDate,
+                Status = product.Status.ToString()
+            };
+            return View(vm);
+        }
+
+      
+
+        [HttpGet]
+        public async Task<IActionResult> AddProduct()
+        {
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            List<UnitDTO> units = await _unitManager.GetAllAsync();
+            ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
+            ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
+            return View(new ProductCreateVm());
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddProduct(ProductCreateVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+                List<UnitDTO> units = await _unitManager.GetAllAsync();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
+                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
+                return View(vm);
+            }
+
+            ProductDTO dto = new ProductDTO
+            {
+                ProductName = vm.ProductName,
+                UnitPrice = vm.UnitPrice,
+                UnitId = vm.UnitId,
+                CategoryId = vm.CategoryId,
+                IsSellable = vm.IsSellable,
+                IsExtra = vm.IsExtra,
+                CanBeProduced = vm.CanBeProduced,
+                IsReadyMade = vm.IsReadyMade
+            };
+
+            OperationStatus result = await _productManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Ürün eklenemedi.");
+                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+                List<UnitDTO> units = await _unitManager.GetAllAsync();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
+                ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Ürün başarıyla eklendi.";
+            return RedirectToAction("ProductManagement");
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditProduct(int id)
+        {
+            ProductDTO product = await _productManager.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+
+            ProductEditVm vm = new ProductEditVm
+            {
+                Id = product.Id,
+                ProductName = product.ProductName,
+                UnitPrice = product.UnitPrice,
+                UnitId = product.UnitId,
+                CategoryId = product.CategoryId,
+                IsSellable = product.IsSellable,
+                IsExtra = product.IsExtra,
+                CanBeProduced = product.CanBeProduced,
+                IsReadyMade = product.IsReadyMade
+            };
+
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            List<UnitDTO> units = await _unitManager.GetAllAsync();
+            ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName", product.CategoryId);
+            ViewBag.UnitList = new SelectList(units, "Id", "UnitName", product.UnitId);
+
+            return View(vm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditProduct(ProductEditVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+                List<UnitDTO> units = await _unitManager.GetAllAsync();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName", vm.CategoryId);
+                ViewBag.UnitList = new SelectList(units, "Id", "UnitName", vm.UnitId);
+                return View(vm);
+            }
+
+            ProductDTO original = await _productManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            ProductDTO updated = new ProductDTO
+            {
+                Id = vm.Id,
+                ProductName = vm.ProductName,
+                UnitPrice = vm.UnitPrice,
+                UnitId = vm.UnitId,
+                CategoryId = vm.CategoryId,
+                IsSellable = vm.IsSellable,
+                IsExtra = vm.IsExtra,
+                CanBeProduced = vm.CanBeProduced,
+                IsReadyMade = vm.IsReadyMade
+            };
+
+            OperationStatus result = await _productManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Ürün güncellenemedi.");
+                List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+                List<UnitDTO> units = await _unitManager.GetAllAsync();
+                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName", vm.CategoryId);
+                ViewBag.UnitList = new SelectList(units, "Id", "UnitName", vm.UnitId);
+                return View(vm);
+            }
+
+            TempData["Success"] = "Ürün başarıyla güncellendi.";
+            return RedirectToAction("ProductManagement");
+        }
+
+
+
 
         [HttpPost]
-        public async Task<IActionResult> AddAnnualLeave(int userId, int days)
+        public async Task<IActionResult> ActivateProduct(int id)
         {
-            TempData["Success"] = $"{days} gün yıllık izin eklendi.";
-            return RedirectToAction("PersonnelDetail", new { id = userId });
+            ProductDTO original = await _productManager.GetByIdAsync(id);
+            if (original == null)
+            {
+                TempData["Error"] = "Ürün bulunamadı.";
+                return RedirectToAction("ProductManagement");
+            }
+
+            ProductDTO updated = new ProductDTO
+            {
+                Id = original.Id,
+                ProductName = original.ProductName,
+                UnitPrice = original.UnitPrice,
+                UnitId = original.UnitId,
+                CategoryId = original.CategoryId,
+                IsSellable = original.IsSellable,
+                IsExtra = original.IsExtra,
+                CanBeProduced = original.CanBeProduced,
+                IsReadyMade = original.IsReadyMade,
+                Status = Domain.Enums.DataStatus.Updated,
+                InsertedDate = original.InsertedDate,
+                UpdatedDate = DateTime.Now,
+                DeletionDate = null,
+                UnitName = original.UnitName,
+                CategoryName = original.CategoryName
+            };
+
+            OperationStatus result = await _productManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Ürün aktifleştirilemedi.";
+            else
+                TempData["Success"] = "Ürün aktifleştirildi.";
+            return RedirectToAction("ProductManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteProduct(int id)
+        {
+            OperationStatus result = await _productManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Ürün pasife alınamadı.";
+            else
+                TempData["Success"] = "Ürün pasife alındı.";
+            return RedirectToAction("ProductManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HardDeleteProduct(int id)
+        {
+            OperationStatus result = await _productManager.HardDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Ürün silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Ürün kalıcı olarak silindi.";
+            return RedirectToAction("ProductManagement");
         }
     }
 }

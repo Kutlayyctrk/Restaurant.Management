@@ -1,0 +1,69 @@
+﻿@model ProductCreateVm
+@{
+    ViewData["Title"] = "Yeni Ürün Ekle";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Yeni Ürün Ekle</h2>
+        <a asp-action="ProductManagement" class="btn btn-secondary">Geri</a>
+    </div>
+
+    <form asp-action="AddProduct" method="post" class="card shadow-sm p-4">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="ProductName" class="form-label"></label>
+            <input asp-for="ProductName" class="form-control" />
+            <span asp-validation-for="ProductName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="UnitPrice" class="form-label"></label>
+            <input asp-for="UnitPrice" class="form-control" />
+            <span asp-validation-for="UnitPrice" class="text-danger"></span>
+        </div>
+
+        <!-- Unit ve Category dropdownlarını yan yana ve dar -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="UnitId" class="form-label"></label>
+                <select asp-for="UnitId" class="form-select form-select-sm" asp-items="ViewBag.UnitList"></select>
+                <span asp-validation-for="UnitId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CategoryId" class="form-label"></label>
+                <select asp-for="CategoryId" class="form-select form-select-sm" asp-items="ViewBag.CategoryList"></select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <div class="form-check">
+                    <input asp-for="IsSellable" class="form-check-input" />
+                    <label asp-for="IsSellable" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="IsExtra" class="form-check-input" />
+                    <label asp-for="IsExtra" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input asp-for="CanBeProduced" class="form-check-input" />
+                    <label asp-for="CanBeProduced" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="IsReadyMade" class="form-check-input" />
+                    <label asp-for="IsReadyMade" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-success">Ekle</button>
+            <a asp-action="ProductManagement" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
