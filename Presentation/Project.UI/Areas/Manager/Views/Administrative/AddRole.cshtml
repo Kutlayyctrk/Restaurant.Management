@@ -1,14 +1,35 @@
-﻿@using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement
+﻿
 @model AddRoleVm
+@{
+    ViewData["Title"] = "Yeni Rol Ekle";
+}
 
-<h2>Yeni Rol Ekle</h2>
-<div asp-validation-summary="All" class="text-danger"></div>
-<form asp-action="AddRole" method="post">
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label">Rol Adı</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="mb-4 text-center">
+        <h2>Yeni Rol Ekle</h2>
     </div>
-    <button type="submit" class="btn btn-success">Kaydet</button>
-    <a asp-action="PersonnelManagement" class="btn btn-secondary">İptal</a>
-</form>
+
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <form asp-action="AddRole" method="post" class="card shadow-sm">
+        @Html.AntiForgeryToken()
+
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Rol Adı</label>
+                <input asp-for="Name" class="form-control" placeholder="Örn: Garson, Kasa Sorumlusu..." />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <p class="text-muted small">
+                <i class="bi bi-info-circle"></i> Eklediğiniz rol, personel düzenleme ve ekleme ekranlarında seçenek olarak görünecektir.
+            </p>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-end gap-2 py-3">
+            <button type="submit" class="btn btn-success">Kaydet</button>
+            <a asp-action="PersonnelManagement" class="btn btn-outline-secondary">İptal</a>
+            <a asp-action="PersonnelManagement" class="btn btn-secondary">Geri</a>
+        </div>
+    </form>
+</div>

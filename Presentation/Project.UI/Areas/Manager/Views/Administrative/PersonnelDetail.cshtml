@@ -1,36 +1,60 @@
 ﻿@model PersonnelDetailVm
 
-<h2>Personel Detayları</h2>
-<table class="table">
-    <tr><th>Kullanıcı Adı</th><td>@Model.UserName</td></tr>
-    <tr><th>Email</th><td>@Model.Email</td></tr>
-    <tr><th>Ad Soyad</th><td>@Model.FullName</td></tr>
-    <tr><th>TCKNo</th><td>@Model.TCKNo</td></tr>
-    <tr><th>Doğum Tarihi</th><td>@Model.BirthDate.ToShortDateString()</td></tr>
-    <tr><th>İşe Giriş Tarihi</th><td>@Model.HireDate.ToShortDateString()</td></tr>
-    <tr><th>Maaş</th><td>@Model.Salary.ToString("C2")</td></tr>
-    <tr><th>Roller</th><td>@string.Join(", ", Model.Roles)</td></tr>
-</table>
-
-<h4>Yıllık İzin Bilgisi</h4>
-<p>
-    Toplam Yıllık İzin: <strong>@Model.TotalAnnualLeaveDays</strong> gün<br />
-    Kullanılan Yıllık İzin: <strong>@Model.UsedAnnualLeaveDays</strong> gün<br />
-    Kalan Yıllık İzin: <strong>@Model.RemainingAnnualLeaveDays</strong> gün
-</p>
-<form asp-action="AddAnnualLeave" method="post" class="mb-3">
-    <input type="hidden" name="userId" value="@Model.Id" />
-    <div class="input-group" style="max-width:200px;">
-        <input type="number" name="days" class="form-control" min="1" max="@Model.RemainingAnnualLeaveDays" placeholder="İzin (gün)" />
-        <button type="submit" class="btn btn-primary">Yıllık İzin Gir</button>
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="mb-4 text-center">
+        <h2>Personel Detayları</h2>
     </div>
-</form>
 
-<h4>Tazminat Bilgisi</h4>
-<p>
-    Tahmini Kıdem Tazminatı: <strong>@Model.EstimatedSeverancePay.ToString("C2")</strong><br />
-    Tahmini İhbar Tazminatı: <strong>@Model.EstimatedNoticePay.ToString("C2")</strong><br />
-    <span class="fw-bold">Tahmini Toplam Tazminat: <strong>@Model.EstimatedTotalPay.ToString("C2")</strong></span>
-</p>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-sm table-borderless mb-4">
+                <tbody>
+                    <tr><th style="width: 30%">Kullanıcı Adı</th><td>@Model.UserName</td></tr>
+                    <tr><th>Email</th><td>@Model.Email</td></tr>
+                    <tr><th>Ad Soyad</th><td>@Model.FullName</td></tr>
+                    <tr><th>TCKNo</th><td>@Model.TCKNo</td></tr>
+                    <tr><th>Doğum Tarihi</th><td>@Model.BirthDate.ToShortDateString()</td></tr>
+                    <tr><th>İşe Giriş Tarihi</th><td>@Model.HireDate.ToShortDateString()</td></tr>
+                    <tr><th>Maaş</th><td>@Model.Salary.ToString("C2")</td></tr>
+                    <tr><th>Roller</th><td><span class="badge bg-info text-dark">@string.Join(", ", Model.Roles)</span></td></tr>
+                </tbody>
+            </table>
 
-<a asp-action="PersonnelManagement" class="btn btn-secondary">Geri Dön</a>
+            <hr />
+
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h5 class="text-primary mb-3">Yıllık İzin Bilgisi</h5>
+                    <p class="small mb-2">
+                        Toplam: <strong>@Model.TotalAnnualLeaveDays</strong> gün<br />
+                        Kullanılan: <strong>@Model.UsedAnnualLeaveDays</strong> gün<br />
+                        Kalan: <span class="badge bg-success">@Model.RemainingAnnualLeaveDays gün</span>
+                    </p>
+
+                    <form asp-action="AddAnnualLeave" method="post" class="mt-3">
+                        <input type="hidden" name="userId" value="@Model.Id" />
+                        <div class="input-group input-group-sm" style="max-width:220px;">
+                            <input type="number" name="days" class="form-control" min="1" max="@Model.RemainingAnnualLeaveDays" placeholder="Gün" />
+                            <button type="submit" class="btn btn-primary">İzin Gir</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <h5 class="text-danger mb-3">Tazminat Bilgisi</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-1">Kıdem Tazminatı: <strong>@Model.EstimatedSeverancePay.ToString("C2")</strong></li>
+                        <li class="mb-1">İhbar Tazminatı: <strong>@Model.EstimatedNoticePay.ToString("C2")</strong></li>
+                        <li class="mt-2 border-top pt-2">
+                            <span class="fw-bold">Toplam: @Model.EstimatedTotalPay.ToString("C2")</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-end py-3">
+            <a asp-action="PersonnelManagement" class="btn btn-secondary">Geri Dön</a>
+        </div>
+    </div>
+</div>

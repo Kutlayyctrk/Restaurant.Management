@@ -4,9 +4,8 @@
 }
 
 <div class="container mt-4" style="max-width: 700px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="mb-4 text-center">
         <h2>Ürün Detayı</h2>
-        <a asp-action="ProductManagement" class="btn btn-secondary">Geri</a>
     </div>
 
     <div class="card shadow-sm">
@@ -54,23 +53,10 @@
                 }
             </dl>
         </div>
+
         <div class="card-footer bg-white d-flex justify-content-end gap-2">
-            @if (Model.Status == "Inserted" || Model.Status == "Updated")
-            {
-                <form asp-action="SoftDeleteProduct" asp-route-id="@Model.Id" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-warning" onclick="return confirm('Ürünü pasife almak istediğinize emin misiniz?');">Pasife Al</button>
-                </form>
-            }
-            else if (Model.Status == "Deleted")
-            {
-                <form asp-action="ActivateProduct" asp-route-id="@Model.Id" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-success" onclick="return confirm('Ürünü aktifleştirmek istediğinize emin misiniz?');">Aktife Al</button>
-                </form>
-            }
-            <form asp-action="HardDeleteProduct" asp-route-id="@Model.Id" method="post" class="d-inline">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Ürünü kalıcı olarak silmek istediğinize emin misiniz?');">Sil</button>
-            </form>
             <a asp-action="EditProduct" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+            <a asp-action="ProductManagement" class="btn btn-secondary">Geri</a>
         </div>
     </div>
 </div>

@@ -1,0 +1,54 @@
+﻿@model UnitListVm
+@{
+    ViewData["Title"] = "Birim Yönetimi";
+}
+
+<div class="container-fluid px-0">
+    <div class="product-main-container">
+        <div class="row align-items-center mb-4 mt-4">
+            <div class="col">
+                <div class="product-title fs-3 fw-semibold">Birim Yönetimi</div>
+            </div>
+            <div class="col-auto">
+                <a asp-action="AddUnit" class="btn btn-success">+ Yeni Birim Ekle</a>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Birim Adı</th>
+                        <th>Kısaltma</th>
+                        <th style="min-width:180px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var unit in Model.Units)
+                    {
+                        <tr>
+                            <td>@unit.UnitName</td>
+                            <td>@unit.UnitAbbreviation</td>
+                            <td>
+                                <a asp-action="EditUnit" asp-route-id="@unit.Id" class="btn btn-sm btn-primary me-2">Düzenle</a>
+                                <a asp-action="UnitDetail" asp-route-id="@unit.Id" class="btn btn-sm btn-info me-2">Detaylar</a>
+                                <form asp-action="DeleteUnit" asp-route-id="@unit.Id" method="post" class="d-inline" onsubmit="return confirm('Birim silinsin mi?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -5,6 +5,7 @@ using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.InnerInfrastructure.ManagerConcretes;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
 using System;
 using System.Collections.Generic;
@@ -553,7 +554,8 @@ namespace Project.UI.Areas.Manager.Controllers
                 IsSellable = product.IsSellable,
                 IsExtra = product.IsExtra,
                 CanBeProduced = product.CanBeProduced,
-                IsReadyMade = product.IsReadyMade
+                IsReadyMade = product.IsReadyMade,
+                Status = product.Status.ToString() 
             };
 
             List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
@@ -667,6 +669,124 @@ namespace Project.UI.Areas.Manager.Controllers
             else
                 TempData["Success"] = "Ürün kalıcı olarak silindi.";
             return RedirectToAction("ProductManagement");
+        }
+        [HttpGet]
+        public async Task<IActionResult> UnitManagement()
+        {
+            List<UnitDTO> allUnits = await _unitManager.GetAllAsync();
+           
+            UnitListVm vm = new UnitListVm
+            {
+                Units = allUnits.Select(u => new UnitVm
+                {
+                    Id = u.Id,
+                    UnitName = u.UnitName,
+                    UnitAbbreviation = u.UnitAbbreviation
+                }).ToList()
+            };
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult AddUnit()
+        {
+            return View(new UnitCreateVm());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUnit(UnitCreateVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            UnitDTO dto = new UnitDTO
+            {
+                UnitName = vm.UnitName,
+                UnitAbbreviation = vm.UnitAbbreviation
+            };
+
+            OperationStatus result = await _unitManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Birim eklenemedi.");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Birim başarıyla eklendi.";
+            return RedirectToAction("UnitManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUnit(int id)
+        {
+            UnitDTO unit = await _unitManager.GetByIdAsync(id);
+            if (unit == null)
+                return NotFound();
+
+            UnitEditVm vm = new UnitEditVm
+            {
+                Id = unit.Id,
+                UnitName = unit.UnitName,
+                UnitAbbreviation = unit.UnitAbbreviation
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUnit(UnitEditVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            UnitDTO original = await _unitManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            UnitDTO updated = new UnitDTO
+            {
+                Id = vm.Id,
+                UnitName = vm.UnitName,
+                UnitAbbreviation = vm.UnitAbbreviation
+            };
+
+            OperationStatus result = await _unitManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Birim güncellenemedi.");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Birim başarıyla güncellendi.";
+            return RedirectToAction("UnitManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UnitDetail(int id)
+        {
+            UnitDTO unit = await _unitManager.GetByIdAsync(id);
+            if (unit == null)
+                return NotFound();
+
+            UnitDetailVm vm = new UnitDetailVm
+            {
+                Id = unit.Id,
+                UnitName = unit.UnitName,
+                UnitAbbreviation = unit.UnitAbbreviation
+              
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUnit(int id)
+        {
+            OperationStatus result = await _unitManager.HardDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Birim silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Birim başarıyla silindi.";
+
+            return RedirectToAction("UnitManagement");
         }
     }
 }

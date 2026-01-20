@@ -23,5 +23,7 @@ namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement
         public bool IsExtra { get; set; }
         public bool CanBeProduced { get; set; }
         public bool IsReadyMade { get; set; }
+
+        public string Status { get; set; }
     }
 }

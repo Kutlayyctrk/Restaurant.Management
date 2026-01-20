@@ -1,64 +1,83 @@
 ﻿@model AddPersonnelVm
+@{
+    ViewData["Title"] = "Yeni Personel Ekle";
+}
 
-<h2>Yeni Personel Ekle</h2>
-<div asp-validation-summary="All" class="text-danger"></div>
-<form asp-action="AddPersonnel" method="post">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label asp-for="UserName" class="form-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="SelectedRoleId" class="form-label">Rol</label>
-                <select asp-for="SelectedRoleId" asp-items="Model.Roles" class="form-select"></select>
-                <span asp-validation-for="SelectedRoleId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label asp-for="FirstName" class="form-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="LastName" class="form-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="TCKNo" class="form-label"></label>
-                <input asp-for="TCKNo" class="form-control" />
-                <span asp-validation-for="TCKNo" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Salary" class="form-label"></label>
-                <input asp-for="Salary" class="form-control" />
-                <span asp-validation-for="Salary" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="HireDate" class="form-label"></label>
-                <input asp-for="HireDate" class="form-control" type="date" />
-                <span asp-validation-for="HireDate" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="BirthDate" class="form-label"></label>
-                <input asp-for="BirthDate" class="form-control" type="date" />
-                <span asp-validation-for="BirthDate" class="text-danger"></span>
-            </div>
-        </div>
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="mb-4 text-center">
+        <h2 class="fw-light">Yeni Personel Ekle</h2>
     </div>
-    <button type="submit" class="btn btn-success">Kaydet</button>
-    <a asp-action="PersonnelManagement" class="btn btn-secondary">İptal</a>
-</form>
+
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <form asp-action="AddPersonnel" method="post" class="card shadow-sm border-0">
+        @Html.AntiForgeryToken()
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label fw-bold small text-muted">Kullanıcı Adı</label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-bold small text-muted">E-posta</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-bold small text-muted">Şifre</label>
+                        <input asp-for="Password" class="form-control" type="password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SelectedRoleId" class="form-label fw-bold small text-muted">Rol</label>
+                        <select asp-for="SelectedRoleId" asp-items="Model.Roles" class="form-select"></select>
+                        <span asp-validation-for="SelectedRoleId" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-0">
+                        <label asp-for="Salary" class="form-label fw-bold small text-muted">Maaş</label>
+                        <input asp-for="Salary" class="form-control" />
+                        <span asp-validation-for="Salary" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label asp-for="FirstName" class="form-label fw-bold small text-muted">Ad</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label asp-for="LastName" class="form-label fw-bold small text-muted">Soyad</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="TCKNo" class="form-label fw-bold small text-muted">T.C. Kimlik No</label>
+                        <input asp-for="TCKNo" class="form-control" />
+                        <span asp-validation-for="TCKNo" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="HireDate" class="form-label fw-bold small text-muted">İşe Giriş Tarihi</label>
+                        <input asp-for="HireDate" class="form-control" type="date" />
+                        <span asp-validation-for="HireDate" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-0">
+                        <label asp-for="BirthDate" class="form-label fw-bold small text-muted">Doğum Tarihi</label>
+                        <input asp-for="BirthDate" class="form-control" type="date" />
+                        <span asp-validation-for="BirthDate" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light border-0 d-flex justify-content-end gap-2 py-3">
+            <button type="submit" class="btn btn-success px-4">Kaydet</button>
+            <a asp-action="PersonnelManagement" class="btn btn-secondary px-4">Geri</a>
+        </div>
+    </form>
+</div>
