@@ -4,7 +4,8 @@ using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.Domain.Enums;
-using Project.UI.Areas.Manager.Models.KitchenVMs;
+using Project.UI.Areas.Manager.Models.BarAndKitchenVMs;
+
 
 [Area("Manager")]
 public class BarController : Controller

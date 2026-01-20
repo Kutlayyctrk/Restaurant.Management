@@ -19,8 +19,8 @@ namespace Project.Persistance.SeedDatas
                 new AppUserRole { UserId = 6,  RoleId = 6,  InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
                 new AppUserRole { UserId = 7,  RoleId = 7,  InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
                 new AppUserRole { UserId = 8,  RoleId = 8,  InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
-                new AppUserRole { UserId = 9,  RoleId = 9,  InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
-                new AppUserRole { UserId = 10, RoleId = 10, InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
+                new AppUserRole { UserId = 9,  RoleId = 10,  InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
+                new AppUserRole { UserId = 10, RoleId = 9, InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted },
                 new AppUserRole { UserId = 11, RoleId = 11, InsertedDate = new DateTime(2026,01,14), Status = Domain.Enums.DataStatus.Inserted }
             };
 

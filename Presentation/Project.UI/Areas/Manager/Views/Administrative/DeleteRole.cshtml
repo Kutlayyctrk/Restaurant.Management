@@ -1,0 +1,43 @@
+﻿@model List<DeleteRoleVm>
+
+<h2>Rol Sil</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Rol Adı</th>
+            <th>Bağlı Kullanıcı Sayısı</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.Name</td>
+                <td>@role.UserCount</td>
+                <td>
+                    <form asp-action="DeleteRole" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@role.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                @(role.UserCount > 0 ? "disabled" : "")
+                                onclick="return confirm('Bu rolü silmek istediğinizden emin misiniz?')">
+                            Rolü Sil
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="PersonnelManagement" class="btn btn-secondary">Geri Dön</a>

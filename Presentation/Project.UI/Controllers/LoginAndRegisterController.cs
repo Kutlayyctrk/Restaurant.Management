@@ -72,8 +72,8 @@ namespace Project.UI.Controllers
                 return RedirectToAction("DashBoard", "Kitchen", new { area = "Manager" });
             else if (roles.Contains("Bar Sefi"))
                 return RedirectToAction("DashBoard", "Bar", new { area = "Manager" });
-            else if (roles.Contains("İdari Personel"))
-                return RedirectToAction("Index", "Administration", new { area = "Manager" });
+            else if (roles.Contains("Idari Personel"))
+                return RedirectToAction("DashBoard", "Administrative", new { area = "Manager" });
 
             return RedirectToAction("AccessDenied", "LoginAndRegister");
         }

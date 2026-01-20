@@ -15,6 +15,8 @@ namespace Project.Application.Managers
 
         Task<OperationStatus> UpdateByCompositeKeyAsync(AppUserRoleDTO dto);
         // Composite key ile AppUserRole güncelleme (örneğin UpdatedDate, Status vs.)
+        Task<AppUserRoleDTO> GetByCompositeKeyAsync(int userId, int roleId);
+        // Composite key ile AppUserRole getirme
 
     }
 }

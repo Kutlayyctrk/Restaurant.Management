@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿
 using Project.Application.DTOs;
 
-namespace Project.UI.Areas.Manager.Models.KitchenVMs
+namespace Project.UI.Areas.Manager.Models.BarAndKitchenVMs
 {
     public class RecipeEditPageVm
     {

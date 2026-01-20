@@ -10,7 +10,7 @@ namespace Project.Application.Managers
 {
     public interface IProductManager:IManager<Product,ProductDTO>
     {
-        Task<List<ProductDTO>> GetSellableProductsAsync();
+        Task<List<ProductDTO>> GetSellableProductsAsync(); //Sadece satılabilir ürünleri getirir
 
     }
 }

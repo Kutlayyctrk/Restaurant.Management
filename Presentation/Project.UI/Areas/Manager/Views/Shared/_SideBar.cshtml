@@ -47,7 +47,6 @@
                         Mevcut Siparişler
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link text-white d-block"
                        asp-area="Manager" asp-controller="Kitchen" asp-action="MenuProducts">
@@ -60,7 +59,6 @@
                         Raporlar
                     </a>
                 </li>
-
             }
             else if (User.IsInRole("Bar Sefi"))
             {
@@ -85,6 +83,75 @@
                 <li class="nav-item">
                     <a class="nav-link text-white d-block"
                        asp-area="Manager" asp-controller="Bar" asp-action="Reports">
+                        Raporlar
+                    </a>
+                </li>
+            }
+            else if (User.IsInRole("Idari Personel"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="PersonnelManagement">
+                        Personel Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="ProductManagement">
+                        Ürün Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="UnitManagement">
+                        Birim Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="CategoryManagement">
+                        Kategori Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="MenuManagement">
+                        Menü Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="MenuProductManagement">
+                        Menü Ürünleri Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="InvoiceManagement">
+                        Fatura Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="StockManagement">
+                        Stok Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="SupplierManagement">
+                        Tedarikçi Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="TableManagement">
+                        Masa Yönetimi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white d-block"
+                       asp-area="Manager" asp-controller="Administrative" asp-action="Reports">
                         Raporlar
                     </a>
                 </li>

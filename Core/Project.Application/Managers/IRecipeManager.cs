@@ -11,8 +11,8 @@ namespace Project.Application.Managers
 {
     public interface IRecipeManager : IManager<Recipe, RecipeDTO>
     {
-        Task<List<RecipeDTO>> GetAllAsync();
-        Task<RecipeDTO?> GetByProductIdAsync(int productId);
+        Task<List<RecipeDTO>> GetAllAsync(); 
+        Task<RecipeDTO?> GetByProductIdAsync(int productId); 
         Task<RecipeDTO?> GetByIdWithItemsAsync(int id);
 
     }

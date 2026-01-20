@@ -64,7 +64,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return OperationStatus.Success;
         }
 
-      
+        public async Task<AppUserRoleDTO> GetByCompositeKeyAsync(int userId, int roleId)
+        {
+            AppUserRole entity = await _appUserRoleRepository.GetByCompositeKeyAsync(userId, roleId);
+            return _mapper.Map<AppUserRoleDTO>(entity);
+        }
+
+
         public async Task<OperationStatus> HardDeleteByCompositeKeyAsync(int userId, int roleId)
         {
             AppUserRole entity = await _appUserRoleRepository.GetByCompositeKeyAsync(userId, roleId);

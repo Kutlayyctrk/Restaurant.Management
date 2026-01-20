@@ -1,6 +1,6 @@
 ﻿using Project.Domain.Enums;
 
-namespace Project.UI.Areas.Manager.Models.KitchenVMs
+namespace Project.UI.Areas.Manager.Models.BarAndKitchenVMs
 {
     public class RecipeListPageVm
     {

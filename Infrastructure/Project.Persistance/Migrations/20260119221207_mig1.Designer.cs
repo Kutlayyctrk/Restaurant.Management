@@ -12,8 +12,8 @@ using Project.Persistance.ContextClasses;
 namespace Project.Persistance.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20260118235149_iniitmig")]
-    partial class iniitmig
+    [Migration("20260119221207_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -161,7 +161,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "0e62bfdf-c834-4280-af84-09f44ab6b8fe",
+                            ConcurrencyStamp = "0072c19d-d00c-4799-831a-1632fbaa8640",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Admin",
                             NormalizedName = "ADMIN",
@@ -170,7 +170,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "eb3b5e1c-466a-4bd4-9db8-c28f54d0845a",
+                            ConcurrencyStamp = "c25af763-519a-40bf-98ed-e4298f9fdef3",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Insan Kaynaklari Muduru",
                             NormalizedName = "INSAN KAYNAKLARI MUDURU",
@@ -179,7 +179,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "3f919223-e3b5-4c6c-a065-36984bdf1190",
+                            ConcurrencyStamp = "8668428e-eb00-495a-a20c-835a5b577b47",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Restaurant Muduru",
                             NormalizedName = "RESTAURANT MUDURU",
@@ -188,7 +188,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 4,
-                            ConcurrencyStamp = "085e0701-7dd5-44e9-99f1-a4f50402452d",
+                            ConcurrencyStamp = "9bdcc65d-568f-4c54-be9f-bb798e54eb0a",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mutfak Sefi",
                             NormalizedName = "MUTFAK SEFI",
@@ -197,7 +197,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 5,
-                            ConcurrencyStamp = "0913f647-b4cd-4d09-a2e0-a4956544bbd1",
+                            ConcurrencyStamp = "d75cb137-8f38-4101-a8a9-8701c5b446ba",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Bar Sefi",
                             NormalizedName = "BAR SEFI",
@@ -206,7 +206,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 6,
-                            ConcurrencyStamp = "42061223-b253-4532-bc0a-e8345b9ff357",
+                            ConcurrencyStamp = "a8ece4d5-950b-4bde-9058-2912235940c3",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Asci",
                             NormalizedName = "ASCI",
@@ -215,7 +215,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 7,
-                            ConcurrencyStamp = "6aec346f-3ed8-4851-9bbf-8ce0dd6a4958",
+                            ConcurrencyStamp = "1814899f-db13-493e-b885-88eda5209fac",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Barmen",
                             NormalizedName = "BARMEN",
@@ -224,7 +224,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 8,
-                            ConcurrencyStamp = "1fabaf69-905e-4d82-8894-693034b8be70",
+                            ConcurrencyStamp = "c36b451b-6414-4125-b3f4-d4935774b10c",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Garson",
                             NormalizedName = "GARSON",
@@ -233,7 +233,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 9,
-                            ConcurrencyStamp = "3d1fd669-d433-41e7-89d2-cbd827542a4e",
+                            ConcurrencyStamp = "cbc8a049-9d18-4848-82b8-1e271b9b95fb",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Hizmet Personeli",
                             NormalizedName = "HIZMET PERSONELI",
@@ -242,7 +242,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 10,
-                            ConcurrencyStamp = "a8c477a6-e99f-4bdd-bcf7-befe1dcb9341",
+                            ConcurrencyStamp = "2678f2e0-89c1-43db-8925-a7c46b546189",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Idari Personel",
                             NormalizedName = "IDARI PERSONEL",
@@ -251,7 +251,7 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             Id = 11,
-                            ConcurrencyStamp = "44da02eb-3061-46f6-b8e1-f97939171207",
+                            ConcurrencyStamp = "a7844627-e16d-41cd-8323-bf762ed3dde1",
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Stajyer",
                             NormalizedName = "STAJYER",
@@ -343,15 +343,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3b6dd25c-f6d0-42a8-8d1d-4789a8af1dc7",
+                            ConcurrencyStamp = "c5b58d9b-889f-4e8e-aeed-9067af94f20e",
                             Email = "admin@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBnjNcYVUBsMbtsHz4SztE3CKLS6xwM9dGwTQ/SXLwj7cmu38/IT59P9JZG8qvkDYA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJHrXv3PZae8lOk19ut78KwvZN82eb4Ji6fMl6gtvVXaWcelyJUUV5t+JY8cbqBejw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7c25177e-c1dc-4771-86fc-29bb29fe84e7",
+                            SecurityStamp = "324bd13d-c496-4a6a-8ef2-3e784f9873ae",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -360,15 +360,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "af2f947c-64ac-4ef2-848e-2cdfaa7b8c50",
+                            ConcurrencyStamp = "4e784021-7a30-49a2-a5d5-1ff4683c2688",
                             Email = "mudur@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "MUDUR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAjTVI/zLoxQ8SMRLdKrtuokxUhP6tuARF5WxHKiMdHoC9TKZb6q2SP7auKsoW6kpQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFdP6FB94s9TvYj5KQClOhnDtVHCWj6QY3/EjPUp5DxiDzrBiGFuFbOqIHtiPtf4NA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9312a93a-cc79-4f64-b219-961d1f84d000",
+                            SecurityStamp = "d5677bdd-f012-48b9-8a35-f1d1b90e3960",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "mudur"
@@ -377,15 +377,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c64ade7b-4fe4-44db-801a-08479eaeb269",
+                            ConcurrencyStamp = "69849800-bb3e-446a-a390-3df22f6e79d1",
                             Email = "insankaynaklari@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "INSANKAYNAKLARI",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE2ZnYopUVcpoSv5H1MdHmjU1rrYKmjJWt272Iswc8aA1pquWiX5grO5m8YLgiz+jQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPINVynPkWQxKf9x9JKSlm3UfaNGds98N8NVoRkYgyrsPiZ1f8LOhx7iITdtLGp6hA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6d5cf955-094f-4d3f-9f73-0f7cfbdcface",
+                            SecurityStamp = "38ea630f-510d-44a7-b790-50b05c5b2189",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "insankaynaklari"
@@ -394,15 +394,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 4,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5b2ae545-2b97-4857-a0cb-3d404466f15a",
+                            ConcurrencyStamp = "0a995877-fc59-4d66-93ab-01b2a51d2699",
                             Email = "mutfaksef@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "MUTFAKSEF",
-                            PasswordHash = "AQAAAAIAAYagAAAAELzknXb9iJ5i/hKXDl3drXhDvdoYeKkOgKSpLHG4IinUAehZqNctuxZ83oBaGQBr5A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKBXOTHLP7Dx1RpPKw9qdGYmMtrhz39xmaaHUCo0QHpKhydr3eGTjaNH11/a3D6DKg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "73648180-c0e6-4c4f-8cd1-a37ab86023da",
+                            SecurityStamp = "c2be2c93-2f47-4ad0-9273-2c9d957fb3dd",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "mutfaksef"
@@ -411,15 +411,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 5,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e3526b54-4bf4-457c-b779-6b94c68fde62",
+                            ConcurrencyStamp = "5cd9848b-1d2a-4ce3-9bf1-0d15f1fed42f",
                             Email = "barsef@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "BARSEF",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAI5aKZfGNaQmDw88ESXiz/r9hH8roNcUwIH8uhz0D8D1uw/tpnoaM3A9QjHOrKypA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPsdqns+CTcA3I0BSuNNf1PvM/nsh9u2snTOR9l0wUFJa44XouhYgd7xj8GJHuYBtw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d83337d3-392c-47c1-ad97-c0c9f207fd07",
+                            SecurityStamp = "2e64505e-8b88-44b7-a07e-b72febf1ce26",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "barsef"
@@ -428,15 +428,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 6,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1204c58a-6768-4fbf-8996-4c09a9e6b652",
+                            ConcurrencyStamp = "7afe909c-7936-43de-bef1-5cd71d73c67a",
                             Email = "asci@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "ASCI",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOJ7+R69+6G/YVTI6zYpqVSO2CsbWtbJrFrL5J6DwtF6WlSikX4wZ5RKfSHTRZuiRg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEA8aTNFtoCfYVR3z857nWqkmag7ZVmFNuinJzfnBH+PSOFIAZO1z52NYSN026JpAug==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "554737f8-8a3b-48a4-a90b-330313b3a911",
+                            SecurityStamp = "1bea336d-0be4-472d-8293-d917c23cc315",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "asci"
@@ -445,15 +445,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 7,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "46fca627-7db7-49d4-95d9-22372a5b9891",
+                            ConcurrencyStamp = "3799333a-040e-4703-bcdc-8ae52682395d",
                             Email = "barmen@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "BARMEN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBl/2PN7xTMI5ZSkxve7XxOhf/Z8pY4BHMYL3MtEYbRh7SzSxZXEV77bMq8S4kZbNg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELH4CMgU1GvPwdyMupyZP6WaLrC6NCWMmphQnTgzh3LJu4j0y9ykI02R6fxIPBblrw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4659d5f5-17d9-471b-b5a5-4888886e58ee",
+                            SecurityStamp = "63a0b163-1258-4b30-8a7d-72212e55d103",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "barmen"
@@ -462,15 +462,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 8,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5c5a0eef-b581-4e33-8d68-a07d3eb217f1",
+                            ConcurrencyStamp = "96f54b76-4930-4857-8e4c-98111d03bf69",
                             Email = "garson@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "GARSON",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAJjttvOf4HY8s/xu4rR0eAGPOhBwK4QuXhg/5QxOEfaHupaKhZim9GUPoyf7uo+fw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEATfAQ+Y90znYg/8igOM1JVZMpnCxdT6LQpODH0GN8U2RT2G35d80i7Y4i2Urt8/Ug==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0a9d8496-5e7b-4a0f-8ace-1ec6938efc97",
+                            SecurityStamp = "50f26125-666b-4259-a233-f903253b8c44",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "garson"
@@ -479,15 +479,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 9,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4dbf2dbe-3cce-4445-963f-1b1d68704962",
+                            ConcurrencyStamp = "0eab9183-e5b8-45a3-9d2b-9a0f9a7787a9",
                             Email = "idaripersonel@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "IDARIPERSONEL",
-                            PasswordHash = "AQAAAAIAAYagAAAAENPuStlTldwFyyBU46+H8hc/+ahl/NsgIT67sPXkAeQxqpF+SjN8jrk1wpxgAFFOXA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECRnCvCxIWBSo64rQPQMNU6+i/VluiqHxO28o7IdAly5pRUzgFDKAZACrfxUvM3A4Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e3c4b546-b113-4509-890d-52c3255d5796",
+                            SecurityStamp = "1f8a3986-7ce2-4c82-82f4-a72234f93854",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "idaripersonel"
@@ -496,15 +496,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 10,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "30af3c02-5445-4085-beba-f8aed339ec3f",
+                            ConcurrencyStamp = "904198a7-3a6b-490f-b317-b72058c13402",
                             Email = "hizmetpersoneli@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "HIZMETPERSONELI",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOdrqukvLHB1xuMn1bumX6lciGakcbJuZxthzHVtNfniZb6vekawfQeqrDdZenyuwA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEA9UiTcWH1QRaFKhhRAP9/AN/+e8SwVZOQcciNDA+0Ix6ZmylimVqasTjeZIWJz4Qw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1b8e4611-6318-49ce-b383-435a185fadb0",
+                            SecurityStamp = "629c1b25-bb70-49b7-8d1e-8005935d6a18",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "hizmetpersoneli"
@@ -513,15 +513,15 @@ namespace Project.Persistance.Migrations
                         {
                             Id = 11,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4a35e101-2f06-4ded-9fd2-a6fd5399459d",
+                            ConcurrencyStamp = "6517190d-6614-4cb4-aca7-572a6877e2d9",
                             Email = "stajyer@restaurantmanagement.com",
                             EmailConfirmed = true,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedUserName = "STAJYER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDb90pztAOFbyrY+F/fX7CEF1DJbWkJdypRDn6vkaKVMmGzIPjphAuC1nPpaByrA4Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECu6C6MULibgn1ChUzcyvhDMgcqoQh37LOzioRaITi5FYb/GwPxHjI4g9yQsMr/m4g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c1359ced-b7f5-410e-b951-6a4001a9b354",
+                            SecurityStamp = "13cd3ac5-7396-4df7-a287-551b60970988",
                             Status = 1,
                             TwoFactorEnabled = false,
                             UserName = "stajyer"
@@ -811,14 +811,14 @@ namespace Project.Persistance.Migrations
                         new
                         {
                             UserId = 9,
-                            RoleId = 9,
+                            RoleId = 10,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 1
                         },
                         new
                         {
                             UserId = 10,
-                            RoleId = 10,
+                            RoleId = 9,
                             InsertedDate = new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 1
                         },

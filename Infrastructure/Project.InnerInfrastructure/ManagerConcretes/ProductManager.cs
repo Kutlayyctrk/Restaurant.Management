@@ -19,7 +19,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IMapper _mapper = mapper;
         public async Task<List<ProductDTO>> GetSellableProductsAsync()
         {
-            var products = await _productRepository.GetSellableProductsAsync();
+            List<Product> products = await _productRepository.GetSellableProductsAsync();
             return _mapper.Map<List<ProductDTO>>(products);
         }
 

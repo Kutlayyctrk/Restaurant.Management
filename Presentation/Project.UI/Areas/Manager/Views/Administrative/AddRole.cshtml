@@ -1,0 +1,13 @@
+﻿@model AddRoleVm
+
+<h2>Yeni Rol Ekle</h2>
+<div asp-validation-summary="All" class="text-danger"></div>
+<form asp-action="AddRole" method="post">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Rol Adı</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a asp-action="PersonnelManagement" class="btn btn-secondary">İptal</a>
+</form>

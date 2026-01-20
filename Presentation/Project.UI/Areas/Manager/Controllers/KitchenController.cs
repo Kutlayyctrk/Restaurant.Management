@@ -1,12 +1,11 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
-using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
-using Project.UI.Areas.Manager.Models.KitchenVMs;
+using Project.UI.Areas.Manager.Models.BarAndKitchenVMs;
+
 
 namespace Project.UI.Areas.Manager.Controllers
 {

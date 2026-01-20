@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
-using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
 using Project.UI.Areas.Manager.Models.HRVMs;
 
