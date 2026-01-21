@@ -1,0 +1,71 @@
+﻿
+@model MenuDetailVm
+
+@{
+    ViewData["Title"] = "Menü Detay";
+}
+
+<h2>Menü Detay</h2>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Adı</dt>
+            <dd class="col-sm-9">@Model.MenuName</dd>
+            <dt class="col-sm-3">Başlangıç Tarihi</dt>
+            <dd class="col-sm-9">@Model.StartDate.ToShortDateString()</dd>
+            <dt class="col-sm-3">Bitiş Tarihi</dt>
+            <dd class="col-sm-9">@Model.EndDate.ToShortDateString()</dd>
+            <dt class="col-sm-3">Aktif mi?</dt>
+            <dd class="col-sm-9">
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success">Aktif</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Pasif</span>
+                }
+            </dd>
+        </dl>
+
+        <h4 class="mt-4">Menüdeki Ürünler</h4>
+        @if (Model.MenuProducts != null && Model.MenuProducts.Any())
+        {
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th>Birim Fiyatı</th>
+                        <th>Aktif mi?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.MenuProducts)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.UnitPrice.ToString("C")</td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Pasif</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-info">Bu menüye ait ürün bulunmamaktadır.</div>
+        }
+
+        <a asp-action="MenuManagement" class="btn btn-secondary mt-3">Geri Dön</a>
+    </div>
+</div>

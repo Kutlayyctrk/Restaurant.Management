@@ -1,0 +1,50 @@
+﻿@model MenuProductDetailVm
+@{
+    ViewData["Title"] = "Menü Ürünü Detayları";
+}
+
+<div class="container-fluid px-0">
+    <div class="product-main-container">
+        <div class="row align-items-center mb-4 mt-4">
+            <div class="col">
+                <div class="product-title fs-3 fw-semibold">Menü Ürünü Detayları</div>
+            </div>
+            <div class="col-auto">
+                <a asp-action="EditMenuProduct" asp-route-id="@Model.Id" class="btn btn-primary me-2">Düzenle</a>
+                <a asp-action="MenuProductManagement" class="btn btn-secondary">Geri</a>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2">
+                <label class="fw-semibold">Menü:</label>
+                <div>@Model.MenuName</div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-semibold">Ürün:</label>
+                <div>@Model.ProductName</div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-semibold">Kategori:</label>
+                <div>@Model.CategoryName</div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-semibold">Fiyat:</label>
+                <div>@Model.UnitPrice.ToString("C2")</div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <label class="fw-semibold">Durum:</label>
+                <div>
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">Aktif</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Pasif</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

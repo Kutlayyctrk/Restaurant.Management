@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
-using Project.InnerInfrastructure.ManagerConcretes;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuProductManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
@@ -24,8 +25,10 @@ namespace Project.UI.Areas.Manager.Controllers
         private readonly IUnitManager _unitManager;
         private readonly ICategoryManager _categoryManager;
         private readonly IProductManager _productManager;
+        private readonly IMenuManager _menuManager;
+        private readonly IMenuProductManager _menuProductManager;
 
-        public AdministrativeController(IAppUserManager appUserManager, IAppUserProfileManager appUserProfileManager, IAppUserRoleManager appUserRoleManager, IAppRoleManager appRoleManager, IUnitManager unitManager, ICategoryManager categoryManager, IProductManager productManager)
+        public AdministrativeController(IAppUserManager appUserManager, IAppUserProfileManager appUserProfileManager, IAppUserRoleManager appUserRoleManager, IAppRoleManager appRoleManager, IUnitManager unitManager, ICategoryManager categoryManager, IProductManager productManager, IMenuManager menuManager, IMenuProductManager menuProductManager)
         {
             _appUserManager = appUserManager;
             _appUserProfileManager = appUserProfileManager;
@@ -34,6 +37,8 @@ namespace Project.UI.Areas.Manager.Controllers
             _unitManager = unitManager;
             _categoryManager = categoryManager;
             _productManager = productManager;
+            _menuManager = menuManager;
+            _menuProductManager = menuProductManager;
         }
 
         public IActionResult DashBoard()
@@ -1116,7 +1121,309 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("CategoryManagement");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> MenuManagement()
+        {
+            List<MenuDTO> menus = await _menuManager.GetAllAsync();
+            MenuListVm vm = new MenuListVm
+            {
+                Menus = menus.Select(m => new MenuVm
+                {
+                    Id = m.Id,
+                    MenuName = m.MenuName,
+                    StartDate = m.StartDate,
+                    EndDate = m.EndDate,
+                    IsActive = m.IsActive
+                }).ToList()
+            };
+            return View(vm);
+        }
 
+        [HttpGet]
+        public IActionResult AddMenu()
+        {
+            return View(new MenuCreateVm());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddMenu(MenuCreateVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            MenuDTO dto = new MenuDTO
+            {
+                MenuName = vm.MenuName,
+                StartDate = vm.StartDate,
+                EndDate = vm.EndDate,
+                IsActive = vm.IsActive
+            };
+
+            OperationStatus result = await _menuManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Menü eklenemedi. Lütfen tüm alanları kontrol edin.");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Menü başarıyla eklendi.";
+            return RedirectToAction("MenuManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditMenu(int id)
+        {
+            MenuDTO menu = await _menuManager.GetByIdAsync(id);
+            if (menu == null)
+                return NotFound();
+
+            MenuEditVm vm = new MenuEditVm
+            {
+                Id = menu.Id,
+                MenuName = menu.MenuName,
+                StartDate = menu.StartDate,
+                EndDate = menu.EndDate,
+                IsActive = menu.IsActive
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditMenu(MenuEditVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            MenuDTO original = await _menuManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            MenuDTO updated = new MenuDTO
+            {
+                Id = vm.Id,
+                MenuName = vm.MenuName,
+                StartDate = vm.StartDate,
+                EndDate = vm.EndDate,
+                IsActive = vm.IsActive
+            };
+
+            OperationStatus result = await _menuManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Menü güncellenemedi. Lütfen tüm alanları kontrol edin.");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Menü başarıyla güncellendi.";
+            return RedirectToAction("MenuManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MenuDetail(int id)
+        {
+            MenuDTO menu = await _menuManager.GetByIdAsync(id);
+            if (menu == null)
+            {
+
+                return NotFound();
+            }
+
+            List<MenuProductDTO> menuProducts = await _menuProductManager.WhereAsync(mp => mp.MenuId == id);
+
+            MenuDetailVm vm = new MenuDetailVm
+            {
+                Id = menu.Id,
+                MenuName = menu.MenuName,
+                StartDate = menu.StartDate,
+                EndDate = menu.EndDate,
+                IsActive = menu.IsActive,
+                MenuProducts = menuProducts.Select(mp => new MenuProductInMenuDetailVm
+                {
+                    Id = mp.Id,
+                    ProductName = mp.ProductName,
+                    UnitPrice = mp.UnitPrice,
+                    IsActive = mp.IsActive
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+        [HttpGet]
+        public async Task<IActionResult> MenuProductManagement(int? SelectedMenuId = null, string SearchTerm = null)
+        {
+            List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
+            List<MenuDTO> menus = await _menuManager.GetAllAsync();
+
+            if (SelectedMenuId.HasValue)
+                menuProducts = menuProducts.Where(mp => mp.MenuId == SelectedMenuId.Value).ToList();
+
+            if (!string.IsNullOrWhiteSpace(SearchTerm))
+                menuProducts = menuProducts.Where(mp => mp.ProductName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            MenuProductListVm vm = new MenuProductListVm
+            {
+                MenuProducts = menuProducts.Select(mp => new MenuProductVm
+                {
+                    Id = mp.Id,
+                    MenuName = mp.MenuName,
+                    ProductName = mp.ProductName,
+                    CategoryName = mp.CategoryName,
+                    UnitPrice = mp.UnitPrice,
+                    IsActive = mp.IsActive
+                }).ToList(),
+                SelectedMenuId = SelectedMenuId,
+                MenuList = menus.Select(m => new SelectListItem
+                {
+                    Value = m.Id.ToString(),
+                    Text = m.MenuName
+                }).ToList(),
+                SearchTerm = SearchTerm
+            };
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddMenuProduct()
+        {
+            List<MenuDTO> menus = await _menuManager.GetAllAsync();
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            MenuProductCreateVm vm = new MenuProductCreateVm
+            {
+                MenuList = menus.Select(m => new SelectListItem
+                {
+                    Value = m.Id.ToString(),
+                    Text = m.MenuName
+                }).ToList(),
+                ProductList = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.ProductName
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddMenuProduct(MenuProductCreateVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<MenuDTO> menus = await _menuManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            MenuProductDTO dto = new MenuProductDTO
+            {
+                MenuId = vm.MenuId,
+                ProductId = vm.ProductId,
+                UnitPrice = vm.UnitPrice,
+                IsActive = vm.IsActive
+            };
+
+            OperationStatus result = await _menuProductManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Menü ürünü eklenemedi.");
+                List<MenuDTO> menus = await _menuManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Menü ürünü başarıyla eklendi.";
+            return RedirectToAction("MenuProductManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditMenuProduct(int id)
+        {
+            MenuProductDTO menuProduct = await _menuProductManager.GetByIdAsync(id);
+            if (menuProduct == null)
+                return NotFound();
+
+            List<MenuDTO> menus = await _menuManager.GetAllAsync();
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            MenuProductEditVm vm = new MenuProductEditVm
+            {
+                Id = menuProduct.Id,
+                MenuId = menuProduct.MenuId,
+                ProductId = menuProduct.ProductId,
+                UnitPrice = menuProduct.UnitPrice,
+                IsActive = menuProduct.IsActive,
+                MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList(),
+                ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditMenuProduct(MenuProductEditVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<MenuDTO> menus = await _menuManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            MenuProductDTO original = await _menuProductManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            MenuProductDTO updated = new MenuProductDTO
+            {
+                Id = vm.Id,
+                MenuId = vm.MenuId,
+                ProductId = vm.ProductId,
+                UnitPrice = vm.UnitPrice,
+                IsActive = vm.IsActive
+            };
+
+            OperationStatus result = await _menuProductManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Menü ürünü güncellenemedi.");
+                List<MenuDTO> menus = await _menuManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Menü ürünü başarıyla güncellendi.";
+            return RedirectToAction("MenuProductManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MenuProductDetail(int id)
+        {
+            MenuProductDTO menuProduct = await _menuProductManager.GetByIdAsync(id);
+            if (menuProduct == null)
+                return NotFound();
+
+            MenuProductDetailVm vm = new MenuProductDetailVm
+            {
+                Id = menuProduct.Id,
+                MenuName = menuProduct.MenuName,
+                ProductName = menuProduct.ProductName,
+                CategoryName = menuProduct.CategoryName,
+                UnitPrice = menuProduct.UnitPrice,
+                IsActive = menuProduct.IsActive
+            };
+
+            return View(vm);
+        }
 
 
     }

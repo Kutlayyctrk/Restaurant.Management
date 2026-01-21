@@ -1,0 +1,49 @@
+﻿@model MenuProductEditVm
+@{
+    ViewData["Title"] = "Menü Ürünü Düzenle";
+}
+
+<div class="container-fluid px-0">
+    <div class="product-main-container">
+        <div class="row align-items-center mb-4 mt-4">
+            <div class="col">
+                <div class="product-title fs-3 fw-semibold">Menü Ürünü Düzenle</div>
+            </div>
+            <div class="col-auto">
+                <a asp-action="MenuProductManagement" class="btn btn-secondary">Geri</a>
+            </div>
+        </div>
+
+        <form asp-action="EditMenuProduct" method="post" class="row g-3">
+            <input type="hidden" asp-for="Id" />
+            <div class="col-md-6">
+                <label asp-for="MenuId" class="form-label">Menü</label>
+                <select asp-for="MenuId" asp-items="Model.MenuList" class="form-select"></select>
+                <span asp-validation-for="MenuId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ProductId" class="form-label">Ürün</label>
+                <select asp-for="ProductId" asp-items="Model.ProductList" class="form-select"></select>
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="UnitPrice" class="form-label">Fiyat</label>
+                <input asp-for="UnitPrice" class="form-control" />
+                <span asp-validation-for="UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 d-flex align-items-center">
+                <div class="form-check mt-4">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
