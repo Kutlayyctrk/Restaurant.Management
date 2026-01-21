@@ -4,6 +4,7 @@ using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.InnerInfrastructure.ManagerConcretes;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
@@ -378,20 +379,20 @@ namespace Project.UI.Areas.Manager.Controllers
             List<ProductDTO> products = await _productManager.GetAllAsync();
             List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
 
-          
+
             List<int> categoryIds = new();
             if (categoryId.HasValue)
             {
                 categoryIds = GetAllCategoryIdsRecursive(categories, categoryId.Value);
             }
 
-         
+
             ViewBag.SellableValues = products.Select(p => p.IsSellable).Distinct().ToList();
             ViewBag.ExtraValues = products.Select(p => p.IsExtra).Distinct().ToList();
             ViewBag.CanBeProducedValues = products.Select(p => p.CanBeProduced).Distinct().ToList();
             ViewBag.IsReadyMadeValues = products.Select(p => p.IsReadyMade).Distinct().ToList();
 
-    
+
             if (categoryId.HasValue)
                 products = products.Where(p => categoryIds.Contains(p.CategoryId)).ToList();
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -488,7 +489,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return View(vm);
         }
 
-      
+
 
         [HttpGet]
         public async Task<IActionResult> AddProduct()
@@ -555,7 +556,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 IsExtra = product.IsExtra,
                 CanBeProduced = product.CanBeProduced,
                 IsReadyMade = product.IsReadyMade,
-                Status = product.Status.ToString() 
+                Status = product.Status.ToString()
             };
 
             List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
@@ -674,7 +675,7 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> UnitManagement()
         {
             List<UnitDTO> allUnits = await _unitManager.GetAllAsync();
-           
+
             UnitListVm vm = new UnitListVm
             {
                 Units = allUnits.Select(u => new UnitVm
@@ -772,7 +773,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 Id = unit.Id,
                 UnitName = unit.UnitName,
                 UnitAbbreviation = unit.UnitAbbreviation
-              
+
             };
             return View(vm);
         }
@@ -788,5 +789,336 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return RedirectToAction("UnitManagement");
         }
+        [HttpGet]
+        public async Task<IActionResult> CategoryManagement(int? parentCategoryId = null)
+        {
+            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+            List<CategoryVm> parentCategories = allCategories
+                .Where(c => c.ParentCategoryId == null)
+                .Select(c => new CategoryVm
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    ParentCategoryId = c.ParentCategoryId,
+                    ParentCategoryName = null,
+                    SubCategoryCount = allCategories.Count(x => x.ParentCategoryId == c.Id),
+                    ProductCount = 0
+                }).ToList();
+
+            List<CategoryDTO> filteredCategories = allCategories;
+            if (parentCategoryId.HasValue)
+            {
+                List<int> categoryIds = GetAllCategoryIdsRecursive(allCategories.Select(x => new CategoryDTO
+                {
+                    Id = x.Id,
+                    CategoryName = x.CategoryName,
+                    Description = x.Description,
+                    ParentCategoryId = x.ParentCategoryId
+                }).ToList(), parentCategoryId.Value);
+
+                filteredCategories = allCategories.Where(c => categoryIds.Contains(c.Id)).ToList();
+            }
+
+            List<CategoryVm> categoryVms = filteredCategories.Select(c => new CategoryVm
+            {
+                Id = c.Id,
+                CategoryName = c.CategoryName,
+                Description = c.Description,
+                ParentCategoryId = c.ParentCategoryId,
+                ParentCategoryName = allCategories.FirstOrDefault(x => x.Id == c.ParentCategoryId)?.CategoryName,
+                SubCategoryCount = allCategories.Count(x => x.ParentCategoryId == c.Id),
+                ProductCount = 0
+            }).ToList();
+
+            CategoryListVm vm = new CategoryListVm
+            {
+                Categories = categoryVms,
+                SelectedParentCategoryId = parentCategoryId,
+                ParentCategories = parentCategories
+            };
+
+            return View(vm);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> CategoryTablePartial(int? parentCategoryId = null)
+        {
+            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+            List<CategoryDTO> filteredCategories = allCategories;
+            if (parentCategoryId.HasValue)
+            {
+                List<int> categoryIds = GetAllCategoryIdsRecursive(allCategories.Select(x => new CategoryDTO
+                {
+                    Id = x.Id,
+                    CategoryName = x.CategoryName,
+                    Description = x.Description,
+                    ParentCategoryId = x.ParentCategoryId
+                }).ToList(), parentCategoryId.Value);
+
+                filteredCategories = allCategories.Where(c => categoryIds.Contains(c.Id)).ToList();
+            }
+
+            List<CategoryVm> categoryVms = filteredCategories.Select(c => new CategoryVm
+            {
+                Id = c.Id,
+                CategoryName = c.CategoryName,
+                Description = c.Description,
+                ParentCategoryId = c.ParentCategoryId,
+                ParentCategoryName = allCategories.FirstOrDefault(x => x.Id == c.ParentCategoryId)?.CategoryName,
+                SubCategoryCount = allCategories.Count(x => x.ParentCategoryId == c.Id),
+                ProductCount = 0
+            }).ToList();
+
+            return PartialView("CategoryTablePartial", categoryVms);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> AddCategory()
+        {
+            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+            List<SelectListItem> parentCategoryList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+            };
+            parentCategoryList.AddRange(allCategories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.CategoryName
+            }));
+
+            CategoryCreateVm vm = new CategoryCreateVm
+            {
+                ParentCategoryList = parentCategoryList
+            };
+
+            return View(vm);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddCategory(CategoryCreateVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+                List<SelectListItem> parentCategoryList = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+                };
+                parentCategoryList.AddRange(allCategories.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CategoryName
+                }));
+                vm.ParentCategoryList = parentCategoryList;
+                return View(vm);
+            }
+
+            CategoryDTO dto = new CategoryDTO
+            {
+                CategoryName = vm.CategoryName,
+                Description = vm.Description,
+                ParentCategoryId = vm.ParentCategoryId
+            };
+
+            OperationStatus result = await _categoryManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Kategori eklenemedi. Lütfen tüm alanları kontrol edin.");
+                List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+                List<SelectListItem> parentCategoryList = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+                };
+                parentCategoryList.AddRange(allCategories.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CategoryName
+                }));
+                vm.ParentCategoryList = parentCategoryList;
+                return View(vm);
+            }
+
+            TempData["Success"] = "Kategori başarıyla eklendi.";
+            return RedirectToAction("CategoryManagement");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> EditCategory(int id)
+        {
+            CategoryDTO category = await _categoryManager.GetByIdAsync(id);
+            if (category == null)
+                return NotFound();
+
+            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+            List<SelectListItem> parentCategoryList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+            };
+            parentCategoryList.AddRange(allCategories
+                .Where(c => c.Id != id)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CategoryName
+                }));
+
+            CategoryEditVm vm = new CategoryEditVm
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName,
+                Description = category.Description,
+                ParentCategoryId = category.ParentCategoryId,
+                ParentCategoryList = parentCategoryList
+            };
+
+            return View(vm);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditCategory(CategoryEditVm vm)
+        {
+            if (vm == null || !ModelState.IsValid)
+            {
+                return NotFound();
+            }
+
+            CategoryDTO original = await _categoryManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            CategoryDTO updated = new CategoryDTO
+            {
+                Id = vm.Id,
+                CategoryName = vm.CategoryName,
+                Description = vm.Description,
+                ParentCategoryId = vm.ParentCategoryId
+            };
+
+            OperationStatus result = await _categoryManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Kategori güncellenemedi. Lütfen tüm alanları kontrol edin.");
+                List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+                List<SelectListItem> parentCategoryList = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+        };
+                parentCategoryList.AddRange(allCategories
+                    .Where(c => c.Id != vm.Id)
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.CategoryName
+                    }));
+                vm.ParentCategoryList = parentCategoryList;
+                return View(vm);
+            }
+
+            TempData["Success"] = "Kategori başarıyla güncellendi.";
+            return RedirectToAction("CategoryManagement");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> CategoryDetail(int id)
+        {
+            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+            CategoryDTO category = allCategories.FirstOrDefault(c => c.Id == id);
+            if (category == null)
+                return NotFound();
+
+            List<CategoryVm> subCategories = allCategories
+                .Where(c => c.ParentCategoryId == id)
+                .Select(c => new CategoryVm
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    ParentCategoryId = c.ParentCategoryId,
+                    ParentCategoryName = category.CategoryName,
+                    SubCategoryCount = allCategories.Count(x => x.ParentCategoryId == c.Id),
+                    ProductCount = 0
+                }).ToList();
+
+            List<CategoryVm> parentCategories = new List<CategoryVm>();
+            int? parentId = category.ParentCategoryId;
+            while (parentId.HasValue)
+            {
+                CategoryDTO parent = allCategories.FirstOrDefault(c => c.Id == parentId.Value);
+                if (parent != null)
+                {
+                    parentCategories.Add(new CategoryVm
+                    {
+                        Id = parent.Id,
+                        CategoryName = parent.CategoryName,
+                        Description = parent.Description,
+                        ParentCategoryId = parent.ParentCategoryId,
+                        ParentCategoryName = allCategories.FirstOrDefault(x => x.Id == parent.ParentCategoryId)?.CategoryName,
+                        SubCategoryCount = allCategories.Count(x => x.ParentCategoryId == parent.Id),
+                        ProductCount = 0
+                    });
+                    parentId = parent.ParentCategoryId;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            CategoryDetailVm vm = new CategoryDetailVm
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName,
+                Description = category.Description,
+                ParentCategoryName = allCategories.FirstOrDefault(c => c.Id == category.ParentCategoryId)?.CategoryName,
+                SubCategories = subCategories,
+                ParentCategories = parentCategories
+            };
+
+            return View(vm);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
+            bool hasSubCategory = allCategories.Any(c => c.ParentCategoryId == id);
+            if (hasSubCategory)
+            {
+                TempData["Error"] = "Alt kategorisi olan bir kategori silinemez.";
+                return RedirectToAction("CategoryManagement");
+            }
+
+            List<ProductDTO> allProducts = await _productManager.GetAllAsync();
+            bool hasProduct = allProducts.Any(p => p.CategoryId == id);
+            if (hasProduct)
+            {
+                TempData["Error"] = "Ürünü olan bir kategori silinemez.";
+                return RedirectToAction("CategoryManagement");
+            }
+
+            OperationStatus result = await _categoryManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+            {
+                TempData["Error"] = "Kategori silinemedi.";
+            }
+            else
+            {
+                TempData["Success"] = "Kategori başarıyla silindi.";
+            }
+            return RedirectToAction("CategoryManagement");
+        }
+
+
+
+
     }
 }
+

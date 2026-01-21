@@ -1,0 +1,38 @@
+﻿@model Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryCreateVm
+@{
+    ViewData["Title"] = "Yeni Kategori Oluştur";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="mb-4 text-center">
+        <h2>Yeni Kategori Oluştur</h2>
+    </div>
+
+    <form asp-action="AddCategory" method="post" class="card shadow-sm p-4">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="CategoryName" class="form-label">Kategori Adı</label>
+            <input asp-for="CategoryName" class="form-control" />
+            <span asp-validation-for="CategoryName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Açıklama</label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ParentCategoryId" class="form-label">Üst Kategori</label>
+            <select asp-for="ParentCategoryId" class="form-select" asp-items="Model.ParentCategoryList"></select>
+            <span asp-validation-for="ParentCategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 border-top pt-3">
+            <button type="submit" class="btn btn-success">Ekle</button>
+            <a asp-action="CategoryManagement" class="btn btn-outline-secondary">İptal</a>
+            <a asp-action="CategoryManagement" class="btn btn-secondary">Geri</a>
+        </div>
+    </form>
+</div>

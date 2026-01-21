@@ -1,0 +1,59 @@
+﻿@model Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryDetailVm
+@{
+    ViewData["Title"] = "Kategori Detayı";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="mb-4 text-center">
+        <h2>Kategori Detayı</h2>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Adı</dt>
+                <dd class="col-sm-8">@Model.CategoryName</dd>
+
+                <dt class="col-sm-4">Açıklama</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+
+                <dt class="col-sm-4">Üst Kategori</dt>
+                <dd class="col-sm-8">@Model.ParentCategoryName</dd>
+            </dl>
+            <hr />
+            <h5>Alt Kategoriler</h5>
+            @if (Model.SubCategories != null && Model.SubCategories.Count > 0)
+            {
+                <ul>
+                    @foreach (Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryVm sub in Model.SubCategories)
+                    {
+                        <li>@sub.CategoryName</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Alt kategori yok.</p>
+            }
+            <hr />
+            <h5>Üst Kategoriler</h5>
+            @if (Model.ParentCategories != null && Model.ParentCategories.Count > 0)
+            {
+                <ul>
+                    @foreach (Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryVm parent in Model.ParentCategories)
+                    {
+                        <li>@parent.CategoryName</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Üst kategori yok.</p>
+            }
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-end gap-2">
+            <a asp-action="EditCategory" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+            <a asp-action="CategoryManagement" class="btn btn-secondary">Geri</a>
+        </div>
+    </div>
+</div>
