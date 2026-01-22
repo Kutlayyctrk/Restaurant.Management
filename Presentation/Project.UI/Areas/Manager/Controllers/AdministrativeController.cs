@@ -8,7 +8,7 @@ using Project.InnerInfrastructure.ManagerConcretes;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuProductManagement;
-//using Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
@@ -1435,9 +1435,382 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return View(vm);
         }
+        [HttpGet]
+        public IActionResult OrderManagement()
+        {
+            
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> PurchaseInvoiceList(int? supplierId = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            List<OrderDTO> allInvoices = await _orderManager.WhereAsync(o =>
+                o.Type == OrderType.Purchase &&
+                (!supplierId.HasValue || o.SupplierId == supplierId) &&
+                (!startDate.HasValue || o.OrderDate >= startDate) &&
+                (!endDate.HasValue || o.OrderDate <= endDate)
+            );
+
+            List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+
+            PurchaseInvoiceListVm vm = new PurchaseInvoiceListVm
+            {
+                Invoices = allInvoices,
+                SelectedSupplierId = supplierId,
+                StartDate = startDate,
+                EndDate = endDate,
+                SupplierList = suppliers.Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.SupplierName
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+        [HttpGet]
+        public async Task<IActionResult> PurchaseInvoiceDetail(int id)
+        {
+            OrderDTO invoice = await _orderManager.GetByIdAsync(id);
+            if (invoice == null || invoice.Type != OrderType.Purchase)
+                return NotFound();
+
+            string supplierName = null;
+            if (invoice.SupplierId.HasValue)
+            {
+                SupplierDTO supplier = await _supplierManager.GetByIdAsync(invoice.SupplierId.Value);
+                supplierName = supplier?.SupplierName;
+            }
+
+            PurchaseInvoiceDetailVm vm = new PurchaseInvoiceDetailVm
+            {
+                Invoice = invoice,
+                Details = invoice.OrderDetails.ToList(),
+                SupplierName = supplierName
+            };
+
+            return View(vm);
+        }
+        [HttpGet]
+        public async Task<IActionResult> AddPurchaseInvoice()
+        {
+            List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            PurchaseInvoiceEditVm vm = new PurchaseInvoiceEditVm
+            {
+                OrderDate = DateTime.Now,
+                SupplierList = suppliers.Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.SupplierName
+                }).ToList(),
+                ProductList = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.ProductName
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AddPurchaseInvoice(PurchaseInvoiceEditVm vm)
+        {
+            vm.TotalPrice = vm.Details.Sum(d => d.Quantity * d.UnitPrice);
+
+            if (!ModelState.IsValid)
+            {
+                List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            OrderDTO dto = new OrderDTO
+            {
+                SupplierId = vm.SupplierId,
+                OrderDate = vm.OrderDate,
+                TotalPrice = vm.TotalPrice,
+                Type = OrderType.Purchase,
+                OrderState = OrderStatus.Completed,
+                OrderDetails = vm.Details
+            };
+
+            OperationStatus result = await _orderManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Fatura eklenemedi.");
+                List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Alım faturası başarıyla eklendi.";
+            return RedirectToAction("PurchaseInvoiceList");
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditPurchaseInvoice(int id)
+        {
+            OrderDTO invoice = await _orderManager.GetByIdAsync(id);
+            if (invoice == null || invoice.Type != OrderType.Purchase)
+                return NotFound();
+            if (!invoice.SupplierId.HasValue)
+            {
+                TempData["Error"] = "Alım faturası için tedarikçi zorunludur. Lütfen eksik veriyi tamamlayın.";
+                return RedirectToAction("PurchaseInvoiceList");
+            }
+            List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            PurchaseInvoiceEditVm vm = new PurchaseInvoiceEditVm
+            {
+                Id = invoice.Id,
+                SupplierId = invoice.SupplierId,
+                OrderDate = invoice.OrderDate,
+                TotalPrice = invoice.TotalPrice,
+                Details = invoice.OrderDetails.ToList(),
+                SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList(),
+                ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPurchaseInvoice(PurchaseInvoiceEditVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            OrderDTO original = await _orderManager.GetByIdAsync(vm.Id ?? 0);
+            if (original == null || original.Type != OrderType.Purchase)
+                return NotFound();
+
+            OrderDTO updated = new OrderDTO
+            {
+                Id = vm.Id ?? 0,
+                SupplierId = vm.SupplierId,
+                OrderDate = vm.OrderDate,
+                TotalPrice = vm.TotalPrice,
+                Type = OrderType.Purchase,
+                OrderState = original.OrderState,
+                OrderDetails = vm.Details
+            };
+
+            OperationStatus result = await _orderManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Fatura güncellenemedi.");
+                List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList();
+                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Alım faturası başarıyla güncellendi.";
+            return RedirectToAction("PurchaseInvoiceList");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeletePurchaseInvoice(int id)
+        {
         
+            OperationStatus softResult = await _orderManager.SoftDeleteByIdAsync(id);
+            if (softResult != OperationStatus.Success)
+            {
+                TempData["Error"] = "Fatura silinemedi (soft delete başarısız).";
+                return RedirectToAction("EditPurchaseInvoice", new { id });
+            }
 
+        
+            OperationStatus hardResult = await _orderManager.HardDeleteByIdAsync(id);
+            if (hardResult != OperationStatus.Success)
+            {
+                TempData["Error"] = "Fatura silinemedi (hard delete başarısız).";
+                return RedirectToAction("EditPurchaseInvoice", new { id });
+            }
 
+            TempData["Success"] = "Fatura başarıyla silindi.";
+            return RedirectToAction("PurchaseInvoiceList");
+        }
+        [HttpGet]
+        public async Task<IActionResult> SaleInvoiceList(int? tableId = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            List<OrderDTO> allInvoices = await _orderManager.WhereAsync(o =>
+                o.Type == OrderType.Sale &&
+                (!tableId.HasValue || o.TableId == tableId) &&
+                (!startDate.HasValue || o.OrderDate >= startDate) &&
+                (!endDate.HasValue || o.OrderDate <= endDate)
+            );
+
+            List<TableDTO> tables = await _tableManager.GetAllAsync();
+
+            SaleInvoiceListVm vm = new SaleInvoiceListVm
+            {
+                Invoices = allInvoices,
+                SelectedTableId = tableId,
+                StartDate = startDate,
+                EndDate = endDate,
+                TableList = tables.Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.TableName
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+        [HttpGet]
+        public async Task<IActionResult> SaleInvoiceDetail(int id)
+        {
+            OrderDTO invoice = await _orderManager.GetByIdAsync(id);
+            if (invoice == null || invoice.Type != OrderType.Sale)
+                return NotFound();
+
+            string tableName = null;
+            if (invoice.TableId.HasValue)
+            {
+                TableDTO table = await _tableManager.GetByIdAsync(invoice.TableId.Value);
+                tableName = table?.TableNumber;
+            }
+
+            SaleInvoiceDetailVm vm = new SaleInvoiceDetailVm
+            {
+                Invoice = invoice,
+                Details = invoice.OrderDetails.ToList(),
+                TableName = tableName
+            };
+
+            return View(vm);
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditSaleInvoice(int id)
+        {
+            OrderDTO invoice = await _orderManager.GetByIdAsync(id);
+            if (invoice == null || invoice.Type != OrderType.Sale)
+                return NotFound();
+
+           
+            if (!invoice.TableId.HasValue || !invoice.WaiterId.HasValue)
+            {
+                TempData["Error"] = "Satış faturası için masa ve garson zorunludur. Lütfen eksik veriyi tamamlayın.";
+                return RedirectToAction("SaleInvoiceList");
+            }
+
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            string tableName = "";
+            if (invoice.TableId > 0)
+            {
+                TableDTO table = await _tableManager.GetByIdAsync(invoice.TableId.Value);
+                tableName = table?.TableNumber ?? "";
+            }
+
+            string waiterName = "";
+            if (invoice.WaiterId > 0)
+            {
+                AppUserDTO waiter = await _appUserManager.GetByIdAsync(invoice.WaiterId.Value);
+                waiterName = waiter?.UserName ?? "";
+            }
+
+            SaleInvoiceEditVm vm = new SaleInvoiceEditVm
+            {
+                Id = invoice.Id,
+                TableId = invoice.TableId.Value,
+                WaiterId = invoice.WaiterId.Value,
+                TableName = tableName,
+                WaiterName = waiterName,
+                OrderDate = invoice.OrderDate,
+                TotalPrice = invoice.TotalPrice,
+                Details = invoice.OrderDetails.ToList(),
+                ProductList = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.ProductName
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditSaleInvoice(SaleInvoiceEditVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.ProductList = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.ProductName
+                }).ToList();
+                return View(vm);
+            }
+
+            OrderDTO original = await _orderManager.GetByIdAsync(vm.Id ?? 0);
+            if (original == null || original.Type != OrderType.Sale)
+                return NotFound();
+
+            OrderDTO updated = new OrderDTO
+            {
+                Id = vm.Id ?? 0,
+                TableId = vm.TableId,
+                WaiterId = vm.WaiterId,
+                OrderDate = vm.OrderDate,
+                TotalPrice = vm.TotalPrice,
+                Type = OrderType.Sale,
+                OrderState = original.OrderState,
+                OrderDetails = vm.Details
+            };
+
+            OperationStatus result = await _orderManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Fatura güncellenemedi.");
+                List<ProductDTO> products = await _productManager.GetAllAsync();
+                vm.ProductList = products.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.ProductName
+                }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Satış faturası başarıyla güncellendi.";
+            return RedirectToAction("SaleInvoiceList");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteSaleInvoice(int id)
+        {
+            OperationStatus softResult = await _orderManager.SoftDeleteByIdAsync(id);
+            if (softResult != OperationStatus.Success)
+            {
+                TempData["Error"] = "Fatura silinemedi (soft delete başarısız).";
+                return RedirectToAction("EditSaleInvoice", new { id });
+            }
+
+            OperationStatus hardResult = await _orderManager.HardDeleteByIdAsync(id);
+            if (hardResult != OperationStatus.Success)
+            {
+                TempData["Error"] = "Fatura silinemedi (hard delete başarısız).";
+                return RedirectToAction("EditSaleInvoice", new { id });
+            }
+
+            TempData["Success"] = "Fatura başarıyla silindi.";
+            return RedirectToAction("SaleInvoiceList");
+        }
     }
 }
 

@@ -1,0 +1,47 @@
+﻿@model Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement.SaleInvoiceDetailVm
+
+@{
+    ViewData["Title"] = "Satış Faturası Detayı";
+    var invoice = Model.Invoice;
+}
+
+<div class="container mt-4">
+    <h2>Satış Faturası Detayı</h2>
+    <div class="card mb-3">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Masa</dt>
+                <dd class="col-sm-9">@Model.TableName</dd>
+                <dt class="col-sm-3">Tarih</dt>
+                <dd class="col-sm-9">@invoice.OrderDate.ToShortDateString()</dd>
+                <dt class="col-sm-3">Toplam Tutar</dt>
+                <dd class="col-sm-9">@invoice.TotalPrice.ToString("C")</dd>
+                <dt class="col-sm-3">Durum</dt>
+                <dd class="col-sm-9">@invoice.OrderState</dd>
+            </dl>
+        </div>
+    </div>
+    <h4>Fatura Kalemleri</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ürün</th>
+                <th>Miktar</th>
+                <th>Birim Fiyat</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detail in Model.Details)
+            {
+                <tr>
+                    <td>@detail.ProductId</td>
+                    <td>@detail.Quantity</td>
+                    <td>@detail.UnitPrice.ToString("C")</td>
+                    <td>@detail.DetailState</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-action="SaleInvoiceList" class="btn btn-secondary">Geri Dön</a>
+</div>

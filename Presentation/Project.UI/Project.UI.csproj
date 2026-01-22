@@ -29,7 +29,6 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\" />
     <Folder Include="Areas\Manager\Data\" />
-    <Folder Include="Areas\Manager\Models\AdministrativeVMs\OrderManagement\" />
     <Folder Include="wwwroot\FlatAdmin\assets\jquery-file-upload\server\php\files\thumbnail\" />
   </ItemGroup>
 

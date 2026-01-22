@@ -1,0 +1,66 @@
+﻿@model Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement.PurchaseInvoiceListVm
+
+@{
+    ViewData["Title"] = "Alım Faturaları";
+}
+
+<div class="container mt-4">
+    <h2>Alım Faturaları</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form asp-action="PurchaseInvoiceList" method="get" class="form-inline">
+            <div class="form-group mr-2">
+                <select asp-for="SelectedSupplierId" asp-items="Model.SupplierList" class="form-control" style="min-width:150px;">
+                    <option value="">Tedarikçi Seçiniz</option>
+                </select>
+            </div>
+            <div class="form-group mr-2">
+                <input asp-for="StartDate" type="date" class="form-control" placeholder="Başlangıç Tarihi" />
+            </div>
+            <div class="form-group mr-2">
+                <input asp-for="EndDate" type="date" class="form-control" placeholder="Bitiş Tarihi" />
+            </div>
+            <button type="submit" class="btn btn-secondary">Filtrele</button>
+        </form>
+        <a asp-action="AddPurchaseInvoice" class="btn btn-primary">Yeni Fatura Ekle</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Tedarikçi</th>
+                <th>Tarih</th>
+                <th>Tutar</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Invoices != null && Model.Invoices.Count > 0)
+            {
+                int i = 1;
+                foreach (var invoice in Model.Invoices)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@invoice.SupplierId</td>
+                        <td>@invoice.OrderDate.ToShortDateString()</td>
+                        <td>@invoice.TotalPrice.ToString("C")</td>
+                        <td>@invoice.OrderState</td>
+                        <td>
+                            <a asp-action="PurchaseInvoiceDetail" asp-route-id="@invoice.Id" class="btn btn-info btn-sm">Detaylar</a>
+                            <a asp-action="EditPurchaseInvoice" asp-route-id="@invoice.Id" class="btn btn-warning btn-sm">Düzenle</a>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">Kriterlere uygun fatura bulunamadı.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
