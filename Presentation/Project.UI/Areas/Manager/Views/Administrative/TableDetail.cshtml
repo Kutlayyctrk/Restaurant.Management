@@ -1,0 +1,20 @@
+﻿@model TableDetailVm
+@{
+    ViewData["Title"] = "Masa Detay";
+}
+
+<h2>Masa Detay</h2>
+<div class="mb-3">
+    <dl class="row">
+        <dt class="col-sm-3">Masa No</dt>
+        <dd class="col-sm-9">@Model.TableNumber</dd>
+        <dt class="col-sm-3">Masa Adı</dt>
+        <dd class="col-sm-9">@Model.TableName</dd>
+        <dt class="col-sm-3">Garson</dt>
+        <dd class="col-sm-9">@Model.WaiterName</dd>
+        <dt class="col-sm-3">Durum</dt>
+        <dd class="col-sm-9">@Model.TableStatus</dd>
+    </dl>
+    <a asp-action="EditTable" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+    <a asp-action="TableManagement" class="btn btn-secondary">Geri Dön</a>
+</div>

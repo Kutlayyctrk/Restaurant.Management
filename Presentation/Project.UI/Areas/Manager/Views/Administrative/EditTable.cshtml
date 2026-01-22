@@ -1,0 +1,27 @@
+﻿@model TableEditVm
+@{
+    ViewData["Title"] = "Masa Düzenle";
+}
+
+<h2>Masa Düzenle</h2>
+<form asp-action="EditTable" method="post">
+    <input type="hidden" asp-for="Id" />
+    <label asp-for="TableNumber" class="form-label"></label>
+    <input asp-for="TableNumber" class="form-control" />
+    <span asp-validation-for="TableNumber" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="TableName" class="form-label"></label>
+        <input asp-for="TableName" class="form-control" />
+        <span asp-validation-for="TableName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="WaiterId" class="form-label">Garson</label>
+        <select asp-for="WaiterId" asp-items="Model.WaiterList" class="form-select">
+            <option value="">Garson Seçiniz</option>
+        </select>
+        <span asp-validation-for="WaiterId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a asp-action="TableManagement" class="btn btn-secondary">İptal</a>
+</form>

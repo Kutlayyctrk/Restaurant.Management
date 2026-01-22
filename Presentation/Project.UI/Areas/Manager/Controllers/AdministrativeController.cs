@@ -11,6 +11,7 @@ using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuProductManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.SupplierManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.TableManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
 using System;
@@ -1439,7 +1440,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpGet]
         public IActionResult OrderManagement()
         {
-            
+
             return View();
         }
         [HttpGet]
@@ -1627,7 +1628,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> DeletePurchaseInvoice(int id)
         {
-        
+
             OperationStatus softResult = await _orderManager.SoftDeleteByIdAsync(id);
             if (softResult != OperationStatus.Success)
             {
@@ -1635,7 +1636,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return RedirectToAction("EditPurchaseInvoice", new { id });
             }
 
-        
+
             OperationStatus hardResult = await _orderManager.HardDeleteByIdAsync(id);
             if (hardResult != OperationStatus.Success)
             {
@@ -1703,7 +1704,7 @@ namespace Project.UI.Areas.Manager.Controllers
             if (invoice == null || invoice.Type != OrderType.Sale)
                 return NotFound();
 
-           
+
             if (!invoice.TableId.HasValue || !invoice.WaiterId.HasValue)
             {
                 TempData["Error"] = "Satış faturası için masa ve garson zorunludur. Lütfen eksik veriyi tamamlayın.";
@@ -1830,7 +1831,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return View(vm);
         }
 
-      
+
         [HttpGet]
         public async Task<IActionResult> SupplierDetail(int id)
         {
@@ -1850,14 +1851,14 @@ namespace Project.UI.Areas.Manager.Controllers
             return View(vm);
         }
 
-      
+
         [HttpGet]
         public IActionResult AddSupplier()
         {
             return View(new SupplierCreateVm());
         }
 
-     
+
         [HttpPost]
         public async Task<IActionResult> AddSupplier(SupplierCreateVm vm)
         {
@@ -1884,7 +1885,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("SupplierManagement");
         }
 
-       
+
         [HttpGet]
         public async Task<IActionResult> EditSupplier(int id)
         {
@@ -1935,7 +1936,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("SupplierManagement");
         }
 
-    
+
         [HttpPost]
         public async Task<IActionResult> DeleteSupplier(int id)
         {
@@ -1946,6 +1947,180 @@ namespace Project.UI.Areas.Manager.Controllers
                 TempData["Success"] = "Tedarikçi başarıyla silindi.";
 
             return RedirectToAction("SupplierManagement");
+        }
+        [HttpGet]
+        public async Task<IActionResult> TableManagement()
+        {
+            List<TableDTO> tables = await _tableManager.GetAllAsync();
+            List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+
+            TableListVm vm = new TableListVm
+            {
+                Tables = tables.Select(t => new TableVm
+                {
+                    Id = t.Id,
+                    TableNumber = t.TableNumber,
+                    TableName = t.TableName,
+                    WaiterName = waiters.FirstOrDefault(w => w.Id == t.WaiterId)?.UserName,
+                    TableStatus = t.Status.ToString()
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TableDetail(int id)
+        {
+            TableDTO table = await _tableManager.GetByIdAsync(id);
+            if (table == null)
+                return NotFound();
+
+            List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+
+            TableDetailVm vm = new TableDetailVm
+            {
+                Id = table.Id,
+                TableNumber = table.TableNumber,
+                TableName = table.TableName,
+                WaiterName = waiters.FirstOrDefault(w => w.Id == table.WaiterId)?.UserName,
+                TableStatus = table.Status.ToString()
+            };
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddTable()
+        {
+            List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+            TableEditVm vm = new TableEditVm
+            {
+                WaiterList = waiters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.UserName
+                }).ToList()
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTable(TableEditVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+                vm.WaiterList = waiters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.UserName
+                }).ToList();
+                return View(vm);
+            }
+
+            TableDTO dto = new TableDTO
+            {
+                TableNumber = vm.TableNumber,
+                TableName = vm.TableName,
+                WaiterId = vm.WaiterId
+            };
+
+            OperationStatus result = await _tableManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Masa eklenemedi.");
+                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+                vm.WaiterList = waiters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.UserName
+                }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Masa başarıyla eklendi.";
+            return RedirectToAction("TableManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditTable(int id)
+        {
+            TableDTO table = await _tableManager.GetByIdAsync(id);
+            if (table == null)
+                return NotFound();
+
+            List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+
+            TableEditVm vm = new TableEditVm
+            {
+                Id = table.Id,
+                TableNumber = table.TableNumber,
+                TableName = table.TableName,
+                WaiterId = table.WaiterId,
+                WaiterList = waiters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.UserName
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditTable(TableEditVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+                vm.WaiterList = waiters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.UserName
+                }).ToList();
+                return View(vm);
+            }
+
+            TableDTO original = await _tableManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            TableDTO updated = new TableDTO
+            {
+                Id = vm.Id,
+                TableNumber = vm.TableNumber,
+                TableName = vm.TableName,
+                WaiterId = vm.WaiterId
+            };
+
+            OperationStatus result = await _tableManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Masa güncellenemedi.");
+                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
+                vm.WaiterList = waiters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.UserName
+                }).ToList();
+                return View(vm);
+            }
+
+            TempData["Success"] = "Masa başarıyla güncellendi.";
+            return RedirectToAction("TableManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTable(int id)
+        {
+            OperationStatus result = await _tableManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Masa silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Masa başarıyla silindi.";
+
+            return RedirectToAction("TableManagement");
         }
     }
 }
