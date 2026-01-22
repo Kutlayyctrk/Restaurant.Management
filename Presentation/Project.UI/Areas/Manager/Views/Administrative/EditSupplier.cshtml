@@ -1,0 +1,50 @@
+﻿@model SupplierEditVm
+
+@{
+    ViewData["Title"] = "Tedarikçi Düzenle";
+}
+
+<h2>Tedarikçi Düzenle</h2>
+
+<form asp-action="EditSupplier" method="post" class="mt-4">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="SupplierName" class="form-label"></label>
+        <input asp-for="SupplierName" class="form-control" />
+        <span asp-validation-for="SupplierName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ContactName" class="form-label"></label>
+        <input asp-for="ContactName" class="form-control" />
+        <span asp-validation-for="ContactName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+        <a asp-action="SupplierManagement" class="btn btn-secondary">Geri</a>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <form asp-action="DeleteSupplier" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Tedarikçiyi silmek istediğinize emin misiniz?');">
+            <button type="submit" class="btn btn-danger">Sil</button>
+        </form>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

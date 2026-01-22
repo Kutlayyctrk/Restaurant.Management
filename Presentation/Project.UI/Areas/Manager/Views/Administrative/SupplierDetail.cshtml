@@ -1,0 +1,33 @@
+﻿@model SupplierDetailVm
+
+@{
+    ViewData["Title"] = "Tedarikçi Detay";
+}
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h3 class="mb-0">Tedarikçi Detayları</h3>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Tedarikçi Adı</dt>
+            <dd class="col-sm-9">@Model.SupplierName</dd>
+
+            <dt class="col-sm-3">İlgili Kişi</dt>
+            <dd class="col-sm-9">@Model.ContactName</dd>
+
+            <dt class="col-sm-3">Telefon</dt>
+            <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Adres</dt>
+            <dd class="col-sm-9">@Model.Address</dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex justify-content-end gap-2">
+        <a asp-action="SupplierManagement" class="btn btn-secondary">Geri</a>
+        <a asp-action="EditSupplier" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+    </div>
+</div>

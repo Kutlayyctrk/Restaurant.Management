@@ -10,6 +10,7 @@ using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuProductManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.SupplierManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
 using System;
@@ -1810,6 +1811,141 @@ namespace Project.UI.Areas.Manager.Controllers
 
             TempData["Success"] = "Fatura başarıyla silindi.";
             return RedirectToAction("SaleInvoiceList");
+        }
+        [HttpGet]
+        public async Task<IActionResult> SupplierManagement()
+        {
+            List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+            SupplierListVm vm = new SupplierListVm
+            {
+                Suppliers = suppliers.Select(s => new SupplierVm
+                {
+                    Id = s.Id,
+                    SupplierName = s.SupplierName,
+                    ContactName = s.ContactName,
+                    PhoneNumber = s.PhoneNumber,
+                    Email = s.Email
+                }).ToList()
+            };
+            return View(vm);
+        }
+
+      
+        [HttpGet]
+        public async Task<IActionResult> SupplierDetail(int id)
+        {
+            SupplierDTO supplier = await _supplierManager.GetByIdAsync(id);
+            if (supplier == null)
+                return NotFound();
+
+            SupplierDetailVm vm = new SupplierDetailVm
+            {
+                Id = supplier.Id,
+                SupplierName = supplier.SupplierName,
+                ContactName = supplier.ContactName,
+                PhoneNumber = supplier.PhoneNumber,
+                Email = supplier.Email,
+                Address = supplier.Address
+            };
+            return View(vm);
+        }
+
+      
+        [HttpGet]
+        public IActionResult AddSupplier()
+        {
+            return View(new SupplierCreateVm());
+        }
+
+     
+        [HttpPost]
+        public async Task<IActionResult> AddSupplier(SupplierCreateVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            SupplierDTO dto = new SupplierDTO
+            {
+                SupplierName = vm.SupplierName,
+                ContactName = vm.ContactName,
+                PhoneNumber = vm.PhoneNumber,
+                Email = vm.Email,
+                Address = vm.Address
+            };
+
+            OperationStatus result = await _supplierManager.CreateAsync(dto);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Tedarikçi eklenemedi. Lütfen bilgileri kontrol edin.");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Tedarikçi başarıyla eklendi.";
+            return RedirectToAction("SupplierManagement");
+        }
+
+       
+        [HttpGet]
+        public async Task<IActionResult> EditSupplier(int id)
+        {
+            SupplierDTO supplier = await _supplierManager.GetByIdAsync(id);
+            if (supplier == null)
+                return NotFound();
+
+            SupplierEditVm vm = new SupplierEditVm
+            {
+                Id = supplier.Id,
+                SupplierName = supplier.SupplierName,
+                ContactName = supplier.ContactName,
+                PhoneNumber = supplier.PhoneNumber,
+                Email = supplier.Email,
+                Address = supplier.Address
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditSupplier(SupplierEditVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            SupplierDTO original = await _supplierManager.GetByIdAsync(vm.Id);
+            if (original == null)
+                return NotFound();
+
+            SupplierDTO updated = new SupplierDTO
+            {
+                Id = vm.Id,
+                SupplierName = vm.SupplierName,
+                ContactName = vm.ContactName,
+                PhoneNumber = vm.PhoneNumber,
+                Email = vm.Email,
+                Address = vm.Address
+            };
+
+            OperationStatus result = await _supplierManager.UpdateAsync(original, updated);
+            if (result != OperationStatus.Success)
+            {
+                ModelState.AddModelError("", "Tedarikçi güncellenemedi. Lütfen bilgileri kontrol edin.");
+                return View(vm);
+            }
+
+            TempData["Success"] = "Tedarikçi başarıyla güncellendi.";
+            return RedirectToAction("SupplierManagement");
+        }
+
+    
+        [HttpPost]
+        public async Task<IActionResult> DeleteSupplier(int id)
+        {
+            OperationStatus result = await _supplierManager.HardDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Tedarikçi silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Tedarikçi başarıyla silindi.";
+
+            return RedirectToAction("SupplierManagement");
         }
     }
 }
