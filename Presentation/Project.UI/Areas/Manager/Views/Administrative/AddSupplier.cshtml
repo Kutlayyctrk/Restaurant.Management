@@ -4,41 +4,68 @@
     ViewData["Title"] = "Yeni Tedarikçi Ekle";
 }
 
-<h2>Yeni Tedarikçi Ekle</h2>
+<style>
 
-<form asp-action="AddSupplier" method="post" class="mt-4">
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    .standard-form .form-control,
+    .standard-form .form-select,
+    .standard-form textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
 
-    <div class="mb-3">
-        <label asp-for="SupplierName" class="form-label"></label>
-        <input asp-for="SupplierName" class="form-control" />
-        <span asp-validation-for="SupplierName" class="text-danger"></span>
+   
+    .standard-form {
+        overflow: hidden;
+    }
+</style>
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="mb-4 text-center">
+        <h2>Yeni Tedarikçi Ekle</h2>
     </div>
-    <div class="mb-3">
-        <label asp-for="ContactName" class="form-label"></label>
-        <input asp-for="ContactName" class="form-control" />
-        <span asp-validation-for="ContactName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <textarea asp-for="Address" class="form-control"></textarea>
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
-    <div class="d-flex justify-content-end gap-2">
-        <a asp-action="SupplierManagement" class="btn btn-secondary">Geri</a>
-        <button type="submit" class="btn btn-success">Kaydet</button>
-    </div>
-</form>
+
+    <form asp-action="AddSupplier" method="post" class="card shadow-sm p-4 standard-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="SupplierName" class="form-label fw-bold">Tedarikçi Adı</label>
+            <input asp-for="SupplierName" class="form-control" placeholder="Tedarikçi adını giriniz" />
+            <span asp-validation-for="SupplierName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ContactName" class="form-label fw-bold">Yetkili Kişi</label>
+            <input asp-for="ContactName" class="form-control" placeholder="İletişim kurulacak kişi" />
+            <span asp-validation-for="ContactName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PhoneNumber" class="form-label fw-bold">Telefon Numarası</label>
+            <input asp-for="PhoneNumber" class="form-control" placeholder="05xx xxx xx xx" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label fw-bold">E-posta</label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label fw-bold">Adres</label>
+            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Açık adres bilgilerini buraya yazınız..."></textarea>
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 border-top pt-3 mt-2">
+            <button type="submit" class="btn btn-success px-4">Ekle</button>
+            <a asp-action="SupplierManagement" class="btn btn-outline-secondary">İptal</a>
+            <a asp-action="SupplierManagement" class="btn btn-secondary px-3">Geri</a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

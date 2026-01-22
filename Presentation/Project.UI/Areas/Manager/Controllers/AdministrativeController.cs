@@ -4,7 +4,6 @@ using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.Domain.Enums;
-using Project.InnerInfrastructure.ManagerConcretes;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuProductManagement;
@@ -13,10 +12,8 @@ using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.SupplierManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.TableManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
-using Project.UI.Areas.Manager.Models.HRVMs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
+
 
 namespace Project.UI.Areas.Manager.Controllers
 {
@@ -241,7 +238,132 @@ namespace Project.UI.Areas.Manager.Controllers
             TempData["Success"] = "Personel başarıyla eklendi.";
             return RedirectToAction("PersonnelManagement");
         }
+        [HttpGet]
+        public async Task<IActionResult> EditPersonnel(int id)
+        {
+            AppUserDTO user = await _appUserManager.GetByIdAsync(id);
+            AppUserProfileDTO profile = (await _appUserProfileManager.GetAllAsync()).FirstOrDefault(p => p.AppUserId == id);
+            List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
+            List<AppUserRoleDTO> userRoles = await _appUserRoleManager.GetActives();
 
+            if (user == null || profile == null)
+                return NotFound();
+
+            int? selectedRoleId = userRoles.FirstOrDefault(ur => ur.UserId == id)?.RoleId;
+
+            EditPersonnelVm vm = new EditPersonnelVm
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                FirstName = profile.FirstName,
+                LastName = profile.LastName,
+                TCKNo = profile.TCKNo,
+                Salary = profile.Salary,
+                HireDate = profile.HireDate,
+                BirthDate = profile.BirthDate,
+                SelectedRoleId = selectedRoleId ?? 0,
+                Roles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name,
+                    Selected = r.Id == selectedRoleId
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPersonnel(EditPersonnelVm vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
+                vm.Roles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name,
+                    Selected = r.Id == vm.SelectedRoleId
+                }).ToList();
+                return View(vm);
+            }
+
+            AppUserDTO user = await _appUserManager.GetByIdAsync(vm.Id);
+            AppUserProfileDTO profile = (await _appUserProfileManager.GetAllAsync()).FirstOrDefault(p => p.AppUserId == vm.Id);
+            if (user == null || profile == null)
+                return NotFound();
+
+           
+            user.Email = vm.Email;
+            user.UserName = vm.UserName;
+            await _appUserManager.UpdateAsync(user, user);
+
+            profile.FirstName = vm.FirstName;
+            profile.LastName = vm.LastName;
+            profile.TCKNo = vm.TCKNo;
+            profile.Salary = vm.Salary;
+            profile.HireDate = vm.HireDate;
+            profile.BirthDate = vm.BirthDate;
+            await _appUserProfileManager.UpdateAsync(profile, profile);
+
+            
+            List<AppUserRoleDTO> userRoles = await _appUserRoleManager.GetActives();
+            AppUserRoleDTO currentRole = userRoles.FirstOrDefault(ur => ur.UserId == vm.Id);
+            if (currentRole != null && currentRole.RoleId != vm.SelectedRoleId)
+            {
+              
+                await _appUserRoleManager.HardDeleteByCompositeKeyAsync(currentRole.UserId, currentRole.RoleId);
+                if (vm.SelectedRoleId > 0)
+                {
+                    await _appUserRoleManager.CreateAsync(new AppUserRoleDTO
+                    {
+                        UserId = vm.Id,
+                        RoleId = vm.SelectedRoleId
+                    });
+                }
+            }
+            else if (currentRole == null && vm.SelectedRoleId > 0)
+            {
+                await _appUserRoleManager.CreateAsync(new AppUserRoleDTO
+                {
+                    UserId = vm.Id,
+                    RoleId = vm.SelectedRoleId
+                });
+            }
+
+            TempData["Success"] = "Personel başarıyla güncellendi.";
+            return RedirectToAction("PersonnelManagement");
+        }
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> SoftDeletePersonnel(int id)
+        {
+            OperationStatus result = await _appUserManager.SoftDeleteByIdAsync(id);
+            if (result == OperationStatus.Success)
+            {
+                TempData["Success"] = "Personel pasife alındı.";
+            }
+            else
+            {
+                TempData["Error"] = "Personel pasife alınamadı.";
+            }
+            return RedirectToAction("PersonnelManagement");
+        }
+        [HttpPost]
+        public async Task<IActionResult> HardDeletePersonnel(int id)
+        {
+            OperationStatus result = await _appUserManager.HardDeleteByIdAsync(id);
+            if (result == OperationStatus.Success)
+            {
+                TempData["Success"] = "Personel kalıcı olarak silindi.";
+            }
+            else
+            {
+                TempData["Error"] = "Personel silinemedi.";
+            }
+            return RedirectToAction("PersonnelManagement");
+        }
         [HttpGet]
         public IActionResult AddRole()
         {

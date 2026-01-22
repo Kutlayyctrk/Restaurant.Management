@@ -3,73 +3,81 @@
     ViewData["Title"] = "Menü Ürünleri Yönetimi";
 }
 
-<div class="container-fluid px-0">
-    <div class="product-main-container">
-        <div class="row align-items-center mb-4 mt-4">
-            <div class="col">
-                <div class="product-title fs-3 fw-semibold">Menü Ürünleri Yönetimi</div>
-            </div>
-            <div class="col-auto">
-                <a asp-action="AddMenuProduct" class="btn btn-success">+ Yeni Menü Ürünü Ekle</a>
-            </div>
+<div class="container-fluid mt-4 px-4">
+ 
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="fw-light">Menü Ürünleri Yönetimi</h2>
         </div>
+        <div class="col-auto">
+            <a asp-action="AddMenuProduct" class="btn btn-success px-4">+ Yeni Menü Ürünü Ekle</a>
+        </div>
+    </div>
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
+   
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-3 align-items-end" id="filterForm">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Menü Seçimi</label>
+                    <select asp-for="SelectedMenuId" asp-items="Model.MenuList" class="form-select" onchange="this.form.submit();">
+                        <option value="">Tüm Menüler</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Ürün Ara</label>
+                    <input asp-for="SearchTerm" class="form-control" placeholder="Ürün adına göre yazın..." oninput="this.form.submit();" autocomplete="off" />
+                </div>
+                <div class="col-md-auto">
+                    <a asp-action="MenuProductManagement" class="btn btn-outline-secondary px-4">Filtreleri Temizle</a>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <form method="get" class="row g-2 mb-3" id="filterForm">
-            <div class="col-md-4">
-                <select asp-for="SelectedMenuId" asp-items="Model.MenuList" class="form-select" onchange="document.getElementById('filterForm').submit();">
-                    <option value="">Tüm Menüler</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <input asp-for="SearchTerm" class="form-control" placeholder="Ürün adına göre ara..." oninput="document.getElementById('filterForm').submit();" autocomplete="off" />
-            </div>
-            <div class="col-md-2">
-                <a asp-action="MenuProductManagement" class="btn btn-secondary w-100">Temizle</a>
-            </div>
-        </form>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success shadow-sm border-0">@TempData["Success"]</div>
+    }
 
+  
+    <div class="card shadow-sm border-0">
         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
-                        <th>Menü</th>
+                        <th class="ps-4">Menü</th>
                         <th>Ürün</th>
                         <th>Kategori</th>
                         <th>Fiyat</th>
-                        <th>Aktif</th>
-                        <th style="min-width:180px;">İşlemler</th>
+                        <th class="text-center">Durum</th>
+                        <th class="text-end pe-4" style="width: 250px;">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.MenuProducts)
                     {
                         <tr>
-                            <td>@item.MenuName</td>
-                            <td>@item.ProductName</td>
-                            <td>@item.CategoryName</td>
-                            <td>@item.UnitPrice.ToString("C2")</td>
+                       
+                            <td class="ps-4 fw-medium text-dark">@item.MenuName</td>
+                            <td class="text-muted">@item.ProductName</td>
                             <td>
+                                <span class="badge bg-light text-secondary border fw-normal">@item.CategoryName</span>
+                            </td>
+                            <td class="fw-bold">@item.UnitPrice.ToString("C2")</td>
+                            <td class="text-center">
                                 @if (item.IsActive)
                                 {
-                                    <span class="badge bg-success">Aktif</span>
+                                    <span class="badge bg-success-subtle text-success px-3">Aktif</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">Pasif</span>
+                                    <span class="badge bg-secondary-subtle text-secondary px-3">Pasif</span>
                                 }
                             </td>
-                            <td>
-                                <a asp-action="EditMenuProduct" asp-route-id="@item.Id" class="btn btn-sm btn-primary me-2">Düzenle</a>
-                                <a asp-action="MenuProductDetail" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detaylar</a>
+                            <td class="text-end pe-4">
+                                <a asp-action="EditMenuProduct" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1 px-3">Düzenle</a>
+                                <a asp-action="MenuProductDetail" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info px-3">Detay</a>
                             </td>
                         </tr>
                     }

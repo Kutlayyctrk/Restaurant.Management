@@ -3,25 +3,52 @@
     ViewData["Title"] = "Yeni Masa Ekle";
 }
 
-<h2>Yeni Masa Ekle</h2>
-<form asp-action="AddTable" method="post">
-    <div class="mb-3">
-        <label asp-for="TableNumber" class="form-label"></label>
-        <input asp-for="TableNumber" class="form-control" />
-        <span asp-validation-for="TableNumber" class="text-danger"></span>
+<style>
+ 
+    .standard-form .form-control,
+    .standard-form .form-select {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+</style>
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="mb-4 text-center">
+        <h2>Yeni Masa Ekle</h2>
     </div>
-    <div class="mb-3">
-        <label asp-for="TableName" class="form-label"></label>
-        <input asp-for="TableName" class="form-control" />
-        <span asp-validation-for="TableName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="WaiterId" class="form-label">Garson</label>
-        <select asp-for="WaiterId" asp-items="Model.WaiterList" class="form-select">
-            <option value="">Garson Seçiniz</option>
-        </select>
-        <span asp-validation-for="WaiterId" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Kaydet</button>
-    <a asp-action="TableManagement" class="btn btn-secondary">İptal</a>
-</form>
+
+    <form asp-action="AddTable" method="post" class="card shadow-sm p-4 standard-form">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="TableNumber" class="form-label">Masa Numarası</label>
+            <input asp-for="TableNumber" class="form-control" />
+            <span asp-validation-for="TableNumber" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="TableName" class="form-label">Masa Adı / Tanımı</label>
+            <input asp-for="TableName" class="form-control" />
+            <span asp-validation-for="TableName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="WaiterId" class="form-label">Garson</label>
+            <select asp-for="WaiterId" asp-items="Model.WaiterList" class="form-select">
+                <option value="">Garson Seçiniz...</option>
+            </select>
+            <span asp-validation-for="WaiterId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 border-top pt-3 mt-2">
+            <button type="submit" class="btn btn-success">Ekle</button>
+            <a asp-action="TableManagement" class="btn btn-outline-secondary">İptal</a>
+            <a asp-action="TableManagement" class="btn btn-secondary">Geri</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

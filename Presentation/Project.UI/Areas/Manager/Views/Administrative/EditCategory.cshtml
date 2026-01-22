@@ -3,39 +3,60 @@
     ViewData["Title"] = "Kategori Düzenle";
 }
 
-<div class="container mt-4" style="max-width: 700px;">
+<div class="container mt-4" style="max-width: 800px;">
     <div class="mb-4 text-center">
-        <h2>Kategori Düzenle</h2>
+        <h2 class="fw-light">Kategori Düzenle</h2>
     </div>
 
-  
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <form asp-action="EditCategory" method="post" class="card shadow-sm p-4">
+    <form asp-action="EditCategory" method="post" class="card shadow-sm border-0">
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Id)
 
-        <div class="mb-3">
-            <label asp-for="CategoryName" class="form-label">Kategori Adı</label>
-            <input asp-for="CategoryName" class="form-control" />
-            <span asp-validation-for="CategoryName" class="text-danger"></span>
+        <div class="card-body p-4">
+            <div class="row g-4">
+             
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="CategoryName" class="form-label fw-bold small text-muted">Kategori Adı</label>
+                        <input asp-for="CategoryName" class="form-control" />
+                        <span asp-validation-for="CategoryName" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="ParentCategoryId" class="form-label fw-bold small text-muted">Üst Kategori</label>
+                        <select asp-for="ParentCategoryId" class="form-select" asp-items="Model.ParentCategoryList"></select>
+                        <span asp-validation-for="ParentCategoryId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-0">
+                        <label asp-for="Description" class="form-label fw-bold small text-muted">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label">Açıklama</label>
-            <input asp-for="Description" class="form-control" />
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
+        <div class="card-footer bg-light border-0 d-flex justify-content-between align-items-center py-3">
+         
+            <div>
+                <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="if(confirm('Bu kategoriyi ve varsa alt kategorilerini silmek istediğinize emin misiniz?')) { document.getElementById('deleteCategoryForm').submit(); }">
+                    Kategoriyi Sil
+                </button>
+            </div>
 
-        <div class="mb-3">
-            <label asp-for="ParentCategoryId" class="form-label">Üst Kategori</label>
-            <select asp-for="ParentCategoryId" class="form-select" asp-items="Model.ParentCategoryList"></select>
-            <span asp-validation-for="ParentCategoryId" class="text-danger"></span>
-        </div>
-
-        <div class="d-flex justify-content-end gap-2 border-top pt-3">
-            <button type="submit" class="btn btn-primary">Kaydet</button>
-            <a asp-action="CategoryManagement" class="btn btn-outline-secondary">İptal</a>
-            <a asp-action="CategoryManagement" class="btn btn-secondary">Geri</a>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">Kaydet</button>
+                <a asp-action="CategoryManagement" class="btn btn-secondary px-4">Geri</a>
+            </div>
         </div>
     </form>
+
+
+    <form id="deleteCategoryForm" asp-action="DeleteCategory" asp-route-id="@Model.Id" method="post" style="display:none;"></form>
 </div>

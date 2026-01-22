@@ -4,46 +4,56 @@
     ViewData["Title"] = "Tedarikçi Yönetimi";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Tedarikçi Listesi</h2>
-    <a asp-action="AddSupplier" class="btn btn-success">Yeni Tedarikçi Ekle</a>
+<div class="container-fluid mt-4 px-4">
+   
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="fw-light">Tedarikçi Yönetimi</h2>
+        </div>
+        <div class="col-auto">
+            <a asp-action="AddSupplier" class="btn btn-success px-4">+ Yeni Tedarikçi Ekle</a>
+        </div>
+    </div>
+
+  
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success shadow-sm border-0">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger shadow-sm border-0">@TempData["Error"]</div>
+    }
+
+  
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Tedarikçi Adı</th>
+                        <th>İlgili Kişi</th>
+                        <th>Telefon</th>
+                        <th>E-posta</th>
+                        <th class="text-end pe-4" style="width: 250px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var supplier in Model.Suppliers)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-medium">@supplier.SupplierName</td>
+                            <td>@supplier.ContactName</td>
+                            <td class="small text-muted">@supplier.PhoneNumber</td>
+                            <td>@supplier.Email</td>
+                            <td class="text-end pe-4">
+                                <a asp-action="EditSupplier" asp-route-id="@supplier.Id" class="btn btn-sm btn-outline-primary px-3 me-1">Düzenle</a>
+                                <a asp-action="SupplierDetail" asp-route-id="@supplier.Id" class="btn btn-sm btn-outline-info px-3">Detaylar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Adı</th>
-            <th>İlgili Kişi</th>
-            <th>Telefon</th>
-            <th>Email</th>
-            <th style="width:180px;">İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var supplier in Model.Suppliers)
-        {
-            <tr>
-                <td>@supplier.SupplierName</td>
-                <td>@supplier.ContactName</td>
-                <td>@supplier.PhoneNumber</td>
-                <td>@supplier.Email</td>
-                <td>
-                    <a asp-action="SupplierDetail" asp-route-id="@supplier.Id" class="btn btn-info btn-sm">Detaylar</a>
-                    <a asp-action="EditSupplier" asp-route-id="@supplier.Id" class="btn btn-warning btn-sm">Düzenle</a>
-                    <form asp-action="DeleteSupplier" asp-route-id="@supplier.Id" method="post" class="d-inline" onsubmit="return confirm('Tedarikçiyi silmek istediğinize emin misiniz?');">
-                     
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

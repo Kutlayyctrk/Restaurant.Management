@@ -3,138 +3,90 @@
     ViewData["Title"] = "Ürün Yönetimi";
 }
 
-<style>
-    .product-main-container {
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 0 16px;
-    }
-
-    .product-header-row {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 2rem;
-        margin-top: 2rem;
-        position: relative;
-    }
-
-    .product-title {
-        font-size: 2rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-align: left;
-        flex: unset;
-        margin-left: 1rem;
-    }
-
-    .product-add-btn {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    .product-filter-form {
-        width: 100%;
-        margin-bottom: 2rem;
-    }
-
-    .product-table-container {
-        width: 100%;
-    }
-
-    .table-actions {
-        min-width: 180px;
-    }
-</style>
-
-<div class="container-fluid px-0">
-    <div class="product-main-container">
-        <div class="product-header-row">
-            <div class="product-title">Ürün Yönetimi</div>
-            <a asp-action="AddProduct" class="btn btn-success product-add-btn">+ Yeni Ürün Ekle</a>
+<div class="container-fluid mt-4 px-4">
+  
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="fw-light">Ürün Yönetimi</h2>
         </div>
+        <div class="col-auto">
+            <a asp-action="AddProduct" class="btn btn-success px-4">+ Yeni Ürün Ekle</a>
+        </div>
+    </div>
 
-        <form method="get" class="row g-2 product-filter-form" id="productFilterForm" autocomplete="off">
-            <div class="col-lg-3 col-md-6 col-12">
-                <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Ürün adı ile ara..." />
-            </div>
-            <div class="col-lg-2 col-md-4 col-6">
-                <select name="categoryId" class="form-select">
-                    <option value="">Kategori (Tümü)</option>
-                    @foreach (var cat in Model.Categories)
-                    {
-                        <option value="@cat.Id" selected="@(Model.SelectedCategoryId == cat.Id ? "selected" : null)">@cat.CategoryName</option>
-                    }
-                </select>
-            </div>
-            <div class="col-lg-1 col-md-4 col-6">
-                <select name="isSellable" class="form-select">
-                    <option value="">Satılabilir</option>
-                    @foreach (var val in (List<bool>)ViewBag.SellableValues)
-                    {
-                        <option value="@val.ToString().ToLower()" selected="@(Model.IsSellable == val ? "selected" : null)">
-                            @(val ? "Evet" : "Hayır")
-                        </option>
-                    }
-                </select>
-            </div>
-            <div class="col-lg-1 col-md-4 col-6">
-                <select name="isExtra" class="form-select">
-                    <option value="">Ekstra</option>
-                    @foreach (var val in (List<bool>)ViewBag.ExtraValues)
-                    {
-                        <option value="@val.ToString().ToLower()" selected="@(Model.IsExtra == val ? "selected" : null)">
-                            @(val ? "Evet" : "Hayır")
-                        </option>
-                    }
-                </select>
-            </div>
-            <div class="col-lg-1 col-md-4 col-6">
-                <select name="canBeProduced" class="form-select">
-                    <option value="">Üretilebilir</option>
-                    @foreach (var val in (List<bool>)ViewBag.CanBeProducedValues)
-                    {
-                        <option value="@val.ToString().ToLower()" selected="@(Model.CanBeProduced == val ? "selected" : null)">
-                            @(val ? "Evet" : "Hayır")
-                        </option>
-                    }
-                </select>
-            </div>
-            <div class="col-lg-1 col-md-4 col-6">
-                <select name="isReadyMade" class="form-select">
-                    <option value="">Hazır</option>
-                    @foreach (var val in (List<bool>)ViewBag.IsReadyMadeValues)
-                    {
-                        <option value="@val.ToString().ToLower()" selected="@(Model.IsReadyMade == val ? "selected" : null)">
-                            @(val ? "Evet" : "Hayır")
-                        </option>
-                    }
-                </select>
-            </div>
-        </form>
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success product-table-container">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger product-table-container">@TempData["Error"]</div>
-        }
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2" id="productFilterForm" autocomplete="off">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <label class="form-label fw-bold small text-muted">Ürün Ara</label>
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Ürün adı ile ara..." />
+                </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label fw-bold small text-muted">Kategori</label>
+                    <select name="categoryId" class="form-select">
+                        <option value="">Tümü</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat.Id" selected="@(Model.SelectedCategoryId == cat.Id ? "selected" : null)">@cat.CategoryName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-4 col-6">
+                    <label class="form-label fw-bold small text-muted">Satılabilir</label>
+                    <select name="isSellable" class="form-select">
+                        <option value="">Seç</option>
+                        <option value="true">Evet</option>
+                        <option value="false">Hayır</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-4 col-6">
+                    <label class="form-label fw-bold small text-muted">Ekstra</label>
+                    <select name="isExtra" class="form-select">
+                        <option value="">Seç</option>
+                        <option value="true">Evet</option>
+                        <option value="false">Hayır</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-4 col-6">
+                    <label class="form-label fw-bold small text-muted">Üretilebilir</label>
+                    <select name="canBeProduced" class="form-select">
+                        <option value="">Seç</option>
+                        <option value="true">Evet</option>
+                        <option value="false">Hayır</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-4 col-6">
+                    <label class="form-label fw-bold small text-muted">Hazır</label>
+                    <select name="isReadyMade" class="form-select">
+                        <option value="">Seç</option>
+                        <option value="true">Evet</option>
+                        <option value="false">Hayır</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <div class="table-responsive product-table-container">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success shadow-sm border-0">@TempData["Success"]</div>
+    }
+
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
-                        <th>Adı</th>
+                        <th class="ps-4">Ürün Adı</th>
                         <th>Kategori</th>
                         <th>Birim Fiyat</th>
-                        <th>Durum</th>
-                        <th class="table-actions">İşlemler</th>
+                        <th class="text-center">Durum</th>
+                        <th class="text-end pe-4" style="width: 250px;">İşlemler</th>
                     </tr>
                 </thead>
+               
                 @Html.Partial("ProductTablePartial", Model)
             </table>
         </div>
@@ -142,7 +94,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function fetchFilteredProducts() {
             var data = {
@@ -159,6 +110,6 @@
         }
 
         $('input[name="searchTerm"]').on('input', fetchFilteredProducts);
-        $('select[name="categoryId"], select[name="isSellable"], select[name="isExtra"], select[name="canBeProduced"], select[name="isReadyMade"]').on('change', fetchFilteredProducts);
+        $('select').on('change', fetchFilteredProducts);
     </script>
 }

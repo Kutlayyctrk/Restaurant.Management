@@ -3,47 +3,59 @@
     ViewData["Title"] = "Kategori Yönetimi";
 }
 
-<div class="container-fluid px-0">
-    <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-        <h2 class="mb-0">Kategori Yönetimi</h2>
-        <a asp-action="AddCategory" class="btn btn-success">+ Yeni Kategori Oluştur</a>
+<div class="container-fluid mt-4 px-4">
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="fw-light">Kategori Yönetimi</h2>
+        </div>
+        <div class="col-auto">
+            <a asp-action="AddCategory" class="btn btn-success px-4">+ Yeni Kategori Oluştur</a>
+        </div>
     </div>
 
-    <form method="get" class="row g-2 mb-3" id="categoryFilterForm" autocomplete="off">
-        <div class="col-md-4 col-12">
-            <select name="parentCategoryId" class="form-select" onchange="this.form.submit()">
-                <option value="">Ana Kategori (Tümü)</option>
-                @foreach (Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryVm cat in Model.ParentCategories)
-                {
-                    <option value="@cat.Id" selected="@(Model.SelectedParentCategoryId == cat.Id ? "selected" : null)">
-                        @cat.CategoryName
-                    </option>
-                }
-            </select>
+  
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3">
+            <form method="get" id="categoryFilterForm" autocomplete="off">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold small text-muted">Üst Kategoriye Göre Filtrele</label>
+                        <select name="parentCategoryId" class="form-select" onchange="this.form.submit()">
+                            <option value="">Ana Kategori (Tümü)</option>
+                            @foreach (var cat in Model.ParentCategories)
+                            {
+                                <option value="@cat.Id" selected="@(Model.SelectedParentCategoryId == cat.Id ? "selected" : null)">
+                                    @cat.CategoryName
+                                </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-success shadow-sm border-0">@TempData["Success"]</div>
     }
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Adı</th>
-                    <th>Açıklama</th>
-                    <th>Üst Kategori</th>
-                    <th>Alt Kategori Sayısı</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            @Html.Partial("CategoryTablePartial", Model.Categories)
-        </table>
+ 
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Adı</th>
+                        <th>Açıklama</th>
+                        <th>Üst Kategori</th>
+                        <th class="text-center">Alt Kategori Sayısı</th>
+                        <th class="text-end pe-4" style="width: 250px;">İşlemler</th>
+                    </tr>
+                </thead>
+             
+                @Html.Partial("CategoryTablePartial", Model.Categories)
+            </table>
+        </div>
     </div>
 </div>
