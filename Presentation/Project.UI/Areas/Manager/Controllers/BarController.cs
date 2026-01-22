@@ -238,9 +238,9 @@ public class BarController : Controller
     [HttpGet]
     public async Task<IActionResult> ActiveOrders()
     {
-        List<OrderDTO> orders = await _orderManager.GetActiveOrdersAsync();
+        List<OrderDTO> orders = await _orderManager.GetActiveSaleOrdersAsync();
 
-          List<OrderVm> vmList = orders.Select(o => new OrderVm
+        List<OrderVm> vmList = orders.Select(o => new OrderVm
         {
             OrderId = o.Id,
             TableName = $"Masa {o.TableId}",

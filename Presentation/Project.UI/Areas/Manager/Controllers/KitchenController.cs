@@ -239,7 +239,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> ActiveOrders()
         {
-            List<OrderDTO> orders = await _orderManager.GetActiveOrdersAsync();
+            List<OrderDTO> orders = await _orderManager.GetActiveSaleOrdersAsync();
 
             List<OrderVm> vmList = orders.Select(o => new OrderVm
             {

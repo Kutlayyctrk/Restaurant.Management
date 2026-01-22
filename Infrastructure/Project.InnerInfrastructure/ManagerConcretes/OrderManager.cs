@@ -24,12 +24,10 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         }
 
-        public async Task<List<OrderDTO>> GetActiveOrdersAsync()
+        public async Task<List<OrderDTO>> GetActiveSaleOrdersAsync()
         {
-            List<Order> orders = await _orderRepository.GetActiveOrdersAsync();
+            List<Order> orders = await _orderRepository.GetActiveSaleOrdersAsync();
             return _mapper.Map<List<OrderDTO>>(orders);
-
-
         }
     }
 }

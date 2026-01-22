@@ -11,7 +11,7 @@ namespace Project.Domain.Entities.Concretes
 {
     public class Order : BaseEntity
     {
-        public int TableId { get; set; }
+        public int? TableId { get; set; }
         public int? WaiterId { get; set; }
         public int? SupplierId { get; set; }
 

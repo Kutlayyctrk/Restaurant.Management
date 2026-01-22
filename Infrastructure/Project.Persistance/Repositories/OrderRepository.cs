@@ -15,18 +15,18 @@ namespace Project.Persistance.Repositories
     {
         private readonly MyContext _context = myContext;
 
-        public async Task<List<Order>> GetActiveOrdersAsync()
+        public async Task<List<Order>> GetActiveSaleOrdersAsync()
         {
             return await _context.Set<Order>()
-      .Include(o => o.OrderDetails)
-          .ThenInclude(od => od.Product)
-      .Where(o => o.OrderState == OrderStatus.Pending
-               || o.OrderState == OrderStatus.SentToKitchen
-               || o.OrderState == OrderStatus.Ready)
-      .ToListAsync();
-
-
-
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .Include(o => o.Supplier)
+                .Where(o =>
+                    (o.OrderState == OrderStatus.Pending
+                     || o.OrderState == OrderStatus.SentToKitchen
+                     || o.OrderState == OrderStatus.Ready)
+                    && o.Type == OrderType.Sale)
+                .ToListAsync();
         }
 
         public async  Task UpdateOrderStateAsync(int orderId, OrderStatus newState)

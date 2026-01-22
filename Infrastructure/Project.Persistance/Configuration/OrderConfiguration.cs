@@ -15,9 +15,25 @@ namespace Project.Persistance.Configuration
         {
             base.Configure(builder);
             builder.Property(x => x.TotalPrice).HasColumnType("money");
-            builder.HasOne(x => x.Table).WithMany(x => x.Orders).HasForeignKey(x => x.TableId).OnDelete(DeleteBehavior.Restrict);//Masa silinse bile sipariş verilerini koruyoruz
-            builder.HasOne(x => x.Waiter).WithMany(x => x.Orders).HasForeignKey(x => x.WaiterId).OnDelete(DeleteBehavior.Restrict);//Kullanıcı verisi silinse bile sipariş verilerini koruyoruz.
-            builder.HasMany(x => x.OrderDetails).WithOne(x => x.Order).HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade);//Sipariş silinirse siparişdetaylarınıda kadameli siliyoruz.
+            builder.HasOne(x => x.Table)
+                .WithMany(x => x.Orders)
+                .HasForeignKey(x => x.TableId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Waiter)
+                .WithMany(x => x.Orders)
+                .HasForeignKey(x => x.WaiterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Supplier)
+                .WithMany() 
+                .HasForeignKey(x => x.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.HasMany(x => x.OrderDetails)
+                .WithOne(x => x.Order)
+                .HasForeignKey(x => x.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

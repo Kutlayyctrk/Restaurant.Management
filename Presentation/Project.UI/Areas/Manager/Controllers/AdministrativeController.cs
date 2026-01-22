@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
+using Project.Domain.Enums;
+using Project.InnerInfrastructure.ManagerConcretes;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuProductManagement;
+//using Project.UI.Areas.Manager.Models.AdministrativeVMs.OrderManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
 using Project.UI.Areas.Manager.Models.HRVMs;
@@ -27,8 +30,12 @@ namespace Project.UI.Areas.Manager.Controllers
         private readonly IProductManager _productManager;
         private readonly IMenuManager _menuManager;
         private readonly IMenuProductManager _menuProductManager;
+        private readonly IOrderManager _orderManager;
+        private readonly IOrderDetailManager _orderDetailManager;
+        private readonly ISupplierManager _supplierManager;
+        private readonly ITableManager _tableManager;
 
-        public AdministrativeController(IAppUserManager appUserManager, IAppUserProfileManager appUserProfileManager, IAppUserRoleManager appUserRoleManager, IAppRoleManager appRoleManager, IUnitManager unitManager, ICategoryManager categoryManager, IProductManager productManager, IMenuManager menuManager, IMenuProductManager menuProductManager)
+        public AdministrativeController(IAppUserManager appUserManager, IAppUserProfileManager appUserProfileManager, IAppUserRoleManager appUserRoleManager, IAppRoleManager appRoleManager, IUnitManager unitManager, ICategoryManager categoryManager, IProductManager productManager, IMenuManager menuManager, IMenuProductManager menuProductManager, IOrderManager orderManager, IOrderDetailManager orderDetailManager, ISupplierManager supplierManager, ITableManager tableManager)
         {
             _appUserManager = appUserManager;
             _appUserProfileManager = appUserProfileManager;
@@ -39,6 +46,10 @@ namespace Project.UI.Areas.Manager.Controllers
             _productManager = productManager;
             _menuManager = menuManager;
             _menuProductManager = menuProductManager;
+            _orderManager = orderManager;
+            _orderDetailManager = orderDetailManager;
+            _supplierManager = supplierManager;
+            _tableManager = tableManager;
         }
 
         public IActionResult DashBoard()
@@ -1424,6 +1435,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return View(vm);
         }
+        
 
 
     }

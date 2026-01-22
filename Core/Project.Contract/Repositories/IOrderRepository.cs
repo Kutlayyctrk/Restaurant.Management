@@ -11,7 +11,10 @@ namespace Project.Contract.Repositories
     public interface IOrderRepository:IRepository<Order>
 
     {
-        Task<List<Order>> GetActiveOrdersAsync();
+        /// <summary>
+        /// Sadece aktif ve satış tipindeki siparişleri getirir.
+        /// </summary>
+        Task<List<Order>> GetActiveSaleOrdersAsync();
         Task UpdateOrderStateAsync(int orderId, OrderStatus newState);
 
     }

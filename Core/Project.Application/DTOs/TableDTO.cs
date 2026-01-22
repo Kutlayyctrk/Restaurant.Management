@@ -10,6 +10,7 @@ namespace Project.Application.DTOs
     public class TableDTO:BaseDto
     {
         public string TableNumber { get; set; }
+        public string TableName { get; set; }
         public int? WaiterId { get; set; }
     }
 }
