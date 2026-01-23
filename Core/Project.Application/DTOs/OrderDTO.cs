@@ -9,6 +9,7 @@ namespace Project.Application.DTOs
         public int? TableId { get; set; }
         public int? WaiterId { get; set; }
         public int? SupplierId { get; set; }
+        public string? SupplierName { get; set; }
 
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }

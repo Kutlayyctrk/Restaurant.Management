@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
@@ -294,7 +296,7 @@ namespace Project.UI.Areas.Manager.Controllers
             if (user == null || profile == null)
                 return NotFound();
 
-           
+
             user.Email = vm.Email;
             user.UserName = vm.UserName;
             await _appUserManager.UpdateAsync(user, user);
@@ -307,12 +309,12 @@ namespace Project.UI.Areas.Manager.Controllers
             profile.BirthDate = vm.BirthDate;
             await _appUserProfileManager.UpdateAsync(profile, profile);
 
-            
+
             List<AppUserRoleDTO> userRoles = await _appUserRoleManager.GetActives();
             AppUserRoleDTO currentRole = userRoles.FirstOrDefault(ur => ur.UserId == vm.Id);
             if (currentRole != null && currentRole.RoleId != vm.SelectedRoleId)
             {
-              
+
                 await _appUserRoleManager.HardDeleteByCompositeKeyAsync(currentRole.UserId, currentRole.RoleId);
                 if (vm.SelectedRoleId > 0)
                 {
@@ -466,15 +468,8 @@ namespace Project.UI.Areas.Manager.Controllers
                 .Where(r => !string.IsNullOrEmpty(r))
                 .ToList();
 
-            int daysWorked = (DateTime.Now - profile.HireDate).Days;
-            int yearsWorked = daysWorked / 365;
-            int totalAnnualLeave = yearsWorked * 14;
-
-            int usedAnnualLeave = 0;
-
-            decimal severancePay = yearsWorked * profile.Salary;
-
-            int noticePeriods = daysWorked / 182;
+            decimal severancePay = ((DateTime.Now - profile.HireDate).Days / 365) * profile.Salary;
+            int noticePeriods = ((DateTime.Now - profile.HireDate).Days) / 182;
             decimal noticePay = noticePeriods * (profile.Salary * 0.5m);
 
             PersonnelDetailVm vm = new PersonnelDetailVm
@@ -488,8 +483,6 @@ namespace Project.UI.Areas.Manager.Controllers
                 HireDate = profile.HireDate,
                 BirthDate = profile.BirthDate,
                 Roles = roleNames,
-                TotalAnnualLeaveDays = totalAnnualLeave,
-                UsedAnnualLeaveDays = usedAnnualLeave,
                 EstimatedSeverancePay = severancePay,
                 EstimatedNoticePay = noticePay
             };
@@ -919,15 +912,27 @@ namespace Project.UI.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteUnit(int id)
+        public async Task<IActionResult> SoftDeleteUnit(int id)
         {
-            OperationStatus result = await _unitManager.HardDeleteByIdAsync(id);
+            OperationStatus result = await _unitManager.SoftDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
                 TempData["Error"] = "Birim silinemedi. İlişkili kayıtlar olabilir.";
             else
                 TempData["Success"] = "Birim başarıyla silindi.";
 
             return RedirectToAction("UnitManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HardDeleteUnit(int id)
+        {
+            OperationStatus result = await _unitManager.HardDeleteByIdAsync(id);
+            if(result!=OperationStatus.Success)
+            {
+                TempData["Error"] = "Birim Pasife alınamadı";
+            }
+            TempData["Success"] = "Birim  başarıyla pasife alındı";
+            return RedirectToAction("UnitManager");
         }
         [HttpGet]
         public async Task<IActionResult> CategoryManagement(int? parentCategoryId = null)
@@ -1226,34 +1231,27 @@ namespace Project.UI.Areas.Manager.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> DeleteCategory(int id)
+       public async Task<IActionResult> SofteDeleteCategory(int id)
         {
-            List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
-            bool hasSubCategory = allCategories.Any(c => c.ParentCategoryId == id);
-            if (hasSubCategory)
-            {
-                TempData["Error"] = "Alt kategorisi olan bir kategori silinemez.";
-                return RedirectToAction("CategoryManagement");
-            }
-
-            List<ProductDTO> allProducts = await _productManager.GetAllAsync();
-            bool hasProduct = allProducts.Any(p => p.CategoryId == id);
-            if (hasProduct)
-            {
-                TempData["Error"] = "Ürünü olan bir kategori silinemez.";
-                return RedirectToAction("CategoryManagement");
-            }
-
             OperationStatus result = await _categoryManager.SoftDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
-            {
-                TempData["Error"] = "Kategori silinemedi.";
-            }
+                TempData["Error"] = "Kategori Pasife alınamadı.";
             else
-            {
-                TempData["Success"] = "Kategori başarıyla silindi.";
-            }
+                TempData["Success"] = "Kategori başarıyla Pasife alındı.";
             return RedirectToAction("CategoryManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HardDeleteCategory(int id)
+        {
+            OperationStatus result = await _categoryManager.HardDeleteByIdAsync(id);
+            if(result!=OperationStatus.Success)
+            {
+                TempData["Error"] = "Kategori Silinemedi";
+
+            }
+            TempData["Success"] = "Kategori Silme başarılı";
+            return RedirectToAction("CategoryManager");
         }
 
         [HttpGet]
@@ -1352,6 +1350,28 @@ namespace Project.UI.Areas.Manager.Controllers
             TempData["Success"] = "Menü başarıyla güncellendi.";
             return RedirectToAction("MenuManagement");
         }
+
+        [HttpPost]
+        public async Task <IActionResult> HardDeleteMenu(int id)
+        {
+            OperationStatus result = await _menuManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Menü silinemedi.";
+            else
+                TempData["Success"] = "Menü başarıyla silindi.";
+            return RedirectToAction("MenuManagement");
+        }
+
+        [HttpPost] async Task<IActionResult> SoftDeleteMenu(int id)
+        {
+            OperationStatus result = await _menuManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Menü pasife alınamadı.";
+            else
+                TempData["Success"] = "Menü başarıyla pasife alındı.";
+            return RedirectToAction("MenuManagement");
+        }
+       
 
         [HttpGet]
         public async Task<IActionResult> MenuDetail(int id)
@@ -1539,6 +1559,27 @@ namespace Project.UI.Areas.Manager.Controllers
             TempData["Success"] = "Menü ürünü başarıyla güncellendi.";
             return RedirectToAction("MenuProductManagement");
         }
+        [HttpPost]
+        public async Task<IActionResult> HardDeleteMenuProduct(int id)
+        {
+            OperationStatus result = await _menuProductManager.HardDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Menü ürünü silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Menü ürünü kalıcı olarak silindi.";
+            return RedirectToAction("MenuProductManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteMenuProduct(int id)
+        {
+            OperationStatus result = await _menuProductManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Menü ürünü pasife alınamadı.";
+            else
+                TempData["Success"] = "Menü ürünü pasife alındı.";
+            return RedirectToAction("MenuProductManagement");
+        }
 
         [HttpGet]
         public async Task<IActionResult> MenuProductDetail(int id)
@@ -1566,27 +1607,33 @@ namespace Project.UI.Areas.Manager.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> PurchaseInvoiceList(int? supplierId = null, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<IActionResult> PurchaseInvoiceList(int? SelectedSupplierId = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             List<OrderDTO> allInvoices = await _orderManager.WhereAsync(o =>
                 o.Type == OrderType.Purchase &&
-                (!supplierId.HasValue || o.SupplierId == supplierId) &&
+                (!SelectedSupplierId.HasValue || o.SupplierId == SelectedSupplierId) &&
                 (!startDate.HasValue || o.OrderDate >= startDate) &&
                 (!endDate.HasValue || o.OrderDate <= endDate)
             );
 
             List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
 
+            foreach (var invoice in allInvoices)
+            {
+                invoice.SupplierName = suppliers.FirstOrDefault(s => s.Id == invoice.SupplierId)?.SupplierName;
+            }
+
             PurchaseInvoiceListVm vm = new PurchaseInvoiceListVm
             {
                 Invoices = allInvoices,
-                SelectedSupplierId = supplierId,
+                SelectedSupplierId = SelectedSupplierId,
                 StartDate = startDate,
                 EndDate = endDate,
                 SupplierList = suppliers.Select(s => new SelectListItem
                 {
                     Value = s.Id.ToString(),
-                    Text = s.SupplierName
+                    Text = s.SupplierName,
+                    Selected = SelectedSupplierId.HasValue && s.Id == SelectedSupplierId.Value
                 }).ToList()
             };
 
@@ -1770,11 +1817,11 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("PurchaseInvoiceList");
         }
         [HttpGet]
-        public async Task<IActionResult> SaleInvoiceList(int? tableId = null, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<IActionResult> SaleInvoiceList(int? SelectedTableId = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             List<OrderDTO> allInvoices = await _orderManager.WhereAsync(o =>
                 o.Type == OrderType.Sale &&
-                (!tableId.HasValue || o.TableId == tableId) &&
+                (!SelectedTableId.HasValue || o.TableId == SelectedTableId) &&
                 (!startDate.HasValue || o.OrderDate >= startDate) &&
                 (!endDate.HasValue || o.OrderDate <= endDate)
             );
@@ -1784,13 +1831,14 @@ namespace Project.UI.Areas.Manager.Controllers
             SaleInvoiceListVm vm = new SaleInvoiceListVm
             {
                 Invoices = allInvoices,
-                SelectedTableId = tableId,
+                SelectedTableId = SelectedTableId,
                 StartDate = startDate,
                 EndDate = endDate,
                 TableList = tables.Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
-                    Text = t.TableName
+                    Text = !string.IsNullOrWhiteSpace(t.TableName) ? t.TableName : t.TableNumber,
+                    Selected = SelectedTableId.HasValue && t.Id == SelectedTableId.Value
                 }).ToList()
             };
 
@@ -2060,7 +2108,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> DeleteSupplier(int id)
+        public async Task<IActionResult> HardDeleteSupplier(int id)
         {
             OperationStatus result = await _supplierManager.HardDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
@@ -2068,6 +2116,17 @@ namespace Project.UI.Areas.Manager.Controllers
             else
                 TempData["Success"] = "Tedarikçi başarıyla silindi.";
 
+            return RedirectToAction("SupplierManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteSupplier(int id)
+        {
+            OperationStatus result = await _supplierManager.SoftDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Tedarikçi silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Tedarikçi başarıyla silindi.";
             return RedirectToAction("SupplierManagement");
         }
         [HttpGet]
@@ -2115,15 +2174,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> AddTable()
         {
-            List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
-            TableEditVm vm = new TableEditVm
-            {
-                WaiterList = waiters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.UserName
-                }).ToList()
-            };
+            TableEditVm vm = new TableEditVm();
             return View(vm);
         }
 
@@ -2132,32 +2183,19 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             if (!ModelState.IsValid)
             {
-                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
-                vm.WaiterList = waiters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.UserName
-                }).ToList();
                 return View(vm);
             }
 
             TableDTO dto = new TableDTO
             {
                 TableNumber = vm.TableNumber,
-                TableName = vm.TableName,
-                WaiterId = vm.WaiterId
+                TableName = vm.TableName
             };
 
             OperationStatus result = await _tableManager.CreateAsync(dto);
             if (result != OperationStatus.Success)
             {
                 ModelState.AddModelError("", "Masa eklenemedi.");
-                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
-                vm.WaiterList = waiters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.UserName
-                }).ToList();
                 return View(vm);
             }
 
@@ -2172,19 +2210,11 @@ namespace Project.UI.Areas.Manager.Controllers
             if (table == null)
                 return NotFound();
 
-            List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
-
             TableEditVm vm = new TableEditVm
             {
                 Id = table.Id,
                 TableNumber = table.TableNumber,
-                TableName = table.TableName,
-                WaiterId = table.WaiterId,
-                WaiterList = waiters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.UserName
-                }).ToList()
+                TableName = table.TableName
             };
 
             return View(vm);
@@ -2195,12 +2225,6 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             if (!ModelState.IsValid)
             {
-                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
-                vm.WaiterList = waiters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.UserName
-                }).ToList();
                 return View(vm);
             }
 
@@ -2212,20 +2236,13 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 Id = vm.Id,
                 TableNumber = vm.TableNumber,
-                TableName = vm.TableName,
-                WaiterId = vm.WaiterId
+                TableName = vm.TableName
             };
 
             OperationStatus result = await _tableManager.UpdateAsync(original, updated);
             if (result != OperationStatus.Success)
             {
                 ModelState.AddModelError("", "Masa güncellenemedi.");
-                List<AppUserDTO> waiters = await _appUserManager.GetAllAsync();
-                vm.WaiterList = waiters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.UserName
-                }).ToList();
                 return View(vm);
             }
 
@@ -2234,14 +2251,26 @@ namespace Project.UI.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteTable(int id)
+        public async Task<IActionResult> HardDeleteTable(int id)
         {
+
             OperationStatus result = await _tableManager.SoftDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
                 TempData["Error"] = "Masa silinemedi. İlişkili kayıtlar olabilir.";
             else
                 TempData["Success"] = "Masa başarıyla silindi.";
 
+            return RedirectToAction("TableManagement");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteTable(int id)
+        {
+            OperationStatus result = await _tableManager.HardDeleteByIdAsync(id);
+            if (result != OperationStatus.Success)
+                TempData["Error"] = "Masa silinemedi. İlişkili kayıtlar olabilir.";
+            else
+                TempData["Success"] = "Masa başarıyla silindi.";
             return RedirectToAction("TableManagement");
         }
     }

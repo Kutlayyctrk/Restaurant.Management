@@ -7,7 +7,5 @@ namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.TableManagement
         public int Id { get; set; }
         public string TableNumber { get; set; }
         public string TableName { get; set; }
-        public int? WaiterId { get; set; }
-        public List<SelectListItem>? WaiterList { get; set; }
     }
 }

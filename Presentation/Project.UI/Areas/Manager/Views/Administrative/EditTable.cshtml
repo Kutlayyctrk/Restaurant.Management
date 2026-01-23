@@ -3,71 +3,65 @@
     ViewData["Title"] = "Masa Düzenle";
 }
 
-<div class="container mt-4" style="max-width: 800px;">
-    @* Başlık Bölümü *@
+<style>
+    .standard-form .form-control,
+    .standard-form .form-select {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+</style>
+
+<div class="container mt-4" style="max-width: 700px;">
     <div class="mb-4 text-center">
-        <h2 class="fw-light">Masa Düzenle</h2>
+        <h2>Masa Düzenle</h2>
     </div>
 
-    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-    @* Ana Form Kartı *@
-    <form asp-action="EditTable" method="post" class="card shadow-sm border-0">
+    <form asp-action="EditTable" method="post" class="card shadow-sm p-4 standard-form">
         @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
 
-        <div class="card-body p-4">
-            <div class="row g-4">
-       
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label asp-for="TableNumber" class="form-label fw-bold small text-muted">Masa No</label>
-                        <input asp-for="TableNumber" class="form-control" placeholder="Örn: 5" />
-                        <span asp-validation-for="TableNumber" class="text-danger small"></span>
-                    </div>
-                    <div class="mb-0">
-                        <label asp-for="TableName" class="form-label fw-bold small text-muted">Masa Adı</label>
-                        <input asp-for="TableName" class="form-control" placeholder="Örn: Bahçe-12" />
-                        <span asp-validation-for="TableName" class="text-danger small"></span>
-                    </div>
-                </div>
-
-            
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label asp-for="WaiterId" class="form-label fw-bold small text-muted">Sorumlu Garson</label>
-                        <select asp-for="WaiterId" asp-items="Model.WaiterList" class="form-select">
-                            <option value="">Garson Seçiniz</option>
-                        </select>
-                        <span asp-validation-for="WaiterId" class="text-danger small"></span>
-                    </div>
-                    <div class="mt-4 p-3 bg-light rounded shadow-sm border">
-                        <p class="small text-muted mb-0">
-                            <i class="bi bi-info-circle me-1"></i>
-                            Masa durumları (Dolu/Boş) satış ekranından otomatik yönetilir.
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <div class="mb-3">
+            <label asp-for="TableNumber" class="form-label">Masa Numarası</label>
+            <input asp-for="TableNumber" class="form-control" />
+            <span asp-validation-for="TableNumber" class="text-danger"></span>
         </div>
 
-       
-        <div class="card-footer bg-light border-0 d-flex justify-content-between align-items-center py-3">
-         
-            <div>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="if(confirm('Masa kaydını silmek istediğinize emin misiniz?')) { document.getElementById('hardDeleteForm').submit(); }">
-                    Masa Sil
-                </button>
-            </div>
+        <div class="mb-3">
+            <label asp-for="TableName" class="form-label">Masa Adı / Tanımı</label>
+            <input asp-for="TableName" class="form-control" />
+            <span asp-validation-for="TableName" class="text-danger"></span>
+        </div>
 
-          
+        <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-2">
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary px-4">Kaydet</button>
-                <a asp-action="TableManagement" class="btn btn-secondary px-4">Vazgeç</a>
+                <!-- Pasife Al (Soft Delete) Butonu -->
+                <form asp-action="SoftDeleteTable" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-warning btn-sm"
+                            onclick="return confirm('Bu masayı pasife almak istediğinize emin misiniz?');">
+                        Pasife Al
+                    </button>
+                </form>
+                <!-- Sil (Hard Delete) Butonu -->
+                <form asp-action="HardDeleteTable" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Bu masayı silmek istediğinize emin misiniz?');">
+                        Sil
+                    </button>
+                </form>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Kaydet</button>
+                <a asp-action="TableManagement" class="btn btn-outline-secondary">İptal</a>
+                <a asp-action="TableManagement" class="btn btn-secondary">Geri</a>
             </div>
         </div>
     </form>
-
-  
-    <form id="hardDeleteForm" asp-action="HardDeleteTable" asp-route-id="@Model.Id" method="post" style="display:none;"></form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

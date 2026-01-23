@@ -4,46 +4,80 @@
     ViewData["Title"] = "Tedarikçi Düzenle";
 }
 
-<h2>Tedarikçi Düzenle</h2>
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="mb-4 text-center">
+        <h2 class="fw-light">Tedarikçi Düzenle</h2>
+    </div>
 
-<form asp-action="EditSupplier" method="post" class="mt-4">
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <input type="hidden" asp-for="Id" />
+    <form asp-action="EditSupplier" method="post" class="card shadow-sm border-0">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
 
-    <div class="mb-3">
-        <label asp-for="SupplierName" class="form-label"></label>
-        <input asp-for="SupplierName" class="form-control" />
-        <span asp-validation-for="SupplierName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="ContactName" class="form-label"></label>
-        <input asp-for="ContactName" class="form-control" />
-        <span asp-validation-for="ContactName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <textarea asp-for="Address" class="form-control"></textarea>
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
-    <div class="d-flex justify-content-end gap-2">
-        <a asp-action="SupplierManagement" class="btn btn-secondary">Geri</a>
-        <button type="submit" class="btn btn-primary">Kaydet</button>
-        <form asp-action="DeleteSupplier" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Tedarikçiyi silmek istediğinize emin misiniz?');">
-            <button type="submit" class="btn btn-danger">Sil</button>
-        </form>
-    </div>
-</form>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="SupplierName" class="form-label fw-bold small text-muted">Tedarikçi Adı</label>
+                        <input asp-for="SupplierName" class="form-control" />
+                        <span asp-validation-for="SupplierName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ContactName" class="form-label fw-bold small text-muted">Yetkili Kişi</label>
+                        <input asp-for="ContactName" class="form-control" />
+                        <span asp-validation-for="ContactName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-0">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold small text-muted">Telefon</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-bold small text-muted">E-posta</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-0">
+                        <label asp-for="Address" class="form-label fw-bold small text-muted">Adres</label>
+                        <textarea asp-for="Address" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light border-0 d-flex justify-content-between align-items-center py-3">
+            <div class="d-flex gap-2">
+                <!-- Pasife Al (Soft Delete) Butonu -->
+                <form id="softDeleteSupplierForm" asp-action="SoftDeleteSupplier" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-warning btn-sm"
+                            onclick="return confirm('Tedarikçiyi pasife almak istediğinize emin misiniz?');">
+                        Pasife Al
+                    </button>
+                </form>
+                <!-- Sil (Hard Delete) Butonu -->
+                <form id="deleteSupplierForm" asp-action="HardDeleteSupplier" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                            onclick="return confirm('Tedarikçiyi silmek istediğinize emin misiniz?');">
+                        Sil
+                    </button>
+                </form>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">Kaydet</button>
+                <a asp-action="SupplierManagement" class="btn btn-secondary px-4">İptal</a>
+            </div>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

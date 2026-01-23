@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Project.Application.DTOs
 {
-    public class TableDTO:BaseDto
+    public class TableDTO : BaseDto
     {
         public string TableNumber { get; set; }
         public string TableName { get; set; }

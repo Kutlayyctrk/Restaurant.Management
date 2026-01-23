@@ -15,28 +15,35 @@
         </div>
     </div>
 
-   
+
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body p-3">
-            <form asp-action="PurchaseInvoiceList" method="get" class="row g-3 align-items-end">
-                <div class="col-md-3">
+          
+            <form asp-action="PurchaseInvoiceList" method="get" class="row row-cols-auto g-3 align-items-end">
+
+                <div style="min-width: 250px;">
                     <label class="form-label fw-bold small text-muted">Tedarikçi</label>
                     <select asp-for="SelectedSupplierId" asp-items="Model.SupplierList" class="form-select">
                         <option value="">Tedarikçi Seçiniz</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+
+                <div>
                     <label class="form-label fw-bold small text-muted">Başlangıç Tarihi</label>
                     <input asp-for="StartDate" type="date" class="form-control" />
                 </div>
-                <div class="col-md-2">
+
+                <div>
                     <label class="form-label fw-bold small text-muted">Bitiş Tarihi</label>
                     <input asp-for="EndDate" type="date" class="form-control" />
                 </div>
-                <div class="col-md-auto">
+
+              
+                <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-secondary px-4">Filtrele</button>
                     <a asp-action="PurchaseInvoiceList" class="btn btn-outline-secondary px-3">Temizle</a>
                 </div>
+
             </form>
         </div>
     </div>
@@ -63,7 +70,7 @@
                         {
                             <tr>
                                 <td class="ps-4 text-muted">@i</td>
-                                <td class="fw-medium">@invoice.SupplierId</td>
+                                <td class="fw-medium">@invoice.SupplierName</td>
                                 <td class="small">@invoice.OrderDate.ToShortDateString()</td>
                                 <td class="fw-bold text-dark">@invoice.TotalPrice.ToString("C2")</td>
                                 <td class="text-center">

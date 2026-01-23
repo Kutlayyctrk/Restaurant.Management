@@ -1,4 +1,5 @@
 ﻿@model CategoryEditVm
+
 @{
     ViewData["Title"] = "Kategori Düzenle";
 }
@@ -8,48 +9,49 @@
         <h2 class="fw-light">Kategori Düzenle</h2>
     </div>
 
-    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <form asp-action="EditCategory" method="post" class="card shadow-sm border-0">
+    <form asp-action="EditCategory" method="post" class="card shadow-sm border-0 w-100 overflow-hidden">
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.Id)
+        <input type="hidden" asp-for="Id" />
 
         <div class="card-body p-4">
             <div class="row g-4">
-             
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        <label asp-for="CategoryName" class="form-label fw-bold small text-muted">Kategori Adı</label>
-                        <input asp-for="CategoryName" class="form-control" />
-                        <span asp-validation-for="CategoryName" class="text-danger small"></span>
-                    </div>
+                    <label asp-for="CategoryName" class="form-label fw-bold small text-muted">Kategori Adı</label>
+                    <input asp-for="CategoryName" class="form-control" placeholder="Kategori adını giriniz" />
+                    <span asp-validation-for="CategoryName" class="text-danger small"></span>
                 </div>
+
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        <label asp-for="ParentCategoryId" class="form-label fw-bold small text-muted">Üst Kategori</label>
-                        <select asp-for="ParentCategoryId" class="form-select" asp-items="Model.ParentCategoryList"></select>
-                        <span asp-validation-for="ParentCategoryId" class="text-danger small"></span>
-                    </div>
+                    <label asp-for="ParentCategoryId" class="form-label fw-bold small text-muted">Üst Kategori</label>
+                    <select asp-for="ParentCategoryId" asp-items="Model.ParentCategoryList" class="form-select">
+                        <option value="">Üst Kategori Seçme</option>
+                    </select>
+                    <span asp-validation-for="ParentCategoryId" class="text-danger small"></span>
                 </div>
 
                 <div class="col-12">
-                    <div class="mb-0">
-                        <label asp-for="Description" class="form-label fw-bold small text-muted">Açıklama</label>
-                        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
-                        <span asp-validation-for="Description" class="text-danger small"></span>
-                    </div>
+                    <label asp-for="Description" class="form-label fw-bold small text-muted">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control w-100" rows="4"
+                              style="resize: vertical; min-height: 100px; max-height: 300px;"
+                              placeholder="Kategori hakkında kısa açıklama..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
                 </div>
             </div>
         </div>
 
         <div class="card-footer bg-light border-0 d-flex justify-content-between align-items-center py-3">
-         
-            <div>
-                <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="if(confirm('Bu kategoriyi ve varsa alt kategorilerini silmek istediğinize emin misiniz?')) { document.getElementById('deleteCategoryForm').submit(); }">
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-danger btn-sm px-3"
+                        onclick="if(confirm('Kategoriyi silmek istediğinize emin misiniz?')) { document.getElementById('deleteCategoryForm').submit(); }">
                     Kategoriyi Sil
                 </button>
+                <button type="button" class="btn btn-outline-warning btn-sm px-3"
+                        onclick="if(confirm('Kategoriyi pasife almak istediğinize emin misiniz?')) { document.getElementById('softDeleteCategoryForm').submit(); }">
+                    Pasife Al
+                </button>
             </div>
-
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary px-4">Kaydet</button>
                 <a asp-action="CategoryManagement" class="btn btn-secondary px-4">Geri</a>
@@ -57,6 +59,14 @@
         </div>
     </form>
 
-
-    <form id="deleteCategoryForm" asp-action="DeleteCategory" asp-route-id="@Model.Id" method="post" style="display:none;"></form>
+    <form id="deleteCategoryForm" asp-action="HardDeleteCategory" method="post" style="display:none;">
+        <input type="hidden" name="id" value="@Model.Id" />
+    </form>
+    <form id="softDeleteCategoryForm" asp-action="SofteDeleteCategory" method="post" style="display:none;">
+        <input type="hidden" name="id" value="@Model.Id" />
+    </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

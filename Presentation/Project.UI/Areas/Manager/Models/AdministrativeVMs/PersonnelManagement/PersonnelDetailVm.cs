@@ -13,16 +13,8 @@ namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement
         public DateTime HireDate { get; set; }
         public DateTime BirthDate { get; set; }
         public List<string> Roles { get; set; }
-
-
-        public int TotalAnnualLeaveDays { get; set; }
-        public int UsedAnnualLeaveDays { get; set; }
-        public int RemainingAnnualLeaveDays => TotalAnnualLeaveDays - UsedAnnualLeaveDays;
-
-
         public decimal EstimatedSeverancePay { get; set; }
         public decimal EstimatedNoticePay { get; set; }
-        public decimal EstimatedTotalPay => EstimatedSeverancePay + EstimatedNoticePay;
     }
 
 }

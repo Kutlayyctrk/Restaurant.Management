@@ -5,7 +5,6 @@
 }
 
 <style>
-
     .standard-form .form-control,
     .standard-form .form-select,
     .standard-form textarea {
@@ -14,7 +13,6 @@
         box-sizing: border-box !important;
     }
 
-   
     .standard-form {
         overflow: hidden;
     }
@@ -31,31 +29,31 @@
 
         <div class="mb-3">
             <label asp-for="SupplierName" class="form-label fw-bold">Tedarikçi Adı</label>
-            <input asp-for="SupplierName" class="form-control" placeholder="Tedarikçi adını giriniz" />
+            <input asp-for="SupplierName" class="form-control" />
             <span asp-validation-for="SupplierName" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="ContactName" class="form-label fw-bold">Yetkili Kişi</label>
-            <input asp-for="ContactName" class="form-control" placeholder="İletişim kurulacak kişi" />
+            <input asp-for="ContactName" class="form-control" />
             <span asp-validation-for="ContactName" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="PhoneNumber" class="form-label fw-bold">Telefon Numarası</label>
-            <input asp-for="PhoneNumber" class="form-control" placeholder="05xx xxx xx xx" />
+            <input asp-for="PhoneNumber" class="form-control" />
             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Email" class="form-label fw-bold">E-posta</label>
-            <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" />
+            <input asp-for="Email" type="email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Address" class="form-label fw-bold">Adres</label>
-            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Açık adres bilgilerini buraya yazınız..."></textarea>
+            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
             <span asp-validation-for="Address" class="text-danger"></span>
         </div>
 
