@@ -1753,52 +1753,71 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return View(vm);
         }
+        // alım Faturası İçin Özel İsimli liste Doldurma Metotu
+        private async Task PopulatePurchaseLists(PurchaseInvoiceEditVm vm)
+        {
+            List<SupplierDTO>  suppliers = await _supplierManager.GetAllAsync();
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            vm.SupplierList = suppliers.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.SupplierName
+            }).ToList();
+
+            vm.ProductList = products.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.ProductName
+            }).ToList();
+        }
+
+        // satış Faturası İçin Özel İsimli liste Doldurma Metotu
+        private async Task PopulateSaleLists(SaleInvoiceEditVm vm)
+        {
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+
+            vm.ProductList = products.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.ProductName
+            }).ToList();
+
+            OrderDTO original = await _orderManager.GetByIdAsync(vm.Id ?? 0);
+            if (original != null)
+            {
+                vm.TableName = original.TableName;
+                vm.WaiterName = original.WaiterFullName;
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> EditPurchaseInvoice(PurchaseInvoiceEditVm vm)
         {
             if (!ModelState.IsValid)
             {
-                List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                vm.SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList();
-                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                await PopulatePurchaseLists(vm);
                 return View(vm);
             }
 
-            OrderDTO original = await _orderManager.GetByIdAsync(vm.Id ?? 0);
-            if (original == null || original.Type != OrderType.Purchase)
-            {
-                return NotFound();
-            }
-
-            if(vm.Details!=null)
-            {
-                foreach (OrderDetailDTO detail in vm.Details)
-                {
-                    detail.OrderId = original.Id;
-                }
-            }
-
+           
             OrderDTO updated = new OrderDTO
             {
-                Id = original.Id,
+                Id = vm.Id ?? 0,
                 SupplierId = vm.SupplierId,
                 OrderDate = vm.OrderDate,
                 TotalPrice = vm.TotalPrice,
                 Type = OrderType.Purchase,
-                OrderState = original.OrderState,
-                OrderDetails = vm.Details ?? new List<OrderDetailDTO>() 
+                OrderDetails = vm.Details ?? new List<OrderDetailDTO>()
             };
 
-            OperationStatus result = await _orderManager.UpdateAsync(original, updated);
+          
+            OperationStatus result = await _orderManager.UpdateAsync(new OrderDTO { Id = vm.Id ?? 0 }, updated);
+
             if (result != OperationStatus.Success)
             {
                 ModelState.AddModelError("", "Fatura güncellenemedi.");
-                List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                vm.SupplierList = suppliers.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.SupplierName }).ToList();
-                vm.ProductList = products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.ProductName }).ToList();
+                await PopulatePurchaseLists(vm);
                 return View(vm);
             }
 
@@ -1928,24 +1947,18 @@ namespace Project.UI.Areas.Manager.Controllers
             return View(vm);
         }
 
+     
         [HttpPost]
         public async Task<IActionResult> EditSaleInvoice(SaleInvoiceEditVm vm)
         {
             if (!ModelState.IsValid)
             {
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                vm.ProductList = products.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.ProductName
-                }).ToList();
+             
+                await PopulateSaleLists(vm);
                 return View(vm);
             }
 
-            OrderDTO original = await _orderManager.GetByIdAsync(vm.Id ?? 0);
-            if (original == null || original.Type != OrderType.Sale)
-                return NotFound();
-
+         
             OrderDTO updated = new OrderDTO
             {
                 Id = vm.Id ?? 0,
@@ -1954,20 +1967,16 @@ namespace Project.UI.Areas.Manager.Controllers
                 OrderDate = vm.OrderDate,
                 TotalPrice = vm.TotalPrice,
                 Type = OrderType.Sale,
-                OrderState = original.OrderState,
-                OrderDetails = vm.Details ??new List<OrderDetailDTO>()
+                OrderDetails = vm.Details ?? new List<OrderDetailDTO>()
             };
 
-            OperationStatus result = await _orderManager.UpdateAsync(original, updated);
+           
+            OperationStatus result = await _orderManager.UpdateAsync(new OrderDTO { Id = vm.Id ?? 0 }, updated);
+
             if (result != OperationStatus.Success)
             {
-                ModelState.AddModelError("", "Fatura güncellenemedi.");
-                List<ProductDTO> products = await _productManager.GetAllAsync();
-                vm.ProductList = products.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.ProductName
-                }).ToList();
+                ModelState.AddModelError("", "Satış faturası güncellenirken bir hata oluştu.");
+                await PopulateSaleLists(vm);
                 return View(vm);
             }
 

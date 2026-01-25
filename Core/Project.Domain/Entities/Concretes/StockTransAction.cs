@@ -13,10 +13,10 @@ namespace Project.Domain.Entities.Concretes
         public int ProductId { get; set; }
 
         public decimal Quantity { get; set; }
-        public int? SupplierId { get; set; } //İade işlemi için
+        public int? SupplierId { get; set; }
         public int? OrderDetailId { get; set; }
-        public TransActionType Type { get; set; }//işlem adı(iade, satış, zayi vb)
-        public string? Description { get; set; } //iade sebebi zayi sebebi girilebilir.
+        public TransActionType Type { get; set; }
+        public string? Description { get; set; }
         public decimal UnitPrice { get; set; }
 
         //Relational Properties
