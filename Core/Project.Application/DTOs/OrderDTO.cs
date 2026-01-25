@@ -19,6 +19,6 @@ namespace Project.Application.DTOs
         public OrderStatus OrderState { get; set; }
         public OrderType Type { get; set; }
 
-        public List<OrderDetailDto>? OrderDetails { get; set; }
+        public List<OrderDetailDTO>? OrderDetails { get; set; }
     }
 }

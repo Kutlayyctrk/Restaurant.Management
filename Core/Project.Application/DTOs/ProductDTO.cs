@@ -15,8 +15,9 @@ namespace Project.Application.DTOs
         public int UnitId { get; set; }
         public int CategoryId { get; set; }
 
-        public string? UnitName { get; set; }      // Örn: "Adet", "Kilogram"
-        public string? CategoryName { get; set; }  // Örn: "Ana Yemekler"
+
+        public string? UnitName { get; set; }      
+        public string? CategoryName { get; set; }  
         public bool HasRecipe => RecipeId != null;
         public int? RecipeId { get; set; }
 

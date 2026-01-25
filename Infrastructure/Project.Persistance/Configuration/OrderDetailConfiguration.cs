@@ -20,12 +20,15 @@ namespace Project.Persistance.Configuration
                 x.OrderId,
                 x.ProductId
             }).IsUnique();
-            builder.Property(x => x.UnitPrice).HasColumnType("money");
+            builder.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
 
 
-            builder.HasOne(x => x.Order).WithMany(x => x.OrderDetails).HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Restrict); 
+            builder.HasOne(x => x.Order).WithMany(x => x.OrderDetails).HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade); 
             builder.HasOne(x => x.Product).WithMany(x => x.OrderDetails).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
-            builder.HasMany(x => x.StockTransActions).WithOne(x => x.OrderDetail).HasForeignKey(x => x.OrderDeatilId).OnDelete(DeleteBehavior.Restrict); 
+            builder.HasMany(x => x.StockTransActions).WithOne(x => x.OrderDetail).HasForeignKey(x => x.OrderDetailId).OnDelete(DeleteBehavior.Restrict); 
+            builder.Property(x=>x.DiscountAmount).HasColumnType("decimal(18,2)");
+            builder.Property(x=>x.DiscountRate).HasColumnType("decimal(5,2)");
+
         }
     }
 }

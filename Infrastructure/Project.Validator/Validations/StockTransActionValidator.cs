@@ -1,10 +1,6 @@
 ﻿using FluentValidation;
 using Project.Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Project.Domain.Enums;
 
 namespace Project.Validator.Validations
 {
@@ -12,44 +8,35 @@ namespace Project.Validator.Validations
     {
         public StockTransActionValidator()
         {
+         
             RuleFor(x => x.ProductId)
-               .GreaterThan(0).WithMessage("Ürün Id pozitif olmalıdır.");
+                .NotEmpty().WithMessage("İşlem yapılacak ürün seçilmelidir.")
+                .GreaterThan(0).WithMessage("Geçersiz ürün referansı.");
 
+            // Miktar Kontrolü
             RuleFor(x => x.Quantity)
-                .GreaterThan(0m).WithMessage("Miktar 0'dan büyük olmalıdır.");
+                .NotEmpty().WithMessage("Miktar alanı boş bırakılamaz.")
+                .NotEqual(0).WithMessage("İşlem miktarı sıfır olamaz.");
 
-            RuleFor(x => x.TransActionType)
-                .NotEmpty().WithMessage("Stok hareket tipi boş olamaz.")
-                .MaximumLength(30).WithMessage("Stok hareket tipi en fazla 30 karakter olabilir.")
-                .Must(t => t == t?.Trim()).WithMessage("Stok hareket tipi başta veya sonda boşluk içeremez.");
-            RuleFor(x => x.InvoiceDate)
-    .NotNull().WithMessage("Fatura tarihi zorunludur.");
+         
+            RuleFor(x => x.UnitPrice)
+                .GreaterThanOrEqualTo(0).WithMessage("Birim fiyat negatif olamaz.");
 
-            When(x => x.SupplierId.HasValue, () =>
-            {
-                RuleFor(x => x.SupplierId.Value)
-                    .GreaterThan(0).WithMessage("SupplierId pozitif bir değer olmalıdır.");
-            });
+          
+            RuleFor(x => x.Type)
+                .IsInEnum().WithMessage("Geçersiz stok işlem tipi.");
 
-            When(x => x.AppUserId.HasValue, () =>
-            {
-                RuleFor(x => x.AppUserId.Value)
-                    .GreaterThan(0).WithMessage("AppUserId pozitif bir değer olmalıdır.");
-            });
+            
 
-            When(x => !string.IsNullOrWhiteSpace(x.Description), () =>
-            {
-                RuleFor(x => x.Description)
-                    .MaximumLength(500).WithMessage("Açıklama en fazla 500 karakter olabilir.")
-                    .Must(d => d == d?.Trim()).WithMessage("Açıklama başta veya sonda boşluk içeremez.");
-            });
-            When(x => !string.IsNullOrWhiteSpace(x.TransActionType) &&
-          (x.TransActionType.Contains("Satınalma") || x.TransActionType.Contains("İade")),
-    () =>
-    {
-        RuleFor(x => x.SupplierId)
-            .NotNull().WithMessage("Satınalma/İade işlemlerinde tedarikçi zorunludur.");
-    });
+           
+            RuleFor(x => x.SupplierId)
+                .NotEmpty().When(x => x.Type == TransActionType.Return) 
+                .WithMessage("İade işlemlerinde tedarikçi seçilmesi zorunludur.");
+
+            RuleFor(x => x.Description)
+                .NotEmpty().When(x => x.Type == TransActionType.Waste) 
+                .WithMessage("Zayi (kayıp) işlemlerinde açıklama girilmesi zorunludur.")
+                .MaximumLength(500).WithMessage("Açıklama 500 karakterden fazla olamaz.");
         }
     }
 }

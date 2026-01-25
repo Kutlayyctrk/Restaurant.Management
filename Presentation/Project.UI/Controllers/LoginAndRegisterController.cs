@@ -95,7 +95,6 @@ namespace Project.UI.Controllers
             {
                 UserName = vM.UserName,
                 Email = vM.Email,
-                ConfirmEmail = vM.ConfirmedEmail,
                 Password = vM.Password,
                 RoleIds = new List<int> { vM.Role }
             };

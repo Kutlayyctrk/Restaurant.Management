@@ -321,6 +321,7 @@ namespace Project.Persistance.Migrations
                     IsExtra = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CanBeProduced = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsReadyMade = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UnitId = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
@@ -452,47 +453,6 @@ namespace Project.Persistance.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockTransActions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: true),
-                    AppUserId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    InvoiceDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TransActionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StockTransActions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StockTransActions_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_StockTransActions_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_StockTransActions_Suppliers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "Suppliers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderDetails",
                 columns: table => new
                 {
@@ -501,8 +461,10 @@ namespace Project.Persistance.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "money", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DetailState = table.Column<int>(type: "int", nullable: false),
+                    DiscountRate = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -563,22 +525,63 @@ namespace Project.Persistance.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StockTransActions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    SupplierId = table.Column<int>(type: "int", nullable: true),
+                    OrderDetailId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockTransActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockTransActions_OrderDetails_OrderDetailId",
+                        column: x => x.OrderDetailId,
+                        principalTable: "OrderDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockTransActions_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockTransActions_Suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "Suppliers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "DeletionDate", "InsertedDate", "Name", "NormalizedName", "Status", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, "05a703d0-13d6-4305-9434-84fd11fbe9fb", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", "ADMIN", 1, null },
-                    { 2, "8e1d8b06-e6f9-4bcc-8cd9-bf00e54e0309", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Restaurant Muduru", "RESTAURANT MUDURU", 1, null },
-                    { 3, "91d1bb31-71f9-4861-86d2-314558654c4a", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Insan Kaynaklari Muduru", "INSAN KAYNAKLARI MUDURU", 1, null },
-                    { 4, "a428420e-bcfd-42e0-ad7a-f86c111853a6", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mutfak Sefi", "MUTFAK SEFI", 1, null },
-                    { 5, "31ef340a-df6f-49f0-91ab-fda8ba02abc7", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bar Sefi", "BAR SEFI", 1, null },
-                    { 6, "d70015a9-761e-42b8-a7d6-1e96137c1e4e", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Asci", "ASCI", 1, null },
-                    { 7, "e676b4b5-c050-4678-8756-2f68c1943df9", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Barmen", "BARMEN", 1, null },
-                    { 8, "c2efae5d-40b6-49ca-be3c-50c0c18570be", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Garson", "GARSON", 1, null },
-                    { 9, "5b4908f1-ffaf-4db9-83fc-7315f4dfd9b3", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hizmet Personeli", "HIZMET PERSONELI", 1, null },
-                    { 10, "19dd3a0b-d714-4642-adaf-834a92780489", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Idari Personel", "IDARI PERSONEL", 1, null },
-                    { 11, "4605a6e8-d6f2-4899-b5bf-256f1fe64b31", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stajyer", "STAJYER", 1, null }
+                    { 1, "06c1484f-2abc-4eed-b232-cb55ee0db43d", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", "ADMIN", 1, null },
+                    { 2, "8044888b-64ba-4334-957c-592ee10ab3ef", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Restaurant Muduru", "RESTAURANT MUDURU", 1, null },
+                    { 3, "8169586f-d099-412d-8e88-a943f596107e", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Insan Kaynaklari Muduru", "INSAN KAYNAKLARI MUDURU", 1, null },
+                    { 4, "b9eac596-9ad1-4c1d-910c-b4858cc8307c", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mutfak Sefi", "MUTFAK SEFI", 1, null },
+                    { 5, "c86fe182-d431-4d10-8389-f9777a055f93", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bar Sefi", "BAR SEFI", 1, null },
+                    { 6, "c7600831-4e89-4d6f-b932-9eff34271b27", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Asci", "ASCI", 1, null },
+                    { 7, "1de4d4cc-f0ac-4d87-8f91-acdfb9bb68e9", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Barmen", "BARMEN", 1, null },
+                    { 8, "3d9552ce-b6fe-448e-bd33-850b98cea814", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Garson", "GARSON", 1, null },
+                    { 9, "966cb4e2-23d4-42e3-a98a-730ca6531418", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hizmet Personeli", "HIZMET PERSONELI", 1, null },
+                    { 10, "8ee423c1-21f7-4c79-b436-aa8b72e6bceb", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Idari Personel", "IDARI PERSONEL", 1, null },
+                    { 11, "53b4aee0-8bc0-48d0-927b-83e19a2fa986", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stajyer", "STAJYER", 1, null }
                 });
 
             migrationBuilder.InsertData(
@@ -586,17 +589,17 @@ namespace Project.Persistance.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DeletionDate", "Email", "EmailConfirmed", "InsertedDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Status", "TwoFactorEnabled", "UpdatedDate", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "9e031628-206e-44d4-9e72-4b6847c67dfc", null, "admin@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ADMIN", "AQAAAAIAAYagAAAAEDIP59URS/9aaXrZUM5XN8cSfiwSU/0VbFbGeRI3xXYR2gR75T3KP/gJG9MPpKN7YQ==", null, false, "8c91cf72-35f3-4b29-bf6e-c68f3da8bef9", 1, false, null, "admin" },
-                    { 2, 0, "64c28294-6904-410e-82ff-64266517795b", null, "mudur@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUDUR", "AQAAAAIAAYagAAAAELw+2crW+K2eFO2tSmmmpHbDghYgfmaQggVVmvxIZUYU9A8J/Ci279vbktiOpOC1xA==", null, false, "060dfcd1-a770-4aca-af2e-98f1dc6eba8c", 1, false, null, "mudur" },
-                    { 3, 0, "e72f0e42-a3f3-4d19-ba2f-242811759383", null, "insankaynaklari@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "INSANKAYNAKLARI", "AQAAAAIAAYagAAAAEMxW/+pHVPabMHRLoYvk2Q0iF7ayyKF434f/WMlPfBHB41mym33ui5wja3Y8KvlvJQ==", null, false, "2f88d724-2feb-49a2-96fc-0cb6aaab2a5b", 1, false, null, "insankaynaklari" },
-                    { 4, 0, "14747202-bb36-4e95-aad0-37f84cf750bf", null, "mutfaksef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUTFAKSEF", "AQAAAAIAAYagAAAAEPe+7jjSgSPqvDpK+ulhCN3mpXe4XkZgeGA8lbvLd4FWWnI6H14o4zxb7a+5jhebkA==", null, false, "ef282c99-1c30-4446-8880-6ee822cd50e6", 1, false, null, "mutfaksef" },
-                    { 5, 0, "293cb4b6-e5fc-4f11-893c-fa1bdd2045c1", null, "barsef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARSEF", "AQAAAAIAAYagAAAAEGMm9xhwMxBBWPKqoJypnO5/Xy1rON1eDunDUvsDxeKhDFibnDs2QW1EMZ2fx5tLlA==", null, false, "cf219803-e827-4ab4-9616-fdb584211a94", 1, false, null, "barsef" },
-                    { 6, 0, "48f4a386-1b6c-476c-b73c-7f863582fb28", null, "asci@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ASCI", "AQAAAAIAAYagAAAAEHul4qyYqB8yTAzeBSKjRC9S0gemaSYlR4SMzOQn1FpjySGt61W8Spevp9rD66QB0g==", null, false, "29e93dee-a6af-46ff-a35c-27783eaf41aa", 1, false, null, "asci" },
-                    { 7, 0, "b1029507-bd9d-4fc1-9257-e7ce3ced69ef", null, "barmen@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARMEN", "AQAAAAIAAYagAAAAEFaY6ml9OEPKWPwOydgdp0FlN1qydDQ0Bo0X/M63NCc7J4Ax9sRKEH/Zqp1hTKMiBw==", null, false, "36acd771-ce08-45e1-b913-0f0aa1a71de7", 1, false, null, "barmen" },
-                    { 8, 0, "5140c03a-fffc-47f5-87ed-079c6e2b94e8", null, "garson@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "GARSON", "AQAAAAIAAYagAAAAED2SGltTkEhrqlkbP+Wen8fx7+/jCrSLJwdD4trP8Q/iACzGS894bf6kvVgWZKgrMg==", null, false, "77c2452d-b10a-444c-9f69-e090a957cf08", 1, false, null, "garson" },
-                    { 9, 0, "76162319-5644-443f-8650-40b3bc401a07", null, "idaripersonel@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "IDARIPERSONEL", "AQAAAAIAAYagAAAAEBGwCDEPcJDKp+hTZzFseSILSfZOzUKlMKZGNn/zcDSRISk3kjIxuf0fzvtGRZznXQ==", null, false, "380effba-4be1-46df-bf44-db8b0bbc5881", 1, false, null, "idaripersonel" },
-                    { 10, 0, "66e10fa6-fdac-4458-8448-c8ba34579f0a", null, "hizmetpersoneli@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "HIZMETPERSONELI", "AQAAAAIAAYagAAAAEFesxaH1rjVIVb+LHrv1SAnl/RklwjJFFs3Mb/VCeQVPeSFU0ykCeIwBLBfByRIXAQ==", null, false, "00967073-c23b-405a-a900-7746dc0f8983", 1, false, null, "hizmetpersoneli" },
-                    { 11, 0, "48a1f04c-cf79-4dac-bd50-4bdc1c4eed73", null, "stajyer@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "STAJYER", "AQAAAAIAAYagAAAAEACSmyq/UZxW2tvJvwiT2T6u048C+OIamO6d3Y+P+pUqytr+rs7KyQAtJHQW96rZBA==", null, false, "87feb4e4-18dd-466b-ada1-c69373cbfb11", 1, false, null, "stajyer" }
+                    { 1, 0, "bcdb6f9b-b80f-42e4-a6a6-4f65fafa294f", null, "admin@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ADMIN", "AQAAAAIAAYagAAAAECJ5SesDY2Xxj7mZ75J/mxfrp4KjUEnEqS7mMO6LRAoqjI+SKaUxrQxM9l4pkGDORg==", null, false, "7c40ffcd-566e-4491-9820-853d3be94b56", 1, false, null, "admin" },
+                    { 2, 0, "3a2647b9-4eea-4461-aa22-aadc8ef98724", null, "mudur@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUDUR", "AQAAAAIAAYagAAAAECAMCaegx8pIFASYiJfrkXXqTlozYnk+TCscFcq/HSYDfDgfu3lUrxfvwdHI8MKGVQ==", null, false, "dba78627-67b1-4399-9501-777838b3bf3b", 1, false, null, "mudur" },
+                    { 3, 0, "e286a9e7-d3b1-439b-bbcc-2ce2f0a63521", null, "insankaynaklari@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "INSANKAYNAKLARI", "AQAAAAIAAYagAAAAENpNYCPjOsAvgFXpMummoxYQnuwdZkDyrmoiOEaAq3ciaoFz3wx64H8PZXvXxmzT0g==", null, false, "558bee26-656a-419c-97fc-67091152fc68", 1, false, null, "insankaynaklari" },
+                    { 4, 0, "1456ec88-613c-40aa-ade2-e2b506d21b2d", null, "mutfaksef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUTFAKSEF", "AQAAAAIAAYagAAAAEJS/9YRSEJnrICxa6RO9d8XOr/sog3esGhufSfpRf4x9wAabTk+HLRYrMmQJDkTwHQ==", null, false, "f4b45897-0d64-42de-afff-886f9bdd8824", 1, false, null, "mutfaksef" },
+                    { 5, 0, "9c6d4267-ce19-4223-95f5-67e713a4e15f", null, "barsef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARSEF", "AQAAAAIAAYagAAAAEAYD5ku6c8wZsAES0D5MUSsTCiYL8MRwoh2J5Qx3a/vHKsLdMVPwFrSnhNOOBEBF9A==", null, false, "80690021-4056-4874-83b7-eefd6b4bd9df", 1, false, null, "barsef" },
+                    { 6, 0, "36ca9567-f90e-4fd9-bf5d-3cab9ff8baad", null, "asci@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ASCI", "AQAAAAIAAYagAAAAENLm9/MDf8cT9qRo3WZOGO0DgNDJgYxK1OSBI33/IR1V+i7HLyvhKgSgzjnxNsaf4g==", null, false, "7f07ebae-017a-4c1c-b1cb-2f3a06ebb315", 1, false, null, "asci" },
+                    { 7, 0, "33bcafe4-55ef-425d-9906-2be6a4c0d3aa", null, "barmen@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARMEN", "AQAAAAIAAYagAAAAEMFwYW6RnXKpIw3rUSsWX04TA1zxM3B/t+CPPdENFdbYIfwKlGP5Ze//+kKhp2SEfw==", null, false, "208cfbcc-8a99-4b9c-8f60-9b60998c4444", 1, false, null, "barmen" },
+                    { 8, 0, "62f01084-fada-470b-9670-0d2d66da870a", null, "garson@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "GARSON", "AQAAAAIAAYagAAAAEHVivvF3xzN+hn5cknr3OhLlzG3nSxIL460+Tv/4cKJ1z9ThPhVsKQf78D5+cXM23Q==", null, false, "8e809ee4-ad84-4640-97bc-831a41fd8637", 1, false, null, "garson" },
+                    { 9, 0, "c4b0b3a6-3e45-4312-a6b0-c857fee9f4e0", null, "idaripersonel@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "IDARIPERSONEL", "AQAAAAIAAYagAAAAEKuit8wUO7f3I5RJAZV1tknPoxnBUg4CGDdRtXsh2dwOsFYkW1rldUlatOxjH89FFA==", null, false, "5952b351-e776-433c-bf1a-3f368f58e349", 1, false, null, "idaripersonel" },
+                    { 10, 0, "4bcfb2e9-e30a-47d8-a985-30c50a349b73", null, "hizmetpersoneli@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "HIZMETPERSONELI", "AQAAAAIAAYagAAAAEEN3++6Bg8ksA9bN4U3t/YzoXAB+vigLSky9YFIe4+tolM9hZ/6/ldgUJdNd1W1A9g==", null, false, "fab04432-7073-4972-9ad0-2b4c87e09985", 1, false, null, "hizmetpersoneli" },
+                    { 11, 0, "bd16f391-eb4c-49f2-883f-7ed4a8586958", null, "stajyer@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "STAJYER", "AQAAAAIAAYagAAAAEJyDP2ieLmgWH6BI+IddRaCsWTwVITuqZmPKCdTaKkRP66jciKWKBNe7rRAxhhIxSQ==", null, false, "afef6a9f-9800-4da3-ad11-f96bd0ca1925", 1, false, null, "stajyer" }
                 });
 
             migrationBuilder.InsertData(
@@ -795,17 +798,17 @@ namespace Project.Persistance.Migrations
 
             migrationBuilder.InsertData(
                 table: "OrderDetails",
-                columns: new[] { "Id", "DeletionDate", "DetailState", "InsertedDate", "OrderId", "ProductId", "Quantity", "Status", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "DeletionDate", "DetailState", "DiscountAmount", "DiscountRate", "InsertedDate", "OrderId", "ProductId", "Quantity", "Status", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, 1, 1, 200m, null },
-                    { 2, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 9, 1, 1, 50m, null },
-                    { 3, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, 2, 1, 90m, null },
-                    { 4, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 7, 1, 1, 50m, null },
-                    { 5, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 3, 11, 1, 1, 150m, null },
-                    { 6, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 3, 19, 2, 1, 15m, null },
-                    { 7, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, 20, 1, 1, 18m, null },
-                    { 8, null, 0, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, 15, 1, 1, 25m, null }
+                    { 1, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, 1, 1, 200m, null },
+                    { 2, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 9, 1, 1, 50m, null },
+                    { 3, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, 2, 1, 90m, null },
+                    { 4, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 7, 1, 1, 50m, null },
+                    { 5, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 3, 11, 1, 1, 150m, null },
+                    { 6, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 3, 19, 2, 1, 15m, null },
+                    { 7, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, 20, 1, 1, 18m, null },
+                    { 8, null, 0, 0m, 0m, new DateTime(2026, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 4, 15, 1, 1, 25m, null }
                 });
 
             migrationBuilder.InsertData(
@@ -953,9 +956,9 @@ namespace Project.Persistance.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockTransActions_AppUserId",
+                name: "IX_StockTransActions_OrderDetailId",
                 table: "StockTransActions",
-                column: "AppUserId");
+                column: "OrderDetailId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockTransActions_ProductId",
@@ -998,9 +1001,6 @@ namespace Project.Persistance.Migrations
                 name: "MenuProducts");
 
             migrationBuilder.DropTable(
-                name: "OrderDetails");
-
-            migrationBuilder.DropTable(
                 name: "RecipeItems");
 
             migrationBuilder.DropTable(
@@ -1013,10 +1013,16 @@ namespace Project.Persistance.Migrations
                 name: "Menus");
 
             migrationBuilder.DropTable(
+                name: "Recipes");
+
+            migrationBuilder.DropTable(
+                name: "OrderDetails");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Recipes");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Suppliers");
@@ -1025,16 +1031,13 @@ namespace Project.Persistance.Migrations
                 name: "Tables");
 
             migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Units");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

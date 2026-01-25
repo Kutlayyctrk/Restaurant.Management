@@ -37,6 +37,11 @@ namespace Project.Persistance.Repositories
             return await _myContext.Set<T>().FindAsync(id);
         }
 
+        public IQueryable<T> GetQuery()
+        {
+           return _myContext.Set<T>().AsQueryable();
+        }
+
         public async Task HardDeleteAsync(T entity)
         {
             _myContext.Set<T>().Remove(entity);

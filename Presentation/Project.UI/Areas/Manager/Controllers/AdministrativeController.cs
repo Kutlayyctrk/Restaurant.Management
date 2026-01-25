@@ -338,7 +338,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("PersonnelManagement");
         }
         [HttpPost]
-        [HttpPost]
+        
         public async Task<IActionResult> SoftDeletePersonnel(int id)
         {
             OperationStatus result = await _appUserManager.SoftDeleteByIdAsync(id);
@@ -706,7 +706,7 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
                 List<UnitDTO> units = await _unitManager.GetAllAsync();
-                ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName", vm.CategoryId);
+                ViewBag.CategoryList = new SelectList(categories, "Id","CategoryName", vm.CategoryId);
                 ViewBag.UnitList = new SelectList(units, "Id", "UnitName", vm.UnitId);
                 return View(vm);
             }
@@ -918,7 +918,7 @@ namespace Project.UI.Areas.Manager.Controllers
             if (result != OperationStatus.Success)
                 TempData["Error"] = "Birim silinemedi. İlişkili kayıtlar olabilir.";
             else
-                TempData["Success"] = "Birim başarıyla silindi.";
+                TempData["Success"] = "Birim başarıyla Pasife Alındı.";
 
             return RedirectToAction("UnitManagement");
         }
@@ -931,8 +931,8 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 TempData["Error"] = "Birim Pasife alınamadı";
             }
-            TempData["Success"] = "Birim  başarıyla pasife alındı";
-            return RedirectToAction("UnitManager");
+            TempData["Success"] = "Birim  başarıyla Silindi.";
+            return RedirectToAction("UnitManagement");
         }
         [HttpGet]
         public async Task<IActionResult> CategoryManagement(int? parentCategoryId = null)
@@ -1251,7 +1251,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             }
             TempData["Success"] = "Kategori Silme başarılı";
-            return RedirectToAction("CategoryManager");
+            return RedirectToAction("CategoryManagement");
         }
 
         [HttpGet]
@@ -1354,7 +1354,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpPost]
         public async Task <IActionResult> HardDeleteMenu(int id)
         {
-            OperationStatus result = await _menuManager.SoftDeleteByIdAsync(id);
+            OperationStatus result = await _menuManager.HardDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
                 TempData["Error"] = "Menü silinemedi.";
             else
@@ -1362,7 +1362,8 @@ namespace Project.UI.Areas.Manager.Controllers
             return RedirectToAction("MenuManagement");
         }
 
-        [HttpPost] async Task<IActionResult> SoftDeleteMenu(int id)
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteMenu(int id)
         {
             OperationStatus result = await _menuManager.SoftDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
@@ -1422,7 +1423,7 @@ namespace Project.UI.Areas.Manager.Controllers
                     Id = mp.Id,
                     MenuName = mp.MenuName,
                     ProductName = mp.ProductName,
-                    CategoryName = mp.CategoryName,
+                    
                     UnitPrice = mp.UnitPrice,
                     IsActive = mp.IsActive
                 }).ToList(),
@@ -1593,7 +1594,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 Id = menuProduct.Id,
                 MenuName = menuProduct.MenuName,
                 ProductName = menuProduct.ProductName,
-                CategoryName = menuProduct.CategoryName,
+             
                 UnitPrice = menuProduct.UnitPrice,
                 IsActive = menuProduct.IsActive
             };
@@ -1767,17 +1768,27 @@ namespace Project.UI.Areas.Manager.Controllers
 
             OrderDTO original = await _orderManager.GetByIdAsync(vm.Id ?? 0);
             if (original == null || original.Type != OrderType.Purchase)
+            {
                 return NotFound();
+            }
+
+            if(vm.Details!=null)
+            {
+                foreach (var detail in vm.Details)
+                {
+                    detail.OrderId = original.Id;
+                }
+            }
 
             OrderDTO updated = new OrderDTO
             {
-                Id = vm.Id ?? 0,
+                Id = original.Id,
                 SupplierId = vm.SupplierId,
                 OrderDate = vm.OrderDate,
                 TotalPrice = vm.TotalPrice,
                 Type = OrderType.Purchase,
                 OrderState = original.OrderState,
-                OrderDetails = vm.Details
+                OrderDetails = vm.Details ?? new List<OrderDetailDTO>() 
             };
 
             OperationStatus result = await _orderManager.UpdateAsync(original, updated);

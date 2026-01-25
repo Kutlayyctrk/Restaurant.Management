@@ -40,6 +40,7 @@ namespace Project.Persistance.Configurations
                    .WithOne(r => r.Product)
                    .HasForeignKey<Recipe>(r => r.ProductId)
                    .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x=>x.Quantity).HasColumnType("decimal(18,2)").IsRequired().HasDefaultValue(0);
 
             builder.ToTable("Products");
         }

@@ -41,10 +41,6 @@ public class AppUserValidator : AbstractValidator<AppUserDTO>
                 .Matches("[0-9]").WithMessage("Şifre en az bir rakam içermelidir.")
                 .Matches("[^a-zA-Z0-9]").WithMessage("Şifre en az bir özel karakter içermelidir.")
                 .Must(p => p == p.Trim()).WithMessage("Şifre başta veya sonda boşluk içeremez.");
-
-            RuleFor(x => x.ConfirmEmail)
-                .NotEmpty().WithMessage("Email tekrar alanı zorunludur.")
-                .Equal(x => x.Email).WithMessage("Email alanları uyuşmuyor.");
         });
 
      

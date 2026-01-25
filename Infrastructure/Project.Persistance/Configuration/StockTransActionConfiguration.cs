@@ -15,9 +15,9 @@ namespace Project.Persistance.Configuration
         {
             base.Configure(builder);
             builder.Property(x => x.Quantity).HasPrecision(18, 2);
-            builder.HasOne(x => x.Product).WithMany(x => x.StockTransActions).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);//Bir ürün transaction gördüyse silinemez
-            builder.HasOne(x => x.Supplier).WithMany(x => x.StockTransActions).HasForeignKey(x => x.SupplierId).OnDelete(DeleteBehavior.Restrict);//bir tedarikçi transaction gördüyse silinemez.
-            builder.HasOne(x => x.User).WithMany(x => x.StockTransActions).HasForeignKey(x => x.AppUserId).OnDelete(DeleteBehavior.Restrict);//bir kullanıcı transaction gördüyse silinemez.
+            builder.HasOne(x => x.Product).WithMany(x => x.StockTransActions).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Supplier).WithMany(x => x.StockTransActions).HasForeignKey(x => x.SupplierId).OnDelete(DeleteBehavior.Restrict);
+           builder.Property(x=>x.UnitPrice).HasColumnType("decimal(18,2)");
 
         }
     }

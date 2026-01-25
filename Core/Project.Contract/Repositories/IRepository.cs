@@ -13,5 +13,6 @@ namespace Project.Contract.Repositories
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task HardDeleteAsync(T entity);
+        IQueryable<T> GetQuery();
     }
 }

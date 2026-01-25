@@ -355,7 +355,7 @@ public class BarController : Controller
             IsActive = vm.IsActive,
             MenuName = menu?.MenuName,
             ProductName = product?.ProductName,
-            CategoryName = product?.CategoryName
+           
         };
 
         OperationStatus result = await _menuProductManager.CreateAsync(dto);
