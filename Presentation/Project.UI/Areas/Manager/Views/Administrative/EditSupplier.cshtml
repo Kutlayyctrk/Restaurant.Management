@@ -11,7 +11,7 @@
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <form asp-action="EditSupplier" method="post" class="card shadow-sm border-0">
+    <form asp-action="EditSupplier" method="post" id="editSupplierForm" class="card shadow-sm border-0">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
 
@@ -52,32 +52,33 @@
 
         <div class="card-footer bg-light border-0 d-flex justify-content-between align-items-center py-3">
             <div class="d-flex gap-2">
-                <!-- Pasife Al (Soft Delete) Butonu -->
-                <form id="softDeleteSupplierForm" asp-action="SoftDeleteSupplier" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-warning btn-sm"
-                            onclick="return confirm('Tedarikçiyi pasife almak istediğinize emin misiniz?');">
-                        Pasife Al
-                    </button>
-                </form>
-                <!-- Sil (Hard Delete) Butonu -->
-                <form id="deleteSupplierForm" asp-action="HardDeleteSupplier" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-outline-danger btn-sm"
-                            onclick="return confirm('Tedarikçiyi silmek istediğinize emin misiniz?');">
-                        Sil
-                    </button>
-                </form>
+                <button type="submit" form="softDeleteForm" class="btn btn-warning btn-sm"
+                        onclick="return confirm('Tedarikçiyi pasife almak istediğinize emin misiniz?');">
+                    Pasife Al
+                </button>
+
+                <button type="submit" form="hardDeleteForm" class="btn btn-outline-danger btn-sm"
+                        onclick="return confirm('Tedarikçiyi tamamen silmek istediğinize emin misiniz?');">
+                    Sil
+                </button>
             </div>
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary px-4">Kaydet</button>
+                <button type="submit" form="editSupplierForm" class="btn btn-primary px-4">Kaydet</button>
                 <a asp-action="SupplierManagement" class="btn btn-secondary px-4">İptal</a>
             </div>
         </div>
     </form>
 </div>
+
+<form id="softDeleteForm" asp-action="SoftDeleteSupplier" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+</form>
+
+<form id="hardDeleteForm" asp-action="HardDeleteSupplier" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

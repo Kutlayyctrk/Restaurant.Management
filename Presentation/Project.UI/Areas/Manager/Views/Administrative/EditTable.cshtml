@@ -17,8 +17,9 @@
         <h2>Masa Düzenle</h2>
     </div>
 
-    <form asp-action="EditTable" method="post" class="card shadow-sm p-4 standard-form">
+    <form asp-action="EditTable" method="post" id="editTableForm" class="card shadow-sm p-4 standard-form">
         @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
 
         <div class="mb-3">
             <label asp-for="TableNumber" class="form-label">Masa Numarası</label>
@@ -34,33 +35,33 @@
 
         <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-2">
             <div class="d-flex gap-2">
-                <!-- Pasife Al (Soft Delete) Butonu -->
-                <form asp-action="SoftDeleteTable" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-warning btn-sm"
-                            onclick="return confirm('Bu masayı pasife almak istediğinize emin misiniz?');">
-                        Pasife Al
-                    </button>
-                </form>
-                <!-- Sil (Hard Delete) Butonu -->
-                <form asp-action="HardDeleteTable" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Bu masayı silmek istediğinize emin misiniz?');">
-                        Sil
-                    </button>
-                </form>
+                <button type="submit" form="softDeleteForm" class="btn btn-warning btn-sm"
+                        onclick="return confirm('Bu masayı pasife almak istediğinize emin misiniz?');">
+                    Pasife Al
+                </button>
+
+                <button type="submit" form="hardDeleteForm" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Bu masayı silmek istediğinize emin misiniz?');">
+                    Sil
+                </button>
             </div>
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-success">Kaydet</button>
-                <a asp-action="TableManagement" class="btn btn-outline-secondary">İptal</a>
+                <button type="submit" form="editTableForm" class="btn btn-success">Kaydet</button>
                 <a asp-action="TableManagement" class="btn btn-secondary">Geri</a>
             </div>
         </div>
     </form>
 </div>
+
+<form id="softDeleteForm" asp-action="SoftDeleteTable" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+</form>
+
+<form id="hardDeleteForm" asp-action="HardDeleteTable" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

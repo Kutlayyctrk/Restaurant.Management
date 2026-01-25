@@ -2265,7 +2265,7 @@ namespace Project.UI.Areas.Manager.Controllers
         public async Task<IActionResult> HardDeleteTable(int id)
         {
 
-            OperationStatus result = await _tableManager.SoftDeleteByIdAsync(id);
+            OperationStatus result = await _tableManager.HardDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
                 TempData["Error"] = "Masa silinemedi. İlişkili kayıtlar olabilir.";
             else
@@ -2277,7 +2277,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> SoftDeleteTable(int id)
         {
-            OperationStatus result = await _tableManager.HardDeleteByIdAsync(id);
+            OperationStatus result = await _tableManager.SoftDeleteByIdAsync(id);
             if (result != OperationStatus.Success)
                 TempData["Error"] = "Masa silinemedi. İlişkili kayıtlar olabilir.";
             else
