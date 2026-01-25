@@ -12,5 +12,6 @@ namespace Project.Domain.Enums
         Sale,       // Satış
         Return,     // İade
         Waste,      // Zay
+        Adjustment   // Sayım Farkı
     }
 }

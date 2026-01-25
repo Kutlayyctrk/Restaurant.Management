@@ -11,9 +11,9 @@ namespace Project.Domain.Entities.Concretes
     public class Table : BaseEntity
     {
         public string TableNumber { get; set; }
-        public TableStatus TableStatus { get; set; } //Managerda ataması 1'den başlayacak default'ta 0 kabul ediyor
+        public TableStatus TableStatus { get; set; } 
 
-        public int? WaiterId { get; set; } //Masa'da bir garson varsa baska garson o table bilgilerine ulasamayacak
+        public int? WaiterId { get; set; } 
 
         public virtual AppUser Waiter { get; set; }
         public virtual ICollection<Order> Orders { get; set; }

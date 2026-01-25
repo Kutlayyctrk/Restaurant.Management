@@ -11,12 +11,21 @@ namespace Project.Application.DTOs
     {
         public string Name { get; set; }
         public string Description { get; set; }
+
+       
         public int ProductId { get; set; }
         public int CategoryId { get; set; }
 
-        public IList<RecipeItemDTO> RecipeItems { get; set; } = new List<RecipeItemDTO>();
+        
+        public string? ProductName { get; set; }  
+        public string? CategoryName { get; set; }
+
+        
+        public List<RecipeItemDto>? RecipeItems { get; set; }
+
+    
 
 
-     
+
     }
 }

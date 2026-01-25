@@ -10,6 +10,6 @@ namespace Project.Application.DTOs
     public class AppRoleDTO:BaseDto
     {
         public string Name { get; set; }
-      
+
     }
 }

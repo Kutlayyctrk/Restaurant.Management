@@ -22,9 +22,9 @@ namespace Project.Domain.Entities.Concretes
         public OrderType Type { get; set; } 
 
         // Relational Properties
-        public virtual Table Table { get; set; }
-        public virtual AppUser Waiter { get; set; }
-        public virtual Supplier Supplier { get; set; }
+        public virtual Table? Table { get; set; }
+        public virtual AppUser? Waiter { get; set; }
+        public virtual Supplier? Supplier { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

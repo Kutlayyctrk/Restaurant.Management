@@ -3,6 +3,7 @@ using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,8 @@ namespace Project.Domain.Entities.Concretes
 
         public decimal UnitPrice { get; set; }
         public OrderDetailStatus DetailState { get; set; }
+        public decimal DiscountRate { get; set; }
+        public decimal   DiscountAmount { get; set; }
 
 
         //Relational Properties

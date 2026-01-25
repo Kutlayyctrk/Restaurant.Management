@@ -9,16 +9,16 @@ namespace Project.Application.DTOs
         public int? TableId { get; set; }
         public int? WaiterId { get; set; }
         public int? SupplierId { get; set; }
+
+        public string? TableName { get; set; }
+        public string? WaiterFullName { get; set; }
         public string? SupplierName { get; set; }
 
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
-
         public OrderStatus OrderState { get; set; }
-        public OrderType Type { get; set; } 
+        public OrderType Type { get; set; }
 
-        public IList<OrderDetailDTO> OrderDetails { get; set; } = new List<OrderDetailDTO>();
-
-
+        public List<OrderDetailDto>? OrderDetails { get; set; }
     }
 }

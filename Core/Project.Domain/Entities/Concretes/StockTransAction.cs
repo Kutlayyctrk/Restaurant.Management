@@ -14,15 +14,16 @@ namespace Project.Domain.Entities.Concretes
 
         public decimal Quantity { get; set; }
         public int? SupplierId { get; set; } //İade işlemi için
-        public int? OrderDeatilId { get; set; }
+        public int? OrderDetailId { get; set; }
         public TransActionType Type { get; set; }//işlem adı(iade, satış, zayi vb)
         public string? Description { get; set; } //iade sebebi zayi sebebi girilebilir.
+        public decimal UnitPrice { get; set; }
 
         //Relational Properties
 
         public virtual OrderDetail? OrderDetail { get; set; }
         public virtual Product Product { get; set; }
-        public virtual Supplier Supplier { get; set; }
+        public virtual Supplier? Supplier { get; set; }
       
 
     }

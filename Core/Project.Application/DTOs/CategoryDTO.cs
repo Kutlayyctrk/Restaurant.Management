@@ -13,6 +13,7 @@ namespace Project.Application.DTOs
         public string Description { get; set; }
 
         public int? ParentCategoryId { get; set; }
-      
+        public string? ParentCategoryName { get; set; }
+
     }
 }
