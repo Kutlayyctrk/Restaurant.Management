@@ -1619,7 +1619,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
 
-            foreach (var invoice in allInvoices)
+            foreach (OrderDTO invoice in allInvoices)
             {
                 invoice.SupplierName = suppliers.FirstOrDefault(s => s.Id == invoice.SupplierId)?.SupplierName;
             }
@@ -1774,7 +1774,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if(vm.Details!=null)
             {
-                foreach (var detail in vm.Details)
+                foreach (OrderDetailDTO detail in vm.Details)
                 {
                     detail.OrderId = original.Id;
                 }
@@ -1955,7 +1955,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 TotalPrice = vm.TotalPrice,
                 Type = OrderType.Sale,
                 OrderState = original.OrderState,
-                OrderDetails = vm.Details
+                OrderDetails = vm.Details ??new List<OrderDetailDTO>()
             };
 
             OperationStatus result = await _orderManager.UpdateAsync(original, updated);

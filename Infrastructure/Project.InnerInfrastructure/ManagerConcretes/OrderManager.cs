@@ -2,7 +2,6 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
@@ -11,6 +10,7 @@ using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
+
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -40,32 +40,46 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         {
             ValidationResult validationResult = await _validator.ValidateAsync(newDto);
             if (!validationResult.IsValid)
-            {
+            { 
                 return OperationStatus.Failed;
             }
 
-            Order originalEntity = await _orderRepository.GetQuery()
-                                            .Include(x => x.OrderDetails)
-                                            .FirstOrDefaultAsync(x => x.Id == originalDto.Id);
+            Order originalEntity = await _orderRepository.GetQuery().Include(x => x.OrderDetails).FirstOrDefaultAsync(x => x.Id == originalDto.Id);
 
             if (originalEntity == null)
             {
                 return OperationStatus.NotFound;
             }
-            originalEntity.OrderDetails.Clear();
-
-            originalEntity.SupplierId = newDto.SupplierId;
-            originalEntity.OrderDate = newDto.OrderDate;
-            originalEntity.TotalPrice = newDto.TotalPrice;
+            _mapper.Map(newDto, originalEntity);
             originalEntity.Status = DataStatus.Updated;
             originalEntity.UpdatedDate = DateTime.Now;
 
-            foreach (var detailDto in newDto.OrderDetails)
+            var detailsRemove = originalEntity.OrderDetails.Where(z => !newDto.OrderDetails.Any(x => x.Id == z.Id)).ToList();
+
+            foreach (var toRemove in detailsRemove)
             {
-                var newDetatil = _mapper.Map<OrderDetail>(detailDto);
-                newDetatil.OrderId = originalEntity.Id;
-                originalEntity.OrderDetails.Add(newDetatil);
+                originalEntity.OrderDetails.Remove(toRemove);
             }
+
+            foreach (var dto in   newDto.OrderDetails)
+            {
+                var existingDetail = originalEntity.OrderDetails.FirstOrDefault(x => x.Id == dto.Id && x.Id != 0);
+                if(existingDetail!=null)
+                {
+                    _mapper.Map(dto, existingDetail);
+                    existingDetail.Status = DataStatus.Updated;
+                    existingDetail.UpdatedDate = DateTime.Now;
+                }
+                else
+                {
+                    var newDetail = _mapper.Map<OrderDetail>(dto);
+                    newDetail.OrderId = originalEntity.Id;
+                    newDetail.Status = DataStatus.Updated;
+                    newDetail.UpdatedDate = DateTime.Now;
+                    originalEntity.OrderDetails.Add(newDetail);
+                }
+            }
+
             await _orderRepository.UpdateAsync(originalEntity);
             return OperationStatus.Success;
 
