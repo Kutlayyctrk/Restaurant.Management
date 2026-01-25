@@ -22,7 +22,7 @@ namespace Project.Domain.Entities.Concretes
         public virtual AppUserProfile AppUserProfile { get; set; }
         public virtual ICollection<AppUserRole> UserRoles { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
-        public virtual ICollection<StockTransAction> StockTransActions { get; set; }
+     
         public virtual ICollection<Table> Tables { get; set; }
     }
 }

@@ -23,8 +23,9 @@ namespace Project.Persistance.Configuration
             builder.Property(x => x.UnitPrice).HasColumnType("money");
 
 
-            builder.HasOne(x => x.Order).WithMany(x => x.OrderDetails).HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Cascade); //Bir sipariş silinirse sipariş detaylarınıda siliyoruz.
-            builder.HasOne(x => x.Product).WithMany(x => x.OrderDetails).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict); //Bir ürün'de sipariş hareketi olursa sildirmiyoruz.
+            builder.HasOne(x => x.Order).WithMany(x => x.OrderDetails).HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Restrict); 
+            builder.HasOne(x => x.Product).WithMany(x => x.OrderDetails).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.StockTransActions).WithOne(x => x.OrderDetail).HasForeignKey(x => x.OrderDeatilId).OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }

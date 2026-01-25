@@ -21,5 +21,6 @@ namespace Project.Domain.Entities.Concretes
         //Relational Properties
         public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }
+        public ICollection<StockTransAction> StockTransActions { get; set; }
     }
 }
