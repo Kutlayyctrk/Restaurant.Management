@@ -1,0 +1,85 @@
+﻿@model List<TableVm>
+
+@{
+    ViewData["Title"] = "Masa Listesi";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .table-card {
+        min-width: 180px;
+        min-height: 200px;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        transition: transform 0.1s;
+        background: #fff;
+        border: none;
+    }
+
+        .table-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+    .table-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 8px;
+    }
+
+    .card-title {
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .status-badge {
+        font-size: 1rem;
+        padding: 0.4em 1em;
+        border-radius: 8px;
+    }
+
+    .waiter-badge {
+        font-size: 1rem;
+        padding: 0.4em 1em;
+        border-radius: 8px;
+    }
+</style>
+
+<h2 class="mb-4 text-center">Masa Listesi</h2>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-5 g-4 justify-content-center">
+        @foreach (var table in Model)
+        {
+            <div class="col d-flex">
+                <div class="card table-card w-100 align-items-center justify-content-center">
+                    <div class="card-body text-center">
+                        <div class="table-icon">
+                            <i class="bi bi-table"></i>
+                        </div>
+                        <div class="card-title mb-2">
+                            Masa @table.TableNumber
+                        </div>
+                        <div class="mb-2">
+                            <span class="status-badge badge bg-@(table.Status == "Dolu" ? "danger" : "success")">
+                                @table.Status
+                            </span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="waiter-badge badge bg-@(table.WaiterId.HasValue ? "info" : "secondary")">
+                                @(table.WaiterId.HasValue ? "Siz" : "Boş")
+                            </span>
+                        </div>
+                        <a class="btn btn-lg btn-primary w-100" asp-action="SelectTable" asp-route-id="@table.Id">
+                            <i class="bi bi-pencil-square"></i> Sipariş Gir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

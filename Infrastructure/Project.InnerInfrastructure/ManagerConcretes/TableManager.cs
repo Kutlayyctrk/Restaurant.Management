@@ -14,5 +14,12 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 {
     public class TableManager(ITableRepository tableRepository,IMapper mapper,IValidator<TableDTO> tableValidator):BaseManager<Table,TableDTO>(tableRepository,mapper,tableValidator),ITableManager
     {
+        private readonly ITableRepository _tableRepository = tableRepository;
+        private readonly IMapper _mapper = mapper;
+        public async Task<List<TableDTO>> GetTablesByUserIdAsync(string userId)
+        {
+            var tables = await _tableRepository.GetTablesByUserIdAsync(userId);
+            return _mapper.Map<List<TableDTO>>(tables);
+        }
     }
 }

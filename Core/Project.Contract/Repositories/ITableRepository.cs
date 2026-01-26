@@ -9,5 +9,6 @@ namespace Project.Contract.Repositories
 {
     public interface ITableRepository:IRepository<Table>
     {
+        Task<List<Table>> GetTablesByUserIdAsync(string userId);
     }
 }
