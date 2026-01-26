@@ -1,4 +1,5 @@
 ﻿using Project.Domain.Enums;
+using System.Globalization;
 
 namespace Project.Application.DTOs
 {
@@ -14,10 +15,13 @@ namespace Project.Application.DTOs
         public decimal UnitPrice { get; set; }
         public bool IsActive { get; set; }
 
-      
-     
+        public  int? CategoryId { get; set; }
+        public string?   CategoryName { get; set; }
 
-  
+
+
+
+
 
     }
 

@@ -11,6 +11,7 @@ namespace Project.Application.Managers
     public interface IProductManager:IManager<Product,ProductDTO>
     {
         Task<List<ProductDTO>> GetSellableProductsAsync(); //Sadece satılabilir ürünleri getirir
+        Task<List<ProductDTO>> GetWithCategory(); //Ürünleri kategorileri ile birlikte getirir
 
     }
 }

@@ -10,6 +10,6 @@ namespace Project.Contract.Repositories
     public interface IProductRepository:IRepository<Product>
     {
         Task<List<Product>> GetSellableProductsAsync();
-
+        Task<List<Product>> GetWithCategory();
     }
 }

@@ -24,5 +24,12 @@ namespace Project.Persistance.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Product>> GetWithCategory()
+        {
+            return await _context.Products
+                .Include(p => p.Category)
+                .ToListAsync();
+        }
+
     }
 }

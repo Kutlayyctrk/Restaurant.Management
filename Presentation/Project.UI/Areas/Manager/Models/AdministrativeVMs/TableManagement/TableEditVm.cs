@@ -6,6 +6,6 @@ namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.TableManagement
     {
         public int Id { get; set; }
         public string TableNumber { get; set; }
-        public string TableName { get; set; }
+     
     }
 }

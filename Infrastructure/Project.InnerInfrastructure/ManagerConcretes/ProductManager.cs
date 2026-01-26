@@ -23,5 +23,10 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<List<ProductDTO>>(products);
         }
 
+        public async Task<List<ProductDTO>> GetWithCategory()
+        {
+            List<Product> products = await _productRepository.GetWithCategory();
+            return _mapper.Map<List<ProductDTO>>(products);
+        }
     }
 }

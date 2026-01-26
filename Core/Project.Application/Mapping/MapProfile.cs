@@ -9,7 +9,9 @@ namespace Project.Application.Mapping
         public MapProfile()
         {
             CreateMap<AppRoleDTO, AppRole>().ReverseMap();
-            CreateMap<ProductDTO, Product>().ReverseMap();
+            CreateMap<Product, ProductDTO>()
+     .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+     .ReverseMap();
             CreateMap<RecipeDTO, Recipe>()
       .ForMember(dest => dest.RecipeItems, opt => opt.MapFrom(src => src.RecipeItems))
       .ReverseMap();
@@ -35,9 +37,14 @@ namespace Project.Application.Mapping
             CreateMap<SupplierDTO, Supplier>().ReverseMap();
             CreateMap<UnitDTO, Unit>().ReverseMap();
             CreateMap<Menu, MenuDTO>().ReverseMap();
-            CreateMap<MenuProduct, MenuProductDTO>().ReverseMap()
-     .ForMember(dest => dest.Menu, opt => opt.Ignore())
-     .ForMember(dest => dest.Product, opt => opt.Ignore());
+            CreateMap<MenuProduct, MenuProductDTO>()
+          .ForMember(dest => dest.MenuName, opt => opt.MapFrom(src => src.Menu.MenuName))
+          .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
+          .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Product.Category.CategoryName))
+          .ReverseMap()
+          .ForMember(dest => dest.Menu, opt => opt.Ignore())
+          .ForMember(dest => dest.Product, opt => opt.Ignore());
+
 
 
 

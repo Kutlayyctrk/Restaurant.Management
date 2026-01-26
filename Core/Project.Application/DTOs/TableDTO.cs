@@ -12,7 +12,7 @@ namespace Project.Application.DTOs
     {
         public string TableNumber { get; set; }
         public TableStatus TableStatus { get; set; }
-        public string TableName { get; set; }
+    
         public int? WaiterId { get; set; }
     }
 }

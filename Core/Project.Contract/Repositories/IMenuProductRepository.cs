@@ -9,5 +9,6 @@ namespace Project.Contract.Repositories
 {
     public interface IMenuProductRepository:IRepository<MenuProduct>
     {
+        Task<List<MenuProduct>> GetWithMenuAndProduct();
     }
 }

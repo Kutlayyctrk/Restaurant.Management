@@ -509,7 +509,7 @@ namespace Project.UI.Areas.Manager.Controllers
      bool? canBeProduced = null,
      bool? isReadyMade = null)
         {
-            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<ProductDTO> products = await _productManager.GetWithCategory();
             List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
 
 
@@ -1407,7 +1407,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> MenuProductManagement(int? SelectedMenuId = null, string SearchTerm = null)
         {
-            List<MenuProductDTO> menuProducts = await _menuProductManager.GetAllAsync();
+            List<MenuProductDTO> menuProducts = await _menuProductManager.GetWithMenuAndProduct();
             List<MenuDTO> menus = await _menuManager.GetAllAsync();
 
             if (SelectedMenuId.HasValue)
@@ -1423,6 +1423,7 @@ namespace Project.UI.Areas.Manager.Controllers
                     Id = mp.Id,
                     MenuName = mp.MenuName,
                     ProductName = mp.ProductName,
+                    CategoryName=mp.CategoryName,
                     
                     UnitPrice = mp.UnitPrice,
                     IsActive = mp.IsActive
@@ -1867,7 +1868,6 @@ namespace Project.UI.Areas.Manager.Controllers
                 TableList = tables.Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
-                    Text = !string.IsNullOrWhiteSpace(t.TableName) ? t.TableName : t.TableNumber,
                     Selected = SelectedTableId.HasValue && t.Id == SelectedTableId.Value
                 }).ToList()
             };
@@ -2161,7 +2161,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 {
                     Id = t.Id,
                     TableNumber = t.TableNumber,
-                    TableName = t.TableName,
+                 
                     WaiterName = waiters.FirstOrDefault(w => w.Id == t.WaiterId)?.UserName,
                     TableStatus = t.Status.ToString()
                 }).ToList()
@@ -2183,7 +2183,7 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 Id = table.Id,
                 TableNumber = table.TableNumber,
-                TableName = table.TableName,
+              
                 WaiterName = waiters.FirstOrDefault(w => w.Id == table.WaiterId)?.UserName,
                 TableStatus = table.Status.ToString()
             };
@@ -2209,7 +2209,7 @@ namespace Project.UI.Areas.Manager.Controllers
             TableDTO dto = new TableDTO
             {
                 TableNumber = vm.TableNumber,
-                TableName = vm.TableName
+              
             };
 
             OperationStatus result = await _tableManager.CreateAsync(dto);
@@ -2234,7 +2234,7 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 Id = table.Id,
                 TableNumber = table.TableNumber,
-                TableName = table.TableName
+             
             };
 
             return View(vm);
@@ -2256,7 +2256,7 @@ namespace Project.UI.Areas.Manager.Controllers
             {
                 Id = vm.Id,
                 TableNumber = vm.TableNumber,
-                TableName = vm.TableName
+       
             };
 
             OperationStatus result = await _tableManager.UpdateAsync(original, updated);

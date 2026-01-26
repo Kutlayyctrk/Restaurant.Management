@@ -17,6 +17,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
     {
         private readonly IMenuProductRepository _menuProductRepository = menuProductRepository;
         private readonly IMapper _mapper = mapper;
+
+        public async Task<List<MenuProductDTO>> GetWithMenuAndProduct()
+        {
+            List<MenuProduct> menuProducts = await _menuProductRepository.GetWithMenuAndProduct();
+            return _mapper.Map<List<MenuProductDTO>>(menuProducts);
+        }
+
         public override async Task<OperationStatus> UpdateAsync(MenuProductDTO originalDto, MenuProductDTO newDto)
         {
             MenuProduct entity = await _menuProductRepository.GetByIdAsync(originalDto.Id);
@@ -36,5 +43,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return OperationStatus.Success;
 
         }
+
+       
     }
 }

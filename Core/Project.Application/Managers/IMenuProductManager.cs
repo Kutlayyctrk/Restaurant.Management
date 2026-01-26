@@ -10,5 +10,7 @@ namespace Project.Application.Managers
 {
     public interface IMenuProductManager:IManager<MenuProduct,MenuProductDTO>
     {
+
+        Task<List<MenuProductDTO>> GetWithMenuAndProduct();
     }
 }
