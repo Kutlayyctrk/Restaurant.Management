@@ -16,6 +16,7 @@ namespace Project.Contract.Repositories
         /// </summary>
         Task<List<Order>> GetActiveSaleOrdersAsync();
         Task UpdateOrderStateAsync(int orderId, OrderStatus newState);
+        Task<Order?> GetActiveOrderByTableIdAsync(int tableId);
 
     }
 }

@@ -148,5 +148,11 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
             return OperationStatus.Success; 
         }
+
+        public  async   Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId)
+        {
+            var order = await _orderRepository.GetActiveOrderByTableIdAsync(tableId);
+            return order != null ? _mapper.Map<OrderDTO>(order) : null;
+        }
     }
 }

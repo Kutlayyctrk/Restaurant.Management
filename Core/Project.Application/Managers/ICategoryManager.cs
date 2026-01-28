@@ -10,5 +10,7 @@ namespace Project.Application.Managers
 {
     public interface ICategoryManager:IManager<Category,CategoryDTO>
     {
+        Task<List<CategoryDTO>> GetRootCategoriesAsync();
+        Task<List<CategoryDTO>> GetSubCategoriesByParentIdAsync(int parentId);
     }
 }

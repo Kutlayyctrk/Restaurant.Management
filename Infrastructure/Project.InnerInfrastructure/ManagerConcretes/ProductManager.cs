@@ -17,6 +17,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
     {
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IMapper _mapper = mapper;
+
+        public async Task<List<ProductDTO>> GetProductsByCategoryIdAsync(int categoryId)
+        {
+            var products = await _productRepository.GetByCategoryIdAsync(categoryId);
+            return _mapper.Map<List<ProductDTO>>(products);
+        }
+
         public async Task<List<ProductDTO>> GetSellableProductsAsync()
         {
             List<Product> products = await _productRepository.GetSellableProductsAsync();

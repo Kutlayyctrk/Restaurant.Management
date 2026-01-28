@@ -1,0 +1,316 @@
+﻿@model OrderVm
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS - Masa @Model.TableNumber</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background-color: #f1f3f5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .pos-container {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            grid-template-rows: 1fr 100px;
+            height: 100vh;
+        }
+
+        .order-sidebar {
+            grid-row: 1 / 2;
+            background: white;
+            border-right: 3px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .order-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .menu-area {
+            grid-row: 1 / 3;
+            padding: 25px;
+            overflow-y: auto;
+            background: #e9ecef;
+        }
+
+        .category-card, .product-card {
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            border-radius: 15px;
+        }
+
+            .category-card:hover, .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            }
+
+        .payment-bar {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+            background: #fff;
+            border-top: 2px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .qty-badge {
+            font-size: 1rem;
+            padding: 0.5em 0.8em;
+        }
+
+        .total-section {
+            padding: 15px;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+        /* Mevcut (Mutfaktaki) ürünler için stil */
+        .table-info {
+            background-color: #e7f1ff !important;
+            border-left: 4px solid #0d6efd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pos-container">
+        <div class="order-sidebar">
+            <div class="bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                <h4 class="m-0"><i class="fas fa-chair me-2"></i>MASA @Model.TableNumber</h4>
+                <span class="badge bg-primary">Garson: @User.Identity.Name</span>
+            </div>
+
+            <div class="order-list">
+                <table class="table align-middle">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>ÜRÜN</th>
+                            <th class="text-center">ADET</th>
+                            <th class="text-end">TUTAR</th>
+                            <th class="text-center">#</th>
+                        </tr>
+                    </thead>
+                    <tbody id="basketBody">
+                        @foreach (var item in Model.ExistingDetails)
+                        {
+                            <tr data-id="@item.ProductId" data-price="@item.UnitPrice.ToString().Replace(",", ".")" class="table-info">
+                                <td class="fw-bold">@item.ProductName <br><small class="text-primary fw-normal"><i class="fas fa-clock me-1"></i>İşlemde</small></td>
+                                <td class="text-center"><span class="badge bg-primary qty-badge">@item.Quantity</span></td>
+                                <td class="text-end fw-bold row-total">@((item.UnitPrice * item.Quantity).ToString("N2")) ₺</td>
+                                <td class="text-center text-muted"><i class="fas fa-lock"></i></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total-section">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="h5 text-muted">Genel Toplam:</span>
+                    <span id="totalAmount" class="h4 text-primary fw-bold">0,00 ₺</span>
+                </div>
+                <button class="btn btn-success btn-lg w-100 py-3 shadow-sm" id="btnSendToKitchen">
+                    <i class="fas fa-utensils me-2"></i>SİPARİŞİ ONAYLA (MUTFAK)
+                </button>
+            </div>
+        </div>
+
+        <div class="payment-bar">
+            <button class="btn btn-outline-secondary px-4" onclick="window.location.href='/Sales/Index'">
+                <i class="fas fa-chevron-left"></i> GERİ
+            </button>
+            <button class="btn btn-primary fw-bold flex-grow-1 shadow-sm" id="btnGetPayment">
+                <i class="fas fa-file-invoice-dollar me-2"></i>ÖDEME AL / HESABI KAPAT
+            </button>
+        </div>
+
+        <div class="menu-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold m-0 text-dark">MENÜ SEÇİMİ</h3>
+                <button class="btn btn-outline-dark rounded-pill shadow-sm" onclick="loadMenu(null)">
+                    <i class="fas fa-sync-alt me-2"></i>ANA KATEGORİLER
+                </button>
+            </div>
+
+            <div id="menuContainer" class="row g-3">
+                @foreach (var cat in Model.Categories)
+                {
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card category-card shadow-sm h-100 p-3 text-center" onclick="loadMenu(@cat.Id)">
+                            <div class="card-body">
+                                @{
+                                    var icon = "fa-folder text-warning";
+                                    if (cat.Name.Contains("Yiyecek")) icon = "fa-hamburger text-danger";
+                                    else if (cat.Name.Contains("İçecek")) icon = "fa-glass-whiskey text-info";
+                                }
+                                <i class="fas @icon fa-4x mb-3"></i>
+                                <h5 class="fw-bold">@cat.Name.ToUpper()</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            calculateTotal();
+        });
+
+        function loadMenu(categoryId) {
+            $("#menuContainer").html('<div class="text-center w-100 mt-5"><div class="spinner-border text-primary" role="status"></div></div>');
+            $.ajax({
+                url: '/Sales/GetMenuContent',
+                type: 'GET',
+                data: { categoryId: categoryId },
+                success: function (data) {
+                    let html = "";
+                    if (data.subCategories && data.subCategories.length > 0) {
+                        data.subCategories.forEach(cat => {
+                            html += `<div class="col-md-4 col-lg-3">
+                                        <div class="card category-card shadow-sm h-100 p-3 text-center" onclick="loadMenu(${cat.id})">
+                                            <div class="card-body">
+                                                <i class="fas fa-folder fa-4x text-warning mb-3"></i>
+                                                <h5 class="fw-bold">${cat.categoryName.toUpperCase()}</h5>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                        });
+                    }
+                    else if (data.products && data.products.length > 0) {
+                        data.products.forEach(p => {
+                            html += `<div class="col-md-4 col-lg-3">
+                                        <div class="card product-card shadow-sm h-100 p-2 text-center border-bottom border-success border-4" onclick="addToBasket(${p.id}, '${p.productName}', ${p.unitPrice})">
+                                            <div class="card-body">
+                                                <h6 class="fw-bold">${p.productName}</h6>
+                                                <span class="badge bg-success fs-6">${p.unitPrice.toFixed(2)} ₺</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                        });
+                    }
+                    $("#menuContainer").hide().html(html).fadeIn(200);
+                }
+            });
+        }
+
+        function addToBasket(id, name, price) {
+            // Sadece yeni eklenen satırlarda arama yap (kilitli olanları es geç)
+            let existingRow = $(`#basketBody tr[data-id="${id}"]:not(.table-info)`);
+
+            if (existingRow.length > 0) {
+                let qtySpan = existingRow.find(".qty-badge");
+                let newQty = parseInt(qtySpan.text()) + 1;
+                qtySpan.text(newQty);
+                let totalCell = existingRow.find(".row-total");
+                totalCell.text((newQty * price).toFixed(2).replace(".", ",") + " ₺");
+            } else {
+                let newRow = `
+                    <tr data-id="${id}" data-price="${price}">
+                        <td class="fw-bold">${name} <br><small class="badge bg-warning text-dark">Yeni</small></td>
+                        <td class="text-center"><span class="badge bg-secondary qty-badge">1</span></td>
+                        <td class="text-end fw-bold row-total">${price.toFixed(2).replace(".", ",")} ₺</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-link text-danger" onclick="removeFromBasket(this)">
+                                <i class="fas fa-minus-circle fa-lg"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                $("#basketBody").append(newRow);
+            }
+            calculateTotal();
+        }
+
+        function removeFromBasket(btn) {
+            $(btn).closest('tr').remove();
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            $(".row-total").each(function () {
+                let val = $(this).text().replace(" ₺", "").replace(/\./g, "").replace(",", ".");
+                total += parseFloat(val);
+            });
+            $("#totalAmount").text(total.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + " ₺");
+        }
+
+        // --- SİPARİŞİ ONAYLA (MUTFAĞA GÖNDER) ---
+        $("#btnSendToKitchen").click(function () {
+            let orderData = { tableId: @Model.TableId, details: [] };
+
+            $("#basketBody tr:not(.table-info)").each(function () {
+                let row = $(this);
+                orderData.details.push({
+                    productId: parseInt(row.attr("data-id")),
+                    quantity: parseInt(row.find(".qty-badge").text()),
+                    unitPrice: parseFloat(row.attr("data-price"))
+                });
+            });
+
+            if (orderData.details.length === 0) {
+                alert("Lütfen önce yeni ürünler ekleyin!");
+                return;
+            }
+
+            $(this).prop("disabled", true).html('<span class="spinner-border spinner-border-sm"></span> İşleniyor...');
+
+            $.ajax({
+                url: '/Sales/SubmitOrder',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(orderData),
+                success: function (res) {
+                    if (res.success) {
+                        window.location.reload(); // Sayfayı yenile ki yeni ürünler 'kilitli' olarak gelsin
+                    } else {
+                        alert("Hata: " + res.message);
+                        $("#btnSendToKitchen").prop("disabled", false).text("SİPARİŞİ ONAYLA (MUTFAK)");
+                    }
+                }
+            });
+        });
+
+        // --- ÖDEME AL VE KAPAT ---
+        $("#btnGetPayment").click(function () {
+            if (!confirm("Hesap ödemesi alındı mı? Masa boşaltılacak ve sipariş kapatılacak.")) return;
+
+            $.ajax({
+                url: '/Sales/CloseOrder', // Controller'da bu ismi kullanacağız
+                type: 'POST',
+                data: { tableId: @Model.TableId },
+                success: function (res) {
+                    if (res.success) {
+                        alert("Masa başarıyla kapatıldı.");
+                        window.location.href = '/Sales/Index';
+                    } else {
+                        alert("Hata: " + res.message);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

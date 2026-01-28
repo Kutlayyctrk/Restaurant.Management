@@ -9,5 +9,7 @@ namespace Project.Contract.Repositories
 {
     public interface ICategoryRepository:IRepository<Category>
     {
+        Task<List<Category>> GetRootsAsync();
+        Task<List<Category>> GetByParentIdAsync(int parentId);
     }
 }

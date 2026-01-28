@@ -16,6 +16,7 @@ namespace Project.Application.Managers
         /// </summary>
         Task<List<OrderDTO>> GetActiveSaleOrdersAsync();
         Task ChangeOrderStateAsync(int orderId, OrderStatus newState); //Order durumunu güncellemek için yazıldı
+        Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId);
     }
 
 }

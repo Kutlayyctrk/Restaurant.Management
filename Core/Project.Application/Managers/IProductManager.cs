@@ -12,6 +12,7 @@ namespace Project.Application.Managers
     {
         Task<List<ProductDTO>> GetSellableProductsAsync(); //Sadece satılabilir ürünleri getirir
         Task<List<ProductDTO>> GetWithCategory(); //Ürünleri kategorileri ile birlikte getirir
+        Task<List<ProductDTO>> GetProductsByCategoryIdAsync(int categoryId);
 
     }
 }

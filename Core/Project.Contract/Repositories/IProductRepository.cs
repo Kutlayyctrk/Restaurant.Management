@@ -11,5 +11,6 @@ namespace Project.Contract.Repositories
     {
         Task<List<Product>> GetSellableProductsAsync();
         Task<List<Product>> GetWithCategory();
+        Task<List<Product>> GetByCategoryIdAsync(int categoryId);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
+using Project.Domain.Enums;
 using Project.Persistance.ContextClasses;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,10 @@ namespace Project.Persistance.Repositories
     {
         private readonly MyContext _context = myContext;
 
-      
-        
+        public async Task<List<Product>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _context.Products.Where(x => x.CategoryId == categoryId && x.Status != DataStatus.Deleted).ToListAsync();
+        }
 
         public async Task<List<Product>> GetSellableProductsAsync()
         {

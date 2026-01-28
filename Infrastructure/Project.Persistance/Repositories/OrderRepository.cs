@@ -15,6 +15,14 @@ namespace Project.Persistance.Repositories
     {
         private readonly MyContext _context = myContext;
 
+        public async Task<Order?> GetActiveOrderByTableIdAsync(int tableId)
+        {
+            return await _context.Orders
+           .Include(x => x.OrderDetails)
+           .ThenInclude(x => x.Product)
+           .FirstOrDefaultAsync(x => x.TableId == tableId && x.OrderState != OrderStatus.Closed);
+        }
+
         public async Task<List<Order>> GetActiveSaleOrdersAsync()
         {
             return await _context.Set<Order>()
