@@ -24,16 +24,16 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IMapper _mapper = mapper;
         private readonly IValidator<OrderDTO> _validator = orderValidator;
         private readonly IStockTransActionManager _stockTransActionManager = stockTransActionManager;
-        public async Task ChangeOrderStateAsync(int orderId, OrderStatus newState)
+        public async Task ChangeOrderStateAsync(int orderId, OrderDetailStatus newState)
         {
             await _orderRepository.UpdateOrderStateAsync(orderId, newState);
 
 
         }
 
-        public async Task<List<OrderDTO>> GetActiveSaleOrdersAsync()
+        public async Task<List<OrderDTO>> GetActiveSaleOrdersForKitchenAndBarAsync()
         {
-            List<Order> orders = await _orderRepository.GetActiveSaleOrdersAsync();
+            List<Order> orders = await _orderRepository.GetActiveSaleOrdersForKitchenAndBarAsync();
             return _mapper.Map<List<OrderDTO>>(orders);
         }
 
@@ -151,8 +151,23 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public  async   Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId)
         {
-            var order = await _orderRepository.GetActiveOrderByTableIdAsync(tableId);
+            Order order = await _orderRepository.GetActiveOrderByTableIdAsync(tableId);
             return order != null ? _mapper.Map<OrderDTO>(order) : null;
+        }
+
+        public async Task CloseOrderState(int orderId)
+        {
+          Order order= await _orderRepository.GetActiveOrderByTableIdAsync(orderId);
+            if(order!=null)
+            {
+                await _orderRepository.CloseOrderState(orderId);
+            }
+        }
+
+        public async Task<List<OrderDTO>> GetACtiveSaleOrderForWaiterAsync()
+        {
+            List<Order> orders = await _orderRepository.GetACtiveSaleOrderForWaiterAsync();
+            return _mapper.Map<List<OrderDTO>>(orders);
         }
     }
 }

@@ -14,9 +14,11 @@ namespace Project.Application.Managers
         /// <summary>
         /// Sadece aktif ve satış tipindeki siparişleri getirir.
         /// </summary>
-        Task<List<OrderDTO>> GetActiveSaleOrdersAsync();
-        Task ChangeOrderStateAsync(int orderId, OrderStatus newState); //Order durumunu güncellemek için yazıldı
+        Task<List<OrderDTO>> GetActiveSaleOrdersForKitchenAndBarAsync();
+        Task ChangeOrderStateAsync(int orderId, OrderDetailStatus newState); //Order durumunu güncellemek için yazıldı
         Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId);
+        Task CloseOrderState(int orderId);
+        Task<List<OrderDTO>> GetACtiveSaleOrderForWaiterAsync();
     }
 
 }

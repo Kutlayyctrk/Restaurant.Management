@@ -8,10 +8,9 @@ namespace Project.Domain.Enums
 {
     public enum OrderDetailStatus
     {
-        Waiting,
-        Preparing,
-        Ready,
-        Served
+       SendToKitchen,
+       SendToTheTable,
+       Cancelled,
 
     }
 

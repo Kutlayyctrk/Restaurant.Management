@@ -23,7 +23,7 @@ namespace Project.Persistance.SeedDatas
                     Status=Domain.Enums.DataStatus.Inserted
                 },
                 new Table
-                                {
+                {
                     Id=2,
                     TableNumber="Masa 2",
                     TableStatus=Domain.Enums.TableStatus.Free,
@@ -45,7 +45,7 @@ namespace Project.Persistance.SeedDatas
                     TableNumber="Masa 4",
                     TableStatus=Domain.Enums.TableStatus.Free,
                   InsertedDate =new DateTime(2026,01,14),
-                  WaiterId=8,
+                 
                     Status=Domain.Enums.DataStatus.Inserted
 
                 },

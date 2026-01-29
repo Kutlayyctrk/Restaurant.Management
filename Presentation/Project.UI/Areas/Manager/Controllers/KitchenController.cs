@@ -239,7 +239,7 @@ namespace Project.UI.Areas.Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> ActiveOrders()
         {
-            List<OrderDTO> orders = await _orderManager.GetActiveSaleOrdersAsync();
+            List<OrderDTO> orders = await _orderManager.GetActiveSaleOrdersForKitchenAndBarAsync();
 
             List<OrderVm> vmList = orders.Select(o => new OrderVm
             {
@@ -264,7 +264,7 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             try
             {
-                await _orderManager.ChangeOrderStateAsync(orderId, OrderStatus.Completed);
+                await _orderManager.ChangeOrderStateAsync(orderId, OrderDetailStatus.SendToTheTable);
             }
             catch
             {

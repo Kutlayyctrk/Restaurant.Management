@@ -14,9 +14,11 @@ namespace Project.Contract.Repositories
         /// <summary>
         /// Sadece aktif ve satış tipindeki siparişleri getirir.
         /// </summary>
-        Task<List<Order>> GetActiveSaleOrdersAsync();
-        Task UpdateOrderStateAsync(int orderId, OrderStatus newState);
+        Task<List<Order>> GetActiveSaleOrdersForKitchenAndBarAsync();
+        Task<List<Order>> GetACtiveSaleOrderForWaiterAsync();
+        Task UpdateOrderStateAsync(int orderId, OrderDetailStatus newDetailState);
         Task<Order?> GetActiveOrderByTableIdAsync(int tableId);
+        Task CloseOrderState(int orderId);
 
     }
 }

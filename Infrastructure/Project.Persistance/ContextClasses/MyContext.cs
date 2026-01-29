@@ -58,8 +58,7 @@ namespace Project.Persistance.ContextClasses
             builder.TableSeed();
             builder.SupplierSeed();
 
-            builder.OrderSeed();
-            builder.OrderDetailSeed();
+       
 
 
 

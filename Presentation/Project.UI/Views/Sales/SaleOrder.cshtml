@@ -114,7 +114,26 @@
                         @foreach (var item in Model.ExistingDetails)
                         {
                             <tr data-id="@item.ProductId" data-price="@item.UnitPrice.ToString().Replace(",", ".")" class="table-info">
-                                <td class="fw-bold">@item.ProductName <br><small class="text-primary fw-normal"><i class="fas fa-clock me-1"></i>İşlemde</small></td>
+                                <td class="fw-bold">
+                                    @item.ProductName <br>
+                                    <small class="fw-normal">
+                                        @switch (item.DetailState)
+                                        {
+                                            case Project.Domain.Enums.OrderDetailStatus.SendToKitchen:
+                                                <span class="text-primary"><i class="fas fa-clock me-1"></i>Mutfağa Gönderildi</span>
+                                                break;
+                                            case Project.Domain.Enums.OrderDetailStatus.SendToTheTable:
+                                                <span class="text-success"><i class="fas fa-check-circle me-1"></i>Servis Edildi</span>
+                                                break;
+                                            case Project.Domain.Enums.OrderDetailStatus.Cancelled:
+                                                <span class="text-danger"><i class="fas fa-times-circle me-1"></i>İptal Edildi</span>
+                                                break;
+                                            default:
+                                                <span class="text-secondary">İşlemde</span>
+                                                break;
+                                        }
+                                    </small>
+                                </td>
                                 <td class="text-center"><span class="badge bg-primary qty-badge">@item.Quantity</span></td>
                                 <td class="text-end fw-bold row-total">@((item.UnitPrice * item.Quantity).ToString("N2")) ₺</td>
                                 <td class="text-center text-muted"><i class="fas fa-lock"></i></td>

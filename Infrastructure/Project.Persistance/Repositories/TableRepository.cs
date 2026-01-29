@@ -18,7 +18,9 @@ namespace Project.Persistance.Repositories
             if (!int.TryParse(userId, out int waiterId))
                 return new List<Table>();
 
-            return await _myContext.Tables.Where(x => x.WaiterId == null || x.WaiterId == waiterId).ToListAsync();
+            return await _myContext.Tables
+        .Where(x => x.WaiterId == null || x.WaiterId == waiterId)
+        .ToListAsync();
         }
     }
 }

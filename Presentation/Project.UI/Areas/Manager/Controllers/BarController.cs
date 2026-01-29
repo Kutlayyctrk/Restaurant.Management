@@ -238,7 +238,7 @@ public class BarController : Controller
     [HttpGet]
     public async Task<IActionResult> ActiveOrders()
     {
-        List<OrderDTO> orders = await _orderManager.GetActiveSaleOrdersAsync();
+        List<OrderDTO> orders = await _orderManager.GetActiveSaleOrdersForKitchenAndBarAsync();
 
         List<OrderVm> vmList = orders.Select(o => new OrderVm
         {
@@ -263,7 +263,7 @@ public class BarController : Controller
     {
         try
         {
-            await _orderManager.ChangeOrderStateAsync(orderId, OrderStatus.Completed);
+            await _orderManager.ChangeOrderStateAsync(orderId, OrderDetailStatus.SendToTheTable);
         }
         catch
         {

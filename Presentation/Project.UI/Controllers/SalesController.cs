@@ -1,12 +1,9 @@
-﻿using AspNetCoreGeneratedDocument;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Project.Application.DTOs;
 using Project.Application.Managers;
-
 using Project.UI.Models.SaleOrderVms;
-using System.Security.Cryptography.Xml;
+using System.Security.Claims;
 
 namespace Project.UI.Controllers
 {
@@ -22,8 +19,16 @@ namespace Project.UI.Controllers
         private readonly IStockTransActionManager _stockTransActionManager;
         private readonly IMapper _mapper;
 
-
-        public SalesController(ITableManager tableManager, IMenuManager menuManager, ICategoryManager categoryManager, IProductManager productManager, IOrderManager orderManager, IOrderDetailManager orderDetailManager, IMenuProductManager menuProductManager, IStockTransActionManager stockTransActionManager, IMapper mapper)
+        public SalesController(
+            ITableManager tableManager,
+            IMenuManager menuManager,
+            ICategoryManager categoryManager,
+            IProductManager productManager,
+            IOrderManager orderManager,
+            IOrderDetailManager orderDetailManager,
+            IMenuProductManager menuProductManager,
+            IStockTransActionManager stockTransActionManager,
+            IMapper mapper)
         {
             _tableManager = tableManager;
             _menuManager = menuManager;
@@ -33,19 +38,15 @@ namespace Project.UI.Controllers
             _orderDetailManager = orderDetailManager;
             _menuProductManager = menuProductManager;
             _stockTransActionManager = stockTransActionManager;
-            _mapper= mapper;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
         {
-            string userId= User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if(userId==null)
-            {
-                return RedirectToAction("Login", "LoginAndRegister");
-            }
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return RedirectToAction("Login", "LoginAndRegister");
 
             List<TableDTO> tableDtos = await _tableManager.GetTablesByUserIdAsync(userId);
-
             List<TableVm> tableVms = tableDtos.Select(dto => new TableVm
             {
                 Id = dto.Id,
@@ -55,83 +56,89 @@ namespace Project.UI.Controllers
             }).ToList();
 
             return View(tableVms);
-
-
-
-         
         }
+
         public async Task<IActionResult> SaleOrder(int tableId)
         {
-         
-            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return RedirectToAction("Login", "LoginAndRegister");
 
-          
             TableDTO table = await _tableManager.GetByIdAsync(tableId);
             if (table == null) return NotFound();
 
-         
             if (table.WaiterId.HasValue && table.WaiterId.Value.ToString() != userId)
             {
                 TempData["Error"] = "Bu masa şu an başka bir garson tarafından yönetiliyor!";
                 return RedirectToAction("Index");
             }
 
-         
-            List<CategoryDTO> rootCategories = await _categoryManager.GetRootCategoriesAsync();
-            OrderDTO activeOrder = await _orderManager.GetActiveOrderForTableAsync(tableId);
+           
+            List<CategoryDTO> allRootCategories = await _categoryManager.GetRootCategoriesAsync();
+            List<int> allowedRootIds = new List<int> { 1, 2 };
 
-            string[] forbiddenCategories = new[] { "Demirbaş", "Demirbaşlar", "Sarf Malzemeleri", "Giderler" };
+            OrderDTO activeOrder = await _orderManager.GetActiveOrderForTableAsync(tableId);
 
             OrderVm vm = new OrderVm
             {
                 TableId = tableId,
                 TableNumber = table.TableNumber,
                 ActiveOrderId = activeOrder?.Id,
-
-             
-                Categories = rootCategories
-                    .Where(c => !forbiddenCategories.Contains(c.CategoryName))
+                Categories = allRootCategories
+                    .Where(c => allowedRootIds.Contains(c.Id))
                     .Select(c => new CategoryVm
                     {
                         Id = c.Id,
                         Name = c.CategoryName
                     }).ToList(),
 
-               
                 ExistingDetails = activeOrder?.OrderDetails?.Select(od => new OrderDeatilVm
-                {
+                { 
                     ProductId = od.ProductId,
                     ProductName = od.ProductName,
                     UnitPrice = od.UnitPrice,
-                    Quantity = od.Quantity
-                }).ToList() ?? new List<OrderDeatilVm>() 
+                    Quantity = od.Quantity,
+                    DetailState = od.DetailState
+                }).ToList() ?? new List<OrderDeatilVm>()
             };
 
             return View(vm);
         }
+
         [HttpGet]
         public async Task<IActionResult> GetMenuContent(int? categoryId)
         {
-            string[] forbiddenCategories = new[] { "Demirbaş", "Demirbaşlar", "Sarf Malzemeleri", "Giderler" };
+            List<CategoryVm> filteredSubCategories = new List<CategoryVm>();
+
+            if (categoryId == null)
+            {
+                List<CategoryDTO> roots = await _categoryManager.GetRootCategoriesAsync();
+                filteredSubCategories = roots
+                    .Where(c => c.Id == 1 || c.Id == 2)
+                    .Select(c => new CategoryVm { Id = c.Id, Name = c.CategoryName })
+                    .ToList();
+            }
+            else
+            {
+                List<CategoryDTO> subCategories = await _categoryManager.GetSubCategoriesByParentIdAsync(categoryId.Value);
+                filteredSubCategories = subCategories
+                    .Select(c => new CategoryVm { Id = c.Id, Name = c.CategoryName })
+                    .ToList();
+            }
+
+         
+            List<ProductVm> products = new List<ProductVm>();
 
           
-            List<CategoryDTO> subCategories = categoryId == null
-                ? await _categoryManager.GetRootCategoriesAsync()
-                : await _categoryManager.GetSubCategoriesByParentIdAsync(categoryId.Value);
-
-          
-            var filteredSubCategories = subCategories
-                .Where(c => !forbiddenCategories.Contains(c.CategoryName))
-                .Select(c => new { c.Id, c.CategoryName })
-                .ToList();
-
-           
-            object products = new List<object>();
             if (categoryId != null && !filteredSubCategories.Any())
             {
                 List<ProductDTO> productList = await _productManager.GetProductsByCategoryIdAsync(categoryId.Value);
-                products = productList.Select(p => new { p.Id, p.ProductName, p.UnitPrice }).ToList();
+
+                products = productList.Select(p => new ProductVm
+                {
+                    Id = p.Id,
+                    Name = p.ProductName,
+                    Price = p.UnitPrice
+                }).ToList();
             }
 
             return Json(new
@@ -140,23 +147,22 @@ namespace Project.UI.Controllers
                 products = products
             });
         }
+
         [HttpPost]
         public async Task<IActionResult> SubmitOrder([FromBody] OrderSubmitVm vm)
         {
             if (vm == null || !vm.Details.Any())
                 return Json(new { success = false, message = "Sepet boş!" });
 
-            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Json(new { success = false, message = "Oturum hatası!" });
 
             try
             {
-                
                 OrderDTO activeOrderDto = await _orderManager.GetActiveOrderForTableAsync(vm.TableId);
 
                 if (activeOrderDto == null)
                 {
-                  
                     OrderDTO newOrder = new OrderDTO
                     {
                         TableId = vm.TableId,
@@ -168,72 +174,64 @@ namespace Project.UI.Controllers
                         {
                             ProductId = d.ProductId,
                             Quantity = d.Quantity,
-                            UnitPrice = d.UnitPrice
+                            UnitPrice = d.UnitPrice,
+                            DetailState = Domain.Enums.OrderDetailStatus.SendToKitchen
                         }).ToList()
                     };
-
-                    
                     await _orderManager.CreateAsync(newOrder);
                 }
                 else
                 {
-                  
                     OrderDTO updatedOrder = _mapper.Map<OrderDTO>(activeOrderDto);
-
-                  
                     foreach (OrderDeatilVm item in vm.Details)
                     {
                         updatedOrder.OrderDetails.Add(new OrderDetailDTO
                         {
                             ProductId = item.ProductId,
                             Quantity = item.Quantity,
-                            UnitPrice = item.UnitPrice
+                            UnitPrice = item.UnitPrice,
+                            DetailState = Domain.Enums.OrderDetailStatus.SendToKitchen
                         });
                     }
-
-             
                     await _orderManager.UpdateAsync(activeOrderDto, updatedOrder);
                 }
 
-             
                 TableDTO tableDto = await _tableManager.GetByIdAsync(vm.TableId);
                 if (tableDto != null)
                 {
                     tableDto.TableStatus = Domain.Enums.TableStatus.Occupied;
                     tableDto.WaiterId = int.Parse(userId);
-              
                     await _tableManager.UpdateAsync(tableDto, tableDto);
                 }
 
-                return Json(new { success = true, message = "Sipariş başarıyla işlendi ve stoktan düşüldü." });
+                return Json(new { success = true, message = "Sipariş başarıyla işlendi." });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Hata: " + ex.Message });
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> CloseOrder(int tableId)
         {
             try
             {
-                
                 OrderDTO orderDto = await _orderManager.GetActiveOrderForTableAsync(tableId);
-                if (orderDto == null) return Json(new { success = false, message = "Kapatılacak aktif sipariş bulunamadı." });
+                if (orderDto == null)
+                    return Json(new { success = false, message = "Kapatılacak aktif sipariş bulunamadı." });
 
-                
-                await _orderManager.ChangeOrderStateAsync(orderDto.Id, Domain.Enums.OrderStatus.Closed);
+                await _orderManager.CloseOrderState(orderDto.Id);
 
-               
                 TableDTO tableDto = await _tableManager.GetByIdAsync(tableId);
                 if (tableDto != null)
                 {
-                    tableDto.TableStatus = Domain.Enums.TableStatus.Free; 
+                    tableDto.TableStatus = Domain.Enums.TableStatus.Free;
                     tableDto.WaiterId = null;
                     await _tableManager.UpdateAsync(tableDto, tableDto);
                 }
 
-                return Json(new { success = true, message = "Hesap kapatıldı, masa artık boş." });
+                return Json(new { success = true, message = "Hesap kapatıldı." });
             }
             catch (Exception ex)
             {
@@ -242,4 +240,3 @@ namespace Project.UI.Controllers
         }
     }
 }
-
