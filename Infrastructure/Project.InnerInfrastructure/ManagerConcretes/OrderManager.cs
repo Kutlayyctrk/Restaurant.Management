@@ -18,12 +18,13 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class OrderManager(IOrderRepository orderRepository, IMapper mapper, IValidator<OrderDTO> orderValidator, IStockTransActionManager stockTransActionManager) : BaseManager<Order, OrderDTO>(orderRepository, mapper, orderValidator), IOrderManager
+    public class OrderManager(IOrderRepository orderRepository, IMapper mapper, IValidator<OrderDTO> orderValidator, IStockTransActionManager stockTransActionManager,IProductManager productManager) : BaseManager<Order, OrderDTO>(orderRepository, mapper, orderValidator), IOrderManager
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IMapper _mapper = mapper;
         private readonly IValidator<OrderDTO> _validator = orderValidator;
         private readonly IStockTransActionManager _stockTransActionManager = stockTransActionManager;
+        private readonly IProductManager _productManager = productManager;
         public async Task ChangeOrderStateAsync(int orderId, OrderDetailStatus newState)
         {
             await _orderRepository.UpdateOrderStateAsync(orderId, newState);
@@ -120,16 +121,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public async override Task<OperationStatus> CreateAsync(OrderDTO dto)
         {
-          
             ValidationResult validationResult = await _validator.ValidateAsync(dto);
             if (!validationResult.IsValid) return OperationStatus.Failed;
 
-         
             Order order = _mapper.Map<Order>(dto);
             order.Status = DataStatus.Inserted;
             order.InsertedDate = DateTime.Now;
 
-          
             foreach (OrderDetail detail in order.OrderDetails)
             {
                 detail.Status = DataStatus.Inserted;
@@ -139,14 +137,25 @@ namespace Project.InnerInfrastructure.ManagerConcretes
           
             await _orderRepository.CreateAsync(order);
 
-        
+      
             foreach (OrderDetail detail in order.OrderDetails)
             {
-              
+             
                 await _stockTransActionManager.CreateInitialOrderActionAsync(detail, order.Type);
-            }
 
-            return OperationStatus.Success; 
+              
+                if (order.Type == OrderType.Purchase)
+                {
+                
+                    await _productManager.IncreaseStockAsync(detail.ProductId, detail.Quantity);
+                }
+                else if (order.Type == OrderType.Sale)
+                {
+                  
+                    await _productManager.ReduceStockAfterSaleAsync(detail.ProductId, detail.Quantity, detail.Id);
+                }
+            }
+            return OperationStatus.Success;
         }
 
         public  async   Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId)

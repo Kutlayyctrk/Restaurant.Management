@@ -1754,7 +1754,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             return View(vm);
         }
-        // alım Faturası İçin Özel İsimli liste Doldurma Metotu
+  
         private async Task PopulatePurchaseLists(PurchaseInvoiceEditVm vm)
         {
             List<SupplierDTO>  suppliers = await _supplierManager.GetAllAsync();
@@ -1773,7 +1773,7 @@ namespace Project.UI.Areas.Manager.Controllers
             }).ToList();
         }
 
-        // satış Faturası İçin Özel İsimli liste Doldurma Metotu
+       
         private async Task PopulateSaleLists(SaleInvoiceEditVm vm)
         {
             List<ProductDTO> products = await _productManager.GetAllAsync();

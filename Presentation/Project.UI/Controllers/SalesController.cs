@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.DTOs;
+using Project.Application.Enums;
 using Project.Application.Managers;
 using Project.UI.Models.SaleOrderVms;
 using System.Security.Claims;
@@ -160,9 +161,11 @@ namespace Project.UI.Controllers
             try
             {
                 OrderDTO activeOrderDto = await _orderManager.GetActiveOrderForTableAsync(vm.TableId);
+                OperationStatus status;
 
                 if (activeOrderDto == null)
                 {
+                   
                     OrderDTO newOrder = new OrderDTO
                     {
                         TableId = vm.TableId,
@@ -178,10 +181,11 @@ namespace Project.UI.Controllers
                             DetailState = Domain.Enums.OrderDetailStatus.SendToKitchen
                         }).ToList()
                     };
-                    await _orderManager.CreateAsync(newOrder);
+                    status = await _orderManager.CreateAsync(newOrder);
                 }
                 else
                 {
+                 
                     OrderDTO updatedOrder = _mapper.Map<OrderDTO>(activeOrderDto);
                     foreach (OrderDeatilVm item in vm.Details)
                     {
@@ -193,22 +197,27 @@ namespace Project.UI.Controllers
                             DetailState = Domain.Enums.OrderDetailStatus.SendToKitchen
                         });
                     }
-                    await _orderManager.UpdateAsync(activeOrderDto, updatedOrder);
+                    status = await _orderManager.UpdateAsync(activeOrderDto, updatedOrder);
+
+                  
                 }
 
-                TableDTO tableDto = await _tableManager.GetByIdAsync(vm.TableId);
-                if (tableDto != null)
+                if (status == OperationStatus.Success)
                 {
+                  
+                    TableDTO tableDto = await _tableManager.GetByIdAsync(vm.TableId);
                     tableDto.TableStatus = Domain.Enums.TableStatus.Occupied;
                     tableDto.WaiterId = int.Parse(userId);
                     await _tableManager.UpdateAsync(tableDto, tableDto);
+
+                    return Json(new { success = true, message = "İşlem başarılı." });
                 }
 
-                return Json(new { success = true, message = "Sipariş başarıyla işlendi." });
+                return Json(new { success = false, message = "İşlem başarısız oldu." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Hata: " + ex.Message });
+                return Json(new { success = false, message = ex.Message });
             }
         }
 

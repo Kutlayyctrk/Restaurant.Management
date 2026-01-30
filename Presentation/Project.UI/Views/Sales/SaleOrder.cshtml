@@ -212,23 +212,23 @@
                                         <div class="card category-card shadow-sm h-100 p-3 text-center" onclick="loadMenu(${cat.id})">
                                             <div class="card-body">
                                                 <i class="fas fa-folder fa-4x text-warning mb-3"></i>
-                                                <h5 class="fw-bold">${cat.categoryName.toUpperCase()}</h5>
+                                              <h5 class="fw-bold">${cat.name.toUpperCase()}</h5>
                                             </div>
                                         </div>
                                     </div>`;
                         });
                     }
                     else if (data.products && data.products.length > 0) {
-                        data.products.forEach(p => {
-                            html += `<div class="col-md-4 col-lg-3">
-                                        <div class="card product-card shadow-sm h-100 p-2 text-center border-bottom border-success border-4" onclick="addToBasket(${p.id}, '${p.productName}', ${p.unitPrice})">
-                                            <div class="card-body">
-                                                <h6 class="fw-bold">${p.productName}</h6>
-                                                <span class="badge bg-success fs-6">${p.unitPrice.toFixed(2)} ₺</span>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                        });
+                              data.products.forEach(p => {
+            html += `<div class="col-md-4 col-lg-3">
+                        <div class="card product-card shadow-sm h-100 p-2 text-center border-bottom border-success border-4" onclick="addToBasket(${p.id}, '${p.name}', ${p.price})">
+                            <div class="card-body">
+                                <h6 class="fw-bold">${p.name}</h6>
+                                <span class="badge bg-success fs-6">${p.price.toFixed(2)} ₺</span>
+                            </div>
+                        </div>
+                    </div>`;
+        });
                     }
                     $("#menuContainer").hide().html(html).fadeIn(200);
                 }
