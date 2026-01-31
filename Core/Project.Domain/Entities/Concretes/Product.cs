@@ -20,6 +20,7 @@ namespace Project.Domain.Entities.Concretes
         public decimal UnitPrice { get; set; }
         public int UnitId { get; set; }
         public int CategoryId { get; set; }
+        public int? RecipeId { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual Unit Unit { get; set; }

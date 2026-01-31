@@ -325,6 +325,7 @@ namespace Project.Persistance.Migrations
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UnitId = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
+                    RecipeId = table.Column<int>(type: "int", nullable: true),
                     InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -571,17 +572,17 @@ namespace Project.Persistance.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "DeletionDate", "InsertedDate", "Name", "NormalizedName", "Status", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, "2d6b6201-5ba3-4a8f-8de9-7cbc5fca4776", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", "ADMIN", 1, null },
-                    { 2, "94b7110b-b133-4914-a64a-b3c09c029d2a", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Restaurant Muduru", "RESTAURANT MUDURU", 1, null },
-                    { 3, "e9ab4e80-ad71-4cb7-a182-1f29ced081cd", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Insan Kaynaklari Muduru", "INSAN KAYNAKLARI MUDURU", 1, null },
-                    { 4, "5d70a960-a339-40bb-8c65-56d8c20bb2c7", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mutfak Sefi", "MUTFAK SEFI", 1, null },
-                    { 5, "6b233da9-a98c-45ad-b631-50853bb6b567", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bar Sefi", "BAR SEFI", 1, null },
-                    { 6, "9a06f68a-49de-443f-aa5b-29067fc8b591", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Asci", "ASCI", 1, null },
-                    { 7, "b80e96e0-20aa-4c8c-8025-829307aae076", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Barmen", "BARMEN", 1, null },
-                    { 8, "028e4bde-876a-4c1b-84d3-1894ea6b8bd8", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Garson", "GARSON", 1, null },
-                    { 9, "0da068d3-b495-465a-8182-7487b8a6b54a", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hizmet Personeli", "HIZMET PERSONELI", 1, null },
-                    { 10, "68bdae08-db13-4dec-99d9-bf6dbb58498b", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Idari Personel", "IDARI PERSONEL", 1, null },
-                    { 11, "107b2b58-61b5-4fc1-ae94-a0c7a33e2ea4", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stajyer", "STAJYER", 1, null }
+                    { 1, "a7476b70-a9a3-4274-8043-8e4d6e20dd87", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", "ADMIN", 1, null },
+                    { 2, "7d1f7575-1561-410c-8110-9c08871aac1b", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Restaurant Muduru", "RESTAURANT MUDURU", 1, null },
+                    { 3, "e893b867-100c-4367-8f5d-58076b147a8d", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Insan Kaynaklari Muduru", "INSAN KAYNAKLARI MUDURU", 1, null },
+                    { 4, "3338a032-0489-4ca9-b348-425d0a703b1b", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mutfak Sefi", "MUTFAK SEFI", 1, null },
+                    { 5, "2bdaa150-5fed-41fb-96e2-908b46141804", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bar Sefi", "BAR SEFI", 1, null },
+                    { 6, "01a62cff-dc1e-4d32-b96e-d5fb3a8f7630", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Asci", "ASCI", 1, null },
+                    { 7, "675b938d-f65e-485f-b2b8-e15d575fd970", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Barmen", "BARMEN", 1, null },
+                    { 8, "9ca6abd1-3e5e-4e41-9dcd-5621b7b691bb", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Garson", "GARSON", 1, null },
+                    { 9, "9aaaed2c-b6bf-4545-886c-feea0392e2ad", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Hizmet Personeli", "HIZMET PERSONELI", 1, null },
+                    { 10, "fdf19031-19fe-4bdd-ab9f-efcb390f3fe6", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Idari Personel", "IDARI PERSONEL", 1, null },
+                    { 11, "7485865f-2077-4a10-a50e-9b23fa1101f9", null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Stajyer", "STAJYER", 1, null }
                 });
 
             migrationBuilder.InsertData(
@@ -589,17 +590,17 @@ namespace Project.Persistance.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DeletionDate", "Email", "EmailConfirmed", "InsertedDate", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Status", "TwoFactorEnabled", "UpdatedDate", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "337cc24d-7731-41dc-966b-47d3b8526657", null, "admin@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ADMIN", "AQAAAAIAAYagAAAAEFWhIuGwB9KP2LzOcThbJilYKFCeMjliAb2ys2AY2j43wrgo9Engq203S4h+rS+NEg==", null, false, "85918153-689f-4f64-abb4-6648590c6f46", 1, false, null, "admin" },
-                    { 2, 0, "23594f3e-39f7-4615-b3cb-22f2dd13a9a7", null, "mudur@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUDUR", "AQAAAAIAAYagAAAAEKJySFPQVHejrdvzN4wAlG8pzm6iEQOVf+P/NQQdiaNYOeGAMD0mQuCbpPdl/kubFg==", null, false, "bda44f12-7701-4d25-b582-60f979bdb345", 1, false, null, "mudur" },
-                    { 3, 0, "ea4e4d31-0c41-4b4c-a90d-e423496dcc72", null, "insankaynaklari@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "INSANKAYNAKLARI", "AQAAAAIAAYagAAAAECE95eHcKx9Z08VqNi5j7VVb2HvxM7v6xJn4WcYeoG1wL1bjyJlZh2y1LXtysDDEyg==", null, false, "56b317d2-effc-4b8c-bee9-00a228a2f4b5", 1, false, null, "insankaynaklari" },
-                    { 4, 0, "a8bf0807-49a4-4d68-9b01-ec8fc39094a6", null, "mutfaksef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUTFAKSEF", "AQAAAAIAAYagAAAAEAeVOBTrbyRuhHLNrqW6zLXHgcV2+qz4TTepU+ldPW0m0iJ7NBqJsc+oXY/gGwCo2g==", null, false, "5a9457cc-f2a5-4d04-a73b-b9e18e34232a", 1, false, null, "mutfaksef" },
-                    { 5, 0, "06087942-b72d-41bd-afbf-c89eb7ef33ae", null, "barsef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARSEF", "AQAAAAIAAYagAAAAEFdMebgPXLJsU+qNUsyfps8JPlUY0mQBw71QDTFpfnqjlYDa4bBPwiZGkOK4ypzccg==", null, false, "fa6a6eb5-62d1-4fb1-bfcf-44a0983d2430", 1, false, null, "barsef" },
-                    { 6, 0, "873be1fb-d8e4-4a7c-9c0f-29db7e9cf442", null, "asci@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ASCI", "AQAAAAIAAYagAAAAELRmWXXu16yj9XsnUT0yKDETSZ9t04nZL6jZcKpnivlZtiLQ6sHBFOPt0b93VUJDFQ==", null, false, "2e527267-28db-4756-a9c6-13342e51e823", 1, false, null, "asci" },
-                    { 7, 0, "8eed86c3-48b5-4401-8060-5d5512fb5f97", null, "barmen@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARMEN", "AQAAAAIAAYagAAAAEJfzd/vy6/ZlX8B2O8gt9rKRjgqpXs6p98WtOZJsa/OcsWuKW/kff+gkDRz4oBO1ew==", null, false, "80952064-7de0-4ca3-bfec-31a0b7dfa4b8", 1, false, null, "barmen" },
-                    { 8, 0, "b4bdedb3-393f-4440-8487-cd21eec3a38b", null, "garson@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "GARSON", "AQAAAAIAAYagAAAAEK45MfORiEslJGtnLqcS+sODvjYIaPcZOq2Bn33Ekyullv4C209fmIkWAH12hPyjTQ==", null, false, "6fefcd3f-d969-400f-83a8-47ca49b75bcf", 1, false, null, "garson" },
-                    { 9, 0, "423a8aae-7583-4314-a712-12934a7f2e02", null, "idaripersonel@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "IDARIPERSONEL", "AQAAAAIAAYagAAAAEKNyyxfbcB8+gxwfpFnrL07ox3HS+qCr4vJuIxpYW80uf5xs95WCLlMKoe703Pli5Q==", null, false, "ac4c7005-e880-41f0-be62-fc945fbf100f", 1, false, null, "idaripersonel" },
-                    { 10, 0, "d5ce19f0-9875-4dca-9993-dc9ac8fcd034", null, "hizmetpersoneli@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "HIZMETPERSONELI", "AQAAAAIAAYagAAAAEAucTiOn9CfzJ8YSCNUFJH5wudeb7shRUOeFzXdyx8gBwBNvHnDwsPZyXhq4yYsdOw==", null, false, "264aded3-8e50-465b-afe3-5a3f3f53227e", 1, false, null, "hizmetpersoneli" },
-                    { 11, 0, "e17c6796-ef5b-48b0-bd95-72ff17a8bbde", null, "stajyer@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "STAJYER", "AQAAAAIAAYagAAAAEFO3S4VDPUazC3/+ekpJZoh/oF4+TtphJ4LlKequLNznBf8mlfvMFIVwWSranw0WPg==", null, false, "668f1662-64d6-424f-8914-e4c449f30f74", 1, false, null, "stajyer" }
+                    { 1, 0, "d9fb9402-f4c6-451e-981b-999c75a90d8d", null, "admin@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ADMIN", "AQAAAAIAAYagAAAAECAIuQQ46vKu25E4cdh1FdVh926amc20IAx7snWkVs31bqwinOQ1bFXqj4mFDCO7Wg==", null, false, "cf6e3565-29d3-49ef-b2a8-314855d5e330", 1, false, null, "admin" },
+                    { 2, 0, "15998344-4174-4472-8d28-bd7268d04008", null, "mudur@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUDUR", "AQAAAAIAAYagAAAAEG1uMOyE+uwaQQscFN29SC+2m9Q/GrQWt1OrfQeCmrJ5d4MaWgdfTKFtAqBAjNaYbQ==", null, false, "35a763b3-4676-4e4c-ac00-e7915649e158", 1, false, null, "mudur" },
+                    { 3, 0, "88ecdfc2-97d2-4d26-8f53-36d933da4691", null, "insankaynaklari@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "INSANKAYNAKLARI", "AQAAAAIAAYagAAAAEILOEB8wThNZOi7BtY6CrwtZQoop6yKWMehWqVATV/5s0JApUjys9+7PptRRP4Gl/w==", null, false, "92cd5965-8871-4fc0-aa95-8dba1a516546", 1, false, null, "insankaynaklari" },
+                    { 4, 0, "7b40642d-5a88-4961-a900-5a5da10a3c54", null, "mutfaksef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "MUTFAKSEF", "AQAAAAIAAYagAAAAECZjCGE6iRM581PrGQlO48hlHWh0w52KY2nxaoVAd++Pnf2Pzbf9N4fhC79UkRkGLg==", null, false, "6010b39e-4c57-42ab-ba57-118c6d71ef18", 1, false, null, "mutfaksef" },
+                    { 5, 0, "6175c8d6-b497-4425-8e92-6a5043c2584f", null, "barsef@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARSEF", "AQAAAAIAAYagAAAAEBckmHYtjAoyGwweTHM293s/W8FMJbCbf8ehmWL4GmMhVd6OX/0Hjc3QRVziKgoYsg==", null, false, "466058d0-6d6e-433f-ad10-f4c0e470ba11", 1, false, null, "barsef" },
+                    { 6, 0, "50bd29de-b7a6-4a96-81fd-1a693d259417", null, "asci@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "ASCI", "AQAAAAIAAYagAAAAEOyDx5hE8MvSYb96nU8/TU8PLZBYn1aXxbO0sleKnKAoQfhu7GKa4OO9DZSAAFEeSQ==", null, false, "23299061-3075-429d-ba89-2ac4e30496fc", 1, false, null, "asci" },
+                    { 7, 0, "40f1bb0d-8049-4c1e-973d-8c22c914d0df", null, "barmen@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "BARMEN", "AQAAAAIAAYagAAAAEPuYZTm880uhwLpNlct8IElhPy3vFKYNzgkTqGMGwfnSXUQFeeq3HKYy5joIo4V7Ng==", null, false, "af19e358-5ffc-48b9-b3f2-0b1f00913d3e", 1, false, null, "barmen" },
+                    { 8, 0, "509a962d-fcc0-49e1-8bed-8948ead08f86", null, "garson@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "GARSON", "AQAAAAIAAYagAAAAEBPlKQbuvSCtU3tl31iv0+g3pNoliX5Mln698PJqLfUvINWBq8chCa3W8vJ5jaE3OA==", null, false, "0af6260e-7a37-4d5d-ad95-874d0fbf7461", 1, false, null, "garson" },
+                    { 9, 0, "5b0b934c-e978-4622-a9c3-63143b90125d", null, "idaripersonel@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "IDARIPERSONEL", "AQAAAAIAAYagAAAAEOWR+iXLzYbGO62qzGiKFZol8ZLu/fNWDrvfE6SaocHJBaP0wKaOKTDTlkhDhdaU/Q==", null, false, "3b2bd669-1c70-4f3a-9b8c-7ddd0afb9249", 1, false, null, "idaripersonel" },
+                    { 10, 0, "5e933b81-b62f-4f00-967c-b07027928423", null, "hizmetpersoneli@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "HIZMETPERSONELI", "AQAAAAIAAYagAAAAELU9YHXqeBx1zq2FUItx/pCYNXM3+Oxn7QdEJNVyFOblGWsNgnnDTatpcRq/Q6ZrEg==", null, false, "9cf8c178-7f86-4414-b4c1-3d3236760339", 1, false, null, "hizmetpersoneli" },
+                    { 11, 0, "404ee061-05ef-45fd-8657-7723623f6cf5", null, "stajyer@restaurantmanagement.com", true, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, null, "STAJYER", "AQAAAAIAAYagAAAAECXLt34bBN+XLh9/1YCbM1iNPa6ciqquB591tmIKb2pI6GFOn9AM9mgNPWD7YgBxeg==", null, false, "9c3b74be-c39c-4b6c-8e02-0d2506258933", 1, false, null, "stajyer" }
                 });
 
             migrationBuilder.InsertData(
@@ -713,64 +714,64 @@ namespace Project.Persistance.Migrations
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CanBeProduced", "CategoryId", "DeletionDate", "InsertedDate", "IsSellable", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "CanBeProduced", "CategoryId", "DeletionDate", "InsertedDate", "IsSellable", "ProductName", "RecipeId", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Dana Bonfile", 1, 1, 250m, null },
-                    { 2, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Tavuk Izgara", 1, 1, 180m, null }
+                    { 1, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Dana Bonfile", null, 1, 1, 250m, null },
+                    { 2, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Tavuk Izgara", null, 1, 1, 180m, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "ProductName", "RecipeId", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 3, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Patates", 1, 2, 30m, null },
-                    { 4, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Domates", 1, 2, 25m, null }
+                    { 3, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Patates", null, 1, 2, 30m, null },
+                    { 4, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Domates", null, 1, 2, 25m, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "IsReadyMade", "IsSellable", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "IsReadyMade", "IsSellable", "ProductName", "RecipeId", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 5, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Elma", 1, 2, 20m, null },
-                    { 6, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Muz", 1, 2, 22m, null },
-                    { 7, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Bira", 1, 3, 60m, null },
-                    { 8, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Şarap", 1, 3, 120m, null },
-                    { 9, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Coca Cola", 1, 3, 35m, null },
-                    { 10, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Soda", 1, 3, 20m, null }
+                    { 5, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Elma", null, 1, 2, 20m, null },
+                    { 6, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Muz", null, 1, 2, 22m, null },
+                    { 7, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Bira", null, 1, 3, 60m, null },
+                    { 8, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Şarap", null, 1, 3, 120m, null },
+                    { 9, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Coca Cola", null, 1, 3, 35m, null },
+                    { 10, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Soda", null, 1, 3, 20m, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CanBeProduced", "CategoryId", "DeletionDate", "InsertedDate", "IsSellable", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "CanBeProduced", "CategoryId", "DeletionDate", "InsertedDate", "IsSellable", "ProductName", "RecipeId", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 11, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Izgara Köfte", 1, 1, 150m, null },
-                    { 12, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Antrikot", 1, 1, 200m, null }
+                    { 11, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Izgara Köfte", null, 1, 1, 150m, null },
+                    { 12, true, 5, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Antrikot", null, 1, 1, 200m, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "ProductName", "RecipeId", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 13, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Soğan", 1, 2, 15m, null },
-                    { 14, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Biber", 1, 2, 18m, null }
+                    { 13, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Soğan", null, 1, 2, 15m, null },
+                    { 14, 6, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Biber", null, 1, 2, 18m, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "IsReadyMade", "IsSellable", "ProductName", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
+                columns: new[] { "Id", "CategoryId", "DeletionDate", "InsertedDate", "IsReadyMade", "IsSellable", "ProductName", "RecipeId", "Status", "UnitId", "UnitPrice", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 15, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Portakal", 1, 2, 25m, null },
-                    { 16, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Çilek", 1, 2, 40m, null },
-                    { 17, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Rakı", 1, 3, 180m, null },
-                    { 18, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Viski", 1, 3, 250m, null },
-                    { 19, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Ayran", 1, 3, 15m, null },
-                    { 20, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Gazoz", 1, 3, 18m, null }
+                    { 15, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Portakal", null, 1, 2, 25m, null },
+                    { 16, 7, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Çilek", null, 1, 2, 40m, null },
+                    { 17, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Rakı", null, 1, 3, 180m, null },
+                    { 18, 8, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Viski", null, 1, 3, 250m, null },
+                    { 19, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Ayran", null, 1, 3, 15m, null },
+                    { 20, 9, null, new DateTime(2026, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Gazoz", null, 1, 3, 18m, null }
                 });
 
             migrationBuilder.InsertData(

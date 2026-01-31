@@ -1,115 +1,113 @@
 ﻿@model RecipeEditPageVm
 
 @{
-    ViewData["Title"] = "Yeni Reçete Oluştur";
+    ViewData["Title"] = "Reçete Oluştur";
+ 
+    string productOptions = "<option value=''>Seçiniz</option>";
+    foreach (var p in (SelectList)ViewBag.ProductList)
+    {
+        productOptions += $"<option value='{p.Value}'>{p.Text}</option>";
+    }
+    string unitOptions = "<option value=''>Seçiniz</option>";
+    foreach (var u in (SelectList)ViewBag.UnitList)
+    {
+        unitOptions += $"<option value='{u.Value}'>{u.Text}</option>";
+    }
 }
 
-<h2>Yeni Reçete Oluştur</h2>
+<h2>Reçete Oluştur</h2>
 
-<form asp-action="CreateRecipe" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+<form asp-action="CreateRecipe" method="post" autocomplete="off">
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
         <label asp-for="Description" class="form-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
-        <label asp-for="ProductId" class="form-label"></label>
-        <select asp-for="ProductId" class="form-select" asp-items="ViewBag.ProductList"></select>
+        <label asp-for="ProductId" class="form-label">Ana Ürün</label>
+        <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-select"></select>
         <span asp-validation-for="ProductId" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
-        <label asp-for="CategoryId" class="form-label"></label>
-        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList"></select>
+        <label asp-for="CategoryId" class="form-label">Kategori</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select"></select>
         <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
 
-    <h4>Reçete Kalemleri</h4>
-    <table class="table" id="recipeItemsTable">
-        <thead>
-            <tr>
-                <th>Ürün</th>
-                <th>Miktar</th>
-                <th>Birim</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.Items.Count; i++)
-            {
-                <tr>
-                    <td>
-                        <select asp-for="Items[@i].ProductId" class="form-select" asp-items="ViewBag.ProductList"></select>
-                        <span asp-validation-for="Items[@i].ProductId" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input asp-for="Items[@i].Quantity" class="form-control" />
-                        <span asp-validation-for="Items[@i].Quantity" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <select asp-for="Items[@i].UnitId" class="form-select" asp-items="ViewBag.UnitList"></select>
-                        <span asp-validation-for="Items[@i].UnitId" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm remove-row">Sil</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <button type="button" id="addRow" class="btn btn-success mb-3">Malzeme Ekle</button>
-
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="RecipeList" class="btn btn-secondary">İptal</a>
+    <h4>Malzemeler</h4>
+    <div id="items-container">
+        @for (int i = 0; i < Model.Items.Count; i++)
+        {
+            <div class="row align-items-end mb-2 item-row">
+                <div class="col-md-5">
+                    <label>Ürün</label>
+                    <select asp-for="Items[@i].ProductId" asp-items="ViewBag.ProductList" class="form-select"></select>
+                </div>
+                <div class="col-md-3">
+                    <label>Miktar</label>
+                    <input asp-for="Items[@i].Quantity" class="form-control" type="number" min="0.01" step="0.01" />
+                </div>
+                <div class="col-md-3">
+                    <label>Birim</label>
+                    <select asp-for="Items[@i].UnitId" asp-items="ViewBag.UnitList" class="form-select"></select>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger remove-item">Sil</button>
+                </div>
+            </div>
+        }
+    </div>
+    <button type="button" id="add-item" class="btn btn-secondary mb-3">Malzeme Ekle</button>
+    <div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </div>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        let itemIndex = @Model.Items.Count;
      
-        document.getElementById('addRow').addEventListener('click', function () {
-            var tableBody = document.querySelector('#recipeItemsTable tbody');
-            var rowCount = tableBody.children.length;
+        const productOptions = `@Html.Raw(productOptions)`;
+        const unitOptions = `@Html.Raw(unitOptions)`;
 
-            
-            var productOptions = `@Html.Raw(string.Join("", ((SelectList)ViewBag.ProductList).Select(p => $"<option value='{p.Value}'>{p.Text}</option>")))`;
-            var unitOptions = `@Html.Raw(string.Join("", ((SelectList)ViewBag.UnitList).Select(u => $"<option value='{u.Value}'>{u.Text}</option>")))`;
-
-            var newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>
-                    <select name="RecipeItems[${rowCount}].ProductId" class="form-select">
+        document.getElementById('add-item').addEventListener('click', function () {
+            const container = document.getElementById('items-container');
+            const row = document.createElement('div');
+            row.className = 'row align-items-end mb-2 item-row';
+            row.innerHTML = `
+                <div class="col-md-5">
+                    <label>Ürün</label>
+                    <select name="Items[${itemIndex}].ProductId" class="form-select">
                         ${productOptions}
                     </select>
-                </td>
-                <td>
-                    <input name="RecipeItems[${rowCount}].Quantity" class="form-control" />
-                </td>
-                <td>
-                    <select name="RecipeItems[${rowCount}].UnitId" class="form-select">
+                </div>
+                <div class="col-md-3">
+                    <label>Miktar</label>
+                    <input name="Items[${itemIndex}].Quantity" class="form-control" type="number" min="0.01" step="0.01" />
+                </div>
+                <div class="col-md-3">
+                    <label>Birim</label>
+                    <select name="Items[${itemIndex}].UnitId" class="form-select">
                         ${unitOptions}
                     </select>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm remove-row">Sil</button>
-                </td>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger remove-item">Sil</button>
+                </div>
             `;
-            tableBody.appendChild(newRow);
+            container.appendChild(row);
+            itemIndex++;
         });
 
-        document.addEventListener('click', function (e) {
-            if (e.target && e.target.classList.contains('remove-row')) {
-                var row = e.target.closest('tr');
-                row.parentNode.removeChild(row);
+        document.getElementById('items-container').addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-item')) {
+                e.target.closest('.item-row').remove();
             }
         });
     </script>

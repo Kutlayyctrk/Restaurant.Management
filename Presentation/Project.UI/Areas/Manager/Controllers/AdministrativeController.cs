@@ -633,11 +633,19 @@ namespace Project.UI.Areas.Manager.Controllers
             ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
             return View(new ProductCreateVm());
         }
+
+        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> AddProduct(ProductCreateVm vm)
         {
-            if (!ModelState.IsValid)
+         
+            if (!ModelState.IsValid || vm.CategoryId < 1 || vm.UnitId < 1)
             {
+                if (vm.CategoryId < 1)
+                    ModelState.AddModelError("CategoryId", "Kategori seçimi zorunludur.");
+                if (vm.UnitId < 1)
+                    ModelState.AddModelError("UnitId", "Birim seçimi zorunludur.");
+
                 List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
                 List<UnitDTO> units = await _unitManager.GetAllAsync();
                 ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");

@@ -10,8 +10,9 @@ namespace Project.Application.Mapping
         {
             CreateMap<AppRoleDTO, AppRole>().ReverseMap();
             CreateMap<Product, ProductDTO>()
-     .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
-     .ReverseMap();
+      .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+      .ReverseMap()
+      .ForMember(dest => dest.Category, opt => opt.Ignore());
             CreateMap<RecipeDTO, Recipe>()
       .ForMember(dest => dest.RecipeItems, opt => opt.MapFrom(src => src.RecipeItems))
       .ReverseMap();

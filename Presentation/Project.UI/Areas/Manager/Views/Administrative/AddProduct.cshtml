@@ -11,11 +11,10 @@
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
     <form asp-action="AddProduct" method="post" class="card shadow-sm border-0">
-        @Html.AntiForgeryToken()
+      
 
         <div class="card-body p-4">
             <div class="row g-4">
-              
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label asp-for="ProductName" class="form-label fw-bold small text-muted">Ürün Adı</label>
@@ -29,19 +28,20 @@
                     </div>
                     <div class="mb-0">
                         <label asp-for="UnitId" class="form-label fw-bold small text-muted">Birim</label>
-                        <select asp-for="UnitId" class="form-select" asp-items="ViewBag.UnitList"></select>
+                        <select asp-for="UnitId" class="form-select" asp-items="ViewBag.UnitList">
+                            <option value="">Birim Seçiniz</option>
+                        </select>
                         <span asp-validation-for="UnitId" class="text-danger small"></span>
                     </div>
                 </div>
-
-              
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label asp-for="CategoryId" class="form-label fw-bold small text-muted">Kategori</label>
-                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList"></select>
+                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList">
+                            <option value="">Kategori Seçiniz</option>
+                        </select>
                         <span asp-validation-for="CategoryId" class="text-danger small"></span>
                     </div>
-
                     <label class="form-label fw-bold small text-muted mb-2">Ürün Özellikleri</label>
                     <div class="row">
                         <div class="col-6">
@@ -68,7 +68,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card-footer bg-light border-0 d-flex justify-content-end gap-2 py-3">
             <button type="submit" class="btn btn-success px-4">Ekle</button>
             <a asp-action="ProductManagement" class="btn btn-secondary px-4">Geri</a>

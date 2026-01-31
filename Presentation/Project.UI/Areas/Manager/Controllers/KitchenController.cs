@@ -102,12 +102,12 @@ namespace Project.UI.Areas.Manager.Controllers
             ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
             ViewBag.UnitList = new SelectList(units, "Id", "UnitName");
         }
-
         [HttpGet]
         public async Task<IActionResult> CreateRecipe()
         {
             await SetViewBagsAsync();
 
+ 
             RecipeEditPageVm vm = new RecipeEditPageVm
             {
                 Items = new List<RecipeItemDTO> { new RecipeItemDTO() }
@@ -146,13 +146,22 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
+          
+            List<RecipeItemDTO> validItems = vm.Items?.Where(i => i.ProductId > 0 && i.Quantity > 0).ToList() ?? new List<RecipeItemDTO>();
+            if (!validItems.Any())
+            {
+                ModelState.AddModelError("", "En az bir malzeme eklemelisiniz.");
+                await SetViewBagsAsync();
+                return View(vm);
+            }
+
             RecipeDTO dto = new RecipeDTO
             {
                 Name = vm.Name,
                 Description = vm.Description,
                 ProductId = vm.ProductId,
                 CategoryId = vm.CategoryId,
-                RecipeItems = vm.Items
+                RecipeItems = validItems
             };
 
             OperationStatus result = await _recipeManager.CreateAsync(dto);
