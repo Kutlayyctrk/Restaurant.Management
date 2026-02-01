@@ -7,9 +7,9 @@ namespace Project.Application.DTOs
         public string ProductName { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Quantity { get; set; }
-        public bool IsSellable { get; set; }   // Satılabilir mi? (Örn: Pişmiş yemek)
-        public bool IsExtra { get; set; }      // Ekstra malzeme mi? (Örn: Soslar)
-        public bool CanBeProduced { get; set; } // Reçetesi var mı?
+        public bool IsSellable { get; set; }   
+        public bool IsExtra { get; set; }     
+        public bool CanBeProduced { get; set; }
         public bool IsReadyMade { get; set; }
 
         public int UnitId { get; set; }

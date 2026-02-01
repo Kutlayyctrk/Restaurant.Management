@@ -18,13 +18,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IMapper _mapper = mapper;
         public async Task<List<CategoryDTO>> GetRootCategoriesAsync()
         {
-            var categories = await _categoryRepository.GetRootsAsync();
+            List<Category> categories = await _categoryRepository.GetRootsAsync();
             return _mapper.Map<List<CategoryDTO>>(categories); ;
         }
 
         public async Task<List<CategoryDTO>> GetSubCategoriesByParentIdAsync(int parentId)
         {
-            var categories = await _categoryRepository.GetByParentIdAsync(parentId);
+            List<Category> categories = await _categoryRepository.GetByParentIdAsync(parentId);
             return _mapper.Map<List<CategoryDTO>>(categories);
         }
     }

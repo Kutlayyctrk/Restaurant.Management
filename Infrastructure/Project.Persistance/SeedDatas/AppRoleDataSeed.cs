@@ -16,15 +16,7 @@ namespace Project.Persistance.SeedDatas
         {
             List<AppRole> roles = new()
             {
-                new AppRole
-                {
-                    Id = 1,
-                    Name = "Admin",
-                    NormalizedName = "ADMIN",
-                    ConcurrencyStamp = Guid.NewGuid().ToString(),
-                    InsertedDate = new DateTime(2026,01,14),
-                    Status = Domain.Enums.DataStatus.Inserted
-                },
+               
                 new AppRole
                 {
                     Id = 3,

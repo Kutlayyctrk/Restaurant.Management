@@ -20,7 +20,9 @@ namespace Project.Contract.Repositories
         // EF Core ChangeTracker içinde aynı entity var mı kontrolü (duplicate eklememek için)
 
         Task UpdateByCompositeKeyAsync(AppUserRole entity);
-        // Composite key ile AppUserRole güncelleme (soft delete veya update için)
+        // Composite key ile AppUserRole güncelleme 
+
+        Task<IList<int>> GetRoleIdsByUserIdAsync(int userId);
 
 
     }

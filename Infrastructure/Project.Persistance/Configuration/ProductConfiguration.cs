@@ -22,9 +22,9 @@ namespace Project.Persistance.Configurations
             builder.Property(p => p.IsSellable).HasDefaultValue(true);
             builder.Property(p => p.IsExtra).HasDefaultValue(false);
             builder.Property(p => p.CanBeProduced).HasDefaultValue(false);
-            builder.Property(p => p.IsReadyMade).HasDefaultValue(false);
+            builder.Property(p => p.IsReadyMade).HasDefaultValue(true);
 
-            // İlişkiler
+    
             builder.HasOne(p => p.Category)
                    .WithMany(c => c.Products)
                    .HasForeignKey(p => p.CategoryId)
@@ -35,7 +35,7 @@ namespace Project.Persistance.Configurations
                    .HasForeignKey(p => p.UnitId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Opsiyonel Recipe
+          
             builder.HasOne(p => p.Recipe)
                    .WithOne(r => r.Product)
                    .HasForeignKey<Recipe>(r => r.ProductId)

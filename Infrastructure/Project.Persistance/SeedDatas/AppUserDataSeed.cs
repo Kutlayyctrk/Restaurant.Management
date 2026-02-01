@@ -14,19 +14,7 @@ namespace Project.Persistance.SeedDatas
 
             List<AppUser> appUsers = new()
             {
-                new AppUser
-                {
-                    Id=1,
-                    UserName="admin",
-                    NormalizedUserName="ADMIN",
-                    Email="admin@restaurantmanagement.com",
-                    EmailConfirmed=true,
-                    SecurityStamp=Guid.NewGuid().ToString(),
-                    ConcurrencyStamp=Guid.NewGuid().ToString(),
-                    InsertedDate =new DateTime(2026,01,14),
-                    Status=Domain.Enums.DataStatus.Inserted,
-                    PasswordHash=passwordHasher.HashPassword(null,"admin123")
-                },
+              
                 new AppUser
                 {
                     Id=2,

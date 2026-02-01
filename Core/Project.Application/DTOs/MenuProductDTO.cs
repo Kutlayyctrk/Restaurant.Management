@@ -19,10 +19,6 @@ namespace Project.Application.DTOs
         public string?   CategoryName { get; set; }
 
 
-
-
-
-
     }
 
 }

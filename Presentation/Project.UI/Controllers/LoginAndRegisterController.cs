@@ -16,11 +16,13 @@ namespace Project.UI.Controllers
     {
         private readonly IAppUserManager _appUserManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IAppUserRoleManager _appUserRoleManager;
 
-        public LoginAndRegisterController(IAppUserManager appUserManager, UserManager<AppUser> userManager)
+        public LoginAndRegisterController(IAppUserManager appUserManager, UserManager<AppUser> userManager, IAppUserRoleManager appUserRoleManager)
         {
             _appUserManager = appUserManager;
             _userManager = userManager;
+            _appUserRoleManager = appUserRoleManager;
         }
 
         public IActionResult Login()
@@ -58,26 +60,23 @@ namespace Project.UI.Controllers
                 return View(vM);
             }
 
-           
             AppUser user = await _userManager.FindByNameAsync(loginDTO.UserName);
-            IList<string> roles = await _userManager.GetRolesAsync(user);
+            IList<int> roleIds = await _appUserRoleManager.GetRoleIdsByUserIdAsync(user.Id);
 
-            if (roles.Contains("Admin"))
-                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
-            else if (roles.Contains("Insan Kaynaklari Muduru"))
+            if (roleIds.Contains(RoleIds.InsanKaynaklariMuduru))
                 return RedirectToAction("DashBoard", "Hr", new { area = "Manager" });
-            else if (roles.Contains("Restaurant Muduru"))
+            else if (roleIds.Contains(RoleIds.RestaurantMuduru))
                 return RedirectToAction("DashBoard", "Restaurant", new { area = "Manager" });
-            else if (roles.Contains("Mutfak Sefi"))
+            else if (roleIds.Contains(RoleIds.MutfakSefi))
                 return RedirectToAction("DashBoard", "Kitchen", new { area = "Manager" });
-            else if (roles.Contains("Bar Sefi"))
+            else if (roleIds.Contains(RoleIds.BarSefi))
                 return RedirectToAction("DashBoard", "Bar", new { area = "Manager" });
-            else if (roles.Contains("Idari Personel"))
+            else if (roleIds.Contains(RoleIds.IdariPersonel))
                 return RedirectToAction("DashBoard", "Administrative", new { area = "Manager" });
-            else if (roles.Contains("Garson"))
+            else if (roleIds.Contains(RoleIds.Garson))
                 return RedirectToAction("Index", "Sales");
 
-                return RedirectToAction("AccessDenied", "LoginAndRegister");
+            return RedirectToAction("AccessDenied", "LoginAndRegister");
         }
 
         public IActionResult Register()

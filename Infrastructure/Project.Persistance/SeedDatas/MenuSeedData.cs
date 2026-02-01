@@ -30,7 +30,7 @@ namespace Project.Persistance.SeedDatas
                     MenuName = "2026 Yaz Menüsü",
                     StartDate = new DateTime(2026, 06, 01),
                     EndDate = new DateTime(2026, 08, 31),
-                    IsActive = false, // şimdilik pasif
+                    IsActive = false,
                     InsertedDate = insertedDate,
                     Status = DataStatus.Inserted
                 }

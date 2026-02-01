@@ -35,7 +35,7 @@ namespace Project.Persistance.SeedDatas
                 {
                     Id = 103,
                     MenuId = 1,
-                    ProductId = 9, // Coca Cola (doğru Id)
+                    ProductId = 9, // Coca Cola
                     IsActive = true,
                     InsertedDate = insertedDate,
                     Status = Project.Domain.Enums.DataStatus.Inserted
@@ -44,7 +44,7 @@ namespace Project.Persistance.SeedDatas
                 {
                     Id = 104,
                     MenuId = 1,
-                    ProductId = 7, // Bira (doğru Id)
+                    ProductId = 7, // Bira 
                     IsActive = true,
                     InsertedDate = insertedDate,
                     Status = Project.Domain.Enums.DataStatus.Inserted
@@ -53,7 +53,7 @@ namespace Project.Persistance.SeedDatas
                 {
                     Id = 105,
                     MenuId = 1,
-                    ProductId = 19, // Ayran (doğru Id)
+                    ProductId = 19, // Ayran 
                     IsActive = true,
                     InsertedDate = insertedDate,
                     Status = Project.Domain.Enums.DataStatus.Inserted

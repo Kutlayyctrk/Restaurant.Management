@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
@@ -70,6 +71,10 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<AppUserRoleDTO>(entity);
         }
 
+        public async  Task<IList<int>> GetRoleIdsByUserIdAsync(int userId)
+        {
+            return await _appUserRoleRepository.GetRoleIdsByUserIdAsync(userId);
+        }
 
         public async Task<OperationStatus> HardDeleteByCompositeKeyAsync(int userId, int roleId)
         {

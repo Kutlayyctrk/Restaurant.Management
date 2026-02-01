@@ -14,24 +14,8 @@ namespace Project.Persistance.SeedDatas
         {
             List<AppUserProfile> userprofiles = new()
             {
-                new AppUserProfile //Admin  Profile
-                {
-                    Id=1,
-                    FirstName="Ahmet",
-                    LastName="Yılmaz",
-                    TCKNo="12345678901",
-                    Salary=int.MaxValue,
-                    HireDate=new DateTime(2020,1,15),
-                    BirthDate=new DateTime(1990,5,20),
-                    AppUserId=1,
-                    InsertedDate =new DateTime(2026,01,14),
-                    Status=Domain.Enums.DataStatus.Inserted,
-
-
-
-
-                },
-                new AppUserProfile//Human Resources Director profile
+              
+                new AppUserProfile
                 {
                     Id=2,
                     FirstName="Mehmet",
@@ -45,7 +29,7 @@ namespace Project.Persistance.SeedDatas
                     Status=Domain.Enums.DataStatus.Inserted,
 
                 },
-                new AppUserProfile //Manager profile
+                new AppUserProfile 
                 {
                     Id=3,
                     FirstName="Ayşe",
@@ -58,7 +42,7 @@ namespace Project.Persistance.SeedDatas
                     InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                 },
-                new AppUserProfile // Kitchen Chef profile
+                new AppUserProfile
                 {
                     Id=4,
                     FirstName="Fatma",
@@ -71,7 +55,7 @@ namespace Project.Persistance.SeedDatas
                      InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                 },
-                new AppUserProfile //Bar Manager Profile
+                new AppUserProfile 
                 {
                     Id=5,
                     FirstName="Ali",
@@ -85,7 +69,7 @@ namespace Project.Persistance.SeedDatas
                     Status=Domain.Enums.DataStatus.Inserted,
 
                 },
-                new AppUserProfile //Cook profile
+                new AppUserProfile 
                 {
                     Id=6,
                     FirstName="Zeynep",
@@ -98,7 +82,7 @@ namespace Project.Persistance.SeedDatas
                     InsertedDate =new DateTime(2026,01,14),
                     Status=Domain.Enums.DataStatus.Inserted,
                 },
-                 new AppUserProfile //Bartender profile
+                 new AppUserProfile
                  {
                      Id=7,
                      FirstName="Can",
@@ -112,7 +96,7 @@ namespace Project.Persistance.SeedDatas
                      Status=Domain.Enums.DataStatus.Inserted,
 
                  },
-                 new AppUserProfile //Waiter profile
+                 new AppUserProfile
                  {
                      Id=8,
                      FirstName="Elif",
@@ -125,7 +109,7 @@ namespace Project.Persistance.SeedDatas
                       InsertedDate =new DateTime(2026,01,14),
                      Status=Domain.Enums.DataStatus.Inserted,
                  },
-                 new AppUserProfile //Service personnel profile
+                 new AppUserProfile
                  {
                      Id=9,
                         FirstName="Mert",
@@ -139,7 +123,7 @@ namespace Project.Persistance.SeedDatas
                         Status=Domain.Enums.DataStatus.Inserted
 
                  },
-                 new AppUserProfile //administrative staff profile
+                 new AppUserProfile
                  {
                      Id=10,
                         FirstName="Seda",
@@ -153,7 +137,7 @@ namespace Project.Persistance.SeedDatas
                         Status=Domain.Enums.DataStatus.Inserted
 
                  },
-                 new AppUserProfile //intern profile
+                 new AppUserProfile
                  {
                      Id=11,
                         FirstName="Burak",

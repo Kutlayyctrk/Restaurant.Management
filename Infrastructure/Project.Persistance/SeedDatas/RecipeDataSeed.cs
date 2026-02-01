@@ -17,7 +17,7 @@ namespace Project.Persistance.SeedDatas
                 {
                     Id = 201,
                     ProductId = 1,
-                    CategoryId = 5, // Etler kategorisi
+                    CategoryId = 5, 
                     Name = "Dana Bonfile Reçetesi",
                     Description = "Dana bonfile tabağı için temel reçete",
                     InsertedDate = insertedDate,
@@ -27,7 +27,7 @@ namespace Project.Persistance.SeedDatas
                 {
                     Id = 202,
                     ProductId = 2,
-                    CategoryId = 5, // Etler kategorisi
+                    CategoryId = 5,
                     Name = "Tavuk Izgara Reçetesi",
                     Description = "Tavuk ızgara tabağı için temel reçete",
                     InsertedDate = insertedDate,

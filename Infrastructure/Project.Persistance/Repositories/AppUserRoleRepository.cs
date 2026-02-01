@@ -51,5 +51,13 @@ namespace Project.Persistance.Repositories
             _myContext.Entry(entity).State = EntityState.Modified;
             await _myContext.SaveChangesAsync();
         }
+
+        public async Task<IList<int>> GetRoleIdsByUserIdAsync(int userId)
+        {
+            return await _myContext.AppUserRoles
+                 .Where(ur => ur.UserId == userId)
+                 .Select(ur => ur.RoleId)
+                 .ToListAsync();
+        }
     }
 }

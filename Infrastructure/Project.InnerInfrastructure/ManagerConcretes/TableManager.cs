@@ -18,7 +18,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IMapper _mapper = mapper;
         public async Task<List<TableDTO>> GetTablesByUserIdAsync(string userId)
         {
-            var tables = await _tableRepository.GetTablesByUserIdAsync(userId);
+            List<Table> tables = await _tableRepository.GetTablesByUserIdAsync(userId);
             return _mapper.Map<List<TableDTO>>(tables);
         }
     }
