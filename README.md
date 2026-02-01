@@ -121,7 +121,7 @@ Mail aktivasyon akışı:
 - DI: `Infrastructure/Project.OuterInfrastructure/DependencyResolvers/MailServiceInjection.cs`
 - Sender: `Infrastructure/Project.OuterInfrastructure/Tools/MailSender.cs`
 
-> Güvenlik notu: Repository içinde gerçek SMTP şifresi bulundurmak önerilmez. Prod senaryoda `User Secrets` veya environment variable kullanılmalıdır.
+> Güvenlik notu: Repository içinde gerçek SMTP şifresi bulundurmak önerilmez. Prod senaryoda `User Secrets` veya environment variable kullanılmalıdır. Proje için özellikle açılmış bir mail olduğu için demo amaçlı direkt eklenmiştir.
 
 ---
 
