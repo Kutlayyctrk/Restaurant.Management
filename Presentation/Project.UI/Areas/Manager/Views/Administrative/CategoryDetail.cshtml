@@ -25,7 +25,7 @@
             @if (Model.SubCategories != null && Model.SubCategories.Count > 0)
             {
                 <ul>
-                    @foreach (Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryVm sub in Model.SubCategories)
+                    @foreach (CategoryVm sub in Model.SubCategories)
                     {
                         <li>@sub.CategoryName</li>
                     }
@@ -40,7 +40,7 @@
             @if (Model.ParentCategories != null && Model.ParentCategories.Count > 0)
             {
                 <ul>
-                    @foreach (Project.UI.Areas.Manager.Models.AdministrativeVMs.CategoryManagement.CategoryVm parent in Model.ParentCategories)
+                    @foreach (CategoryVm parent in Model.ParentCategories)
                     {
                         <li>@parent.CategoryName</li>
                     }

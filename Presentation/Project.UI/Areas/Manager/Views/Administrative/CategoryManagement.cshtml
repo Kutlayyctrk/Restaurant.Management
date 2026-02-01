@@ -22,7 +22,7 @@
                         <label class="form-label fw-bold small text-muted">Üst Kategoriye Göre Filtrele</label>
                         <select name="parentCategoryId" class="form-select" onchange="this.form.submit()">
                             <option value="">Ana Kategori (Tümü)</option>
-                            @foreach (var cat in Model.ParentCategories)
+                            @foreach (CategoryVm? cat in Model.ParentCategories)
                             {
                                 <option value="@cat.Id" selected="@(Model.SelectedParentCategoryId == cat.Id ? "selected" : null)">
                                     @cat.CategoryName

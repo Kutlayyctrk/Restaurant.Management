@@ -6,14 +6,14 @@ namespace Project.UI.Areas.Manager.Models.AdministrativeVMs.MenuManagement
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
+        [Required(ErrorMessage = "Kategori adı zorunlu alandır.")]
+        [MaxLength(100, ErrorMessage = "Kategori adı en fazla 100 karakter olabilir.")]
         public string MenuName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Başlangıç tarihi zorunlu alandır.")]
         public DateTime StartDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Bitiş tarihi zorunlu alandır.")]
         public DateTime EndDate { get; set; }
 
         public bool IsActive { get; set; }

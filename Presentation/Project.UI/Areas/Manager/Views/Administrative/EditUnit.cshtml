@@ -51,11 +51,11 @@
         </div>
     </form>
 
-    <!-- Soft Delete Form -->
+    
     <form id="softDeleteUnitForm" asp-action="SoftDeleteUnit" asp-route-id="@Model.Id" method="post" style="display:none;">
         @Html.AntiForgeryToken()
     </form>
-    <!-- Hard Delete Form -->
+  
     <form id="hardDeleteUnitForm" asp-action="HardDeleteUnit" asp-route-id="@Model.Id" method="post" style="display:none;">
         @Html.AntiForgeryToken()
     </form>

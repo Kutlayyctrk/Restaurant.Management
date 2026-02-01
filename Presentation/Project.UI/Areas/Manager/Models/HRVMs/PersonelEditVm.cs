@@ -12,9 +12,9 @@ namespace Project.UI.Areas.Manager.Models.HRVMs
         public int AppUserId { get; set; }
         public int ProfileId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Ad zorunludur.")]
         public string FirstName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Soyad zorunludur.")]
         public string LastName { get; set; }
 
         [Required]

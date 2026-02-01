@@ -4,12 +4,12 @@
     ViewData["Title"] = "Reçete Oluştur";
  
     string productOptions = "<option value=''>Seçiniz</option>";
-    foreach (var p in (SelectList)ViewBag.ProductList)
+    foreach (SelectListItem? p in (SelectList)ViewBag.ProductList)
     {
         productOptions += $"<option value='{p.Value}'>{p.Text}</option>";
     }
     string unitOptions = "<option value=''>Seçiniz</option>";
-    foreach (var u in (SelectList)ViewBag.UnitList)
+    foreach (SelectListItem? u in (SelectList)ViewBag.UnitList)
     {
         unitOptions += $"<option value='{u.Value}'>{u.Text}</option>";
     }

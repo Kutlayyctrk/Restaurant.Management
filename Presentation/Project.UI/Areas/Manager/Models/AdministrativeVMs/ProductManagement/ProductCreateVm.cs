@@ -2,11 +2,11 @@
 
 public class ProductCreateVm
 {
-    [Required]
+    [Required(ErrorMessage = "Ürün adı zorunludur.")]
     public string ProductName { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Birim fiyat zorunludur.")]
     public decimal UnitPrice { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Birim seçimi zorunludur.")]
     public int UnitId { get; set; }
     [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Kategori seçimi zorunludur.")]

@@ -113,7 +113,7 @@
             let newRow = `<tr>
                 <td>
                     <select name="Details[${rowCount}].ProductId" class="form-select form-select-sm">
-                        @foreach (var item in Model.ProductList)
+                        @foreach (SelectListItem? item in Model.ProductList)
                         {
                                 <option value="@item.Value">@item.Text</option>
                         }

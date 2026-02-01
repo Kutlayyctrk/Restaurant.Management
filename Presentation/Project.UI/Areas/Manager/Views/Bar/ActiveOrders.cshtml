@@ -2,7 +2,7 @@
 
 <h2>Aktif Siparişler</h2>
 
-@foreach (var order in Model)
+@foreach (OrderVm order in Model)
 {
     <div class="card mb-3">
         <div class="card-header">
@@ -10,7 +10,7 @@
         </div>
         <div class="card-body">
             <ul>
-                @foreach (var detail in order.OrderDetails)
+                @foreach (OrderDetailPureVm detail in order.OrderDetails)
                 {
                     <li>@detail.ProductName - @detail.Quantity x @detail.UnitPrice ₺ (@detail.DetailState)</li>
                 }
