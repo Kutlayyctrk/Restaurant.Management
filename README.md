@@ -2,59 +2,6 @@
 
 > **BilgeAdam Akademi** kurs bitirme projesi kapsamında geliştirilen, rol bazlı panellere sahip bir **Restaurant Yönetim Sistemi**.
 
----
-## 📸 Live Preview
-
-<p align="center">
-<img src="Solution%20Items/ScreenShots/Solution%20Explorer.png" alt="Solution Explorer - Onion Architecture" width="300"/>
-</p>
-<p align="center">
-<em>Solution Explorer - Onion Architecture katman yapısı</em>
-</p>
-
-### 🎬 Sistem Akışı (GIF)
-
-<p align="center">
-<img src="Solution%20Items/ScreenShots/Siparis%20Olusturma.gif" alt="Sipariş Oluşturma Akışı" width="800"/>
-</p>
-<p align="center">
-<em>Sipariş Oluşturma ve Stok Takip Algoritması'nın çalışması</em>
-</p>
-
-<details>
-<summary>🖼️ Tüm Ekran Görüntüleri</summary>
-
-### Ürün Yönetimi Ekranı
-<p align="center">
-<img src="Solution%20Items/ScreenShots/Urun%20Yonetim%20Ekrani.png" alt="Ürün Yönetimi" width="800"/>
-</p>
-
-### Personel Yönetimi Ekranı
-<p align="center">
-<img src="Solution%20Items/ScreenShots/Personel%20Yonetim%20Ekrani.png" alt="Personel Yönetimi" width="800"/>
-</p>
-
-### Tedarikçi Yönetimi Ekranı
-<p align="center">
-<img src="Solution%20Items/ScreenShots/Tedarikci%20Yonetim%20Ekrani.png" alt="Tedarikçi Yönetimi" width="800"/>
-</p>
-
-### Alım Faturası Oluşturma ve Düzenleme
-<p align="center">
-<img src="Solution%20Items/ScreenShots/Alim%20Faturasi%20Olusturma%20Ve%20Duzenleme%20Ekrani.png" alt="Alım Faturası Yönetimi" width="800"/>
-</p>
-
-</details>
-
-## ✨ Overview
- # Restaurant.Management — Restaurant Management System (Onion Architecture)
-
-> **BilgeAdam Akademi** kurs bitirme projesi kapsamında geliştirilen, rol bazlı panellere sahip bir **Restaurant Yönetim Sistemi**.
-
----
-
-## ✨ Overview
-
 Bu repository; **Onion Architecture** yaklaşımıyla katmanlara ayrılmış, **.NET 8** üzerinde çalışan bir Restaurant Management uygulamasıdır. Proje; ürün/kategori/birim yönetimi, menü & reçete yönetimi, sipariş/fatura akışları ve en önemlisi **stok takip algoritması** gibi işlevleri kapsar.
 
 ---
