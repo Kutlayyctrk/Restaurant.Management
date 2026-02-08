@@ -6,46 +6,46 @@
 
 ## 📸 Live Preview
 
-<p align="center">
-  <img src="ScreenShots/Solution%20Explorer.png" alt="Solution Explorer - Onion Architecture" width="300"/>
-</p>
-<p align="center">
-  <em>Solution Explorer - Onion Architecture katman yapısı</em>
-</p>
+&lt;p align="center"&gt;
+  &lt;img src="Solution%20Items/ScreenShots/Solution%20Explorer.png" alt="Solution Explorer - Onion Architecture" width="300"/&gt;
+&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;em&gt;Solution Explorer - Onion Architecture katman yapısı&lt;/em&gt;
+&lt;/p&gt;
 
 ### 🎬 Sistem Akışı (GIF)
 
-<p align="center">
-  <img src="ScreenShots/Siparis%20Olusturma.gif" alt="Sipariş Oluşturma Akışı" width="800"/>
-</p>
-<p align="center">
-  <em>Sipariş Oluşturma ve Stok Takip Algoritması'nın çalışması</em>
-</p>
+&lt;p align="center"&gt;
+  &lt;img src="Solution%20Items/ScreenShots/Siparis%20Olusturma.gif" alt="Sipariş Oluşturma Akışı" width="800"/&gt;
+&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;em&gt;Sipariş Oluşturma ve Stok Takip Algoritması'nın çalışması&lt;/em&gt;
+&lt;/p&gt;
 
-<details>
-<summary>🖼️ Tüm Ekran Görüntüleri</summary>
+&lt;details&gt;
+&lt;summary&gt;🖼️ Tüm Ekran Görüntüleri&lt;/summary&gt;
 
 ### Ürün Yönetimi Ekranı
-<p align="center">
-  <img src="ScreenShots/Urun%20Yonetim%20Ekrani.png" alt="Ürün Yönetimi" width="800"/>
-</p>
+&lt;p align="center"&gt;
+  &lt;img src="Solution%20Items/ScreenShots/Urun%20Yonetim%20Ekrani.png" alt="Ürün Yönetimi" width="800"/&gt;
+&lt;/p&gt;
 
 ### Personel Yönetimi Ekranı
-<p align="center">
-  <img src="ScreenShots/Personel%20Yonetim%20Ekrani.png" alt="Personel Yönetimi" width="800"/>
-</p>
+&lt;p align="center"&gt;
+  &lt;img src="Solution%20Items/ScreenShots/Personel%20Yonetim%20Ekrani.png" alt="Personel Yönetimi" width="800"/&gt;
+&lt;/p&gt;
 
 ### Tedarikçi Yönetimi Ekranı
-<p align="center">
-  <img src="ScreenShots/Tedarik%C3%A7i%20Yonetim%20Ekrani.png" alt="Tedarikçi Yönetimi" width="800"/>
-</p>
+&lt;p align="center"&gt;
+  &lt;img src="Solution%20Items/ScreenShots/Tedarikci%20Yonetim%20Ekrani.png" alt="Tedarikçi Yönetimi" width="800"/&gt;
+&lt;/p&gt;
 
 ### Alım Faturası Oluşturma ve Düzenleme
-<p align="center">
-  <img src="ScreenShots/Alim%20Faturasi%20Olusturma%20Ve%20Duzenleme%20Ekrani.png" alt="Alım Faturası Yönetimi" width="800"/>
-</p>
+&lt;p align="center"&gt;
+  &lt;img src="Solution%20Items/ScreenShots/Alim%20Faturasi%20Olusturma%20Ve%20Duzenleme%20Ekrani.png" alt="Alım Faturası Yönetimi" width="800"/&gt;
+&lt;/p&gt;
 
-</details>
+&lt;/details&gt;
 
 ---
 
