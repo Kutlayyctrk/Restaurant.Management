@@ -37,7 +37,7 @@
 
 ### Tedarikçi Yönetimi Ekranı
 <p align="center">
-  <img src="ScreenShots/Tedarikci%20Yonetim%20Ekrani.png" alt="Tedarikçi Yönetimi" width="800"/>
+  <img src="ScreenShots/Tedarik%C3%A7i%20Yonetim%20Ekrani.png" alt="Tedarikçi Yönetimi" width="800"/>
 </p>
 
 ### Alım Faturası Oluşturma ve Düzenleme
