@@ -30,6 +30,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScreenShots", "ScreenShots", "{1D5326E6-139C-4D9B-8499-F475B5B6126B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\Alim Faturasi Olusturma Ve Duzenleme Ekrani.png = ..\..\..\Desktop\Alim Faturasi Olusturma Ve Duzenleme Ekrani.png
+		..\..\..\Desktop\Personel Yonetim Ekrani.png = ..\..\..\Desktop\Personel Yonetim Ekrani.png
+		..\..\..\Desktop\Siparis Olusturma.gif = ..\..\..\Desktop\Siparis Olusturma.gif
+		..\..\..\Desktop\Solution Explorer.png = ..\..\..\Desktop\Solution Explorer.png
+		..\..\..\Desktop\Tedarikçi Yönetim Ekrani.png = ..\..\..\Desktop\Tedarikçi Yönetim Ekrani.png
+		..\..\..\Desktop\Urun Yonetim Ekrani.png = ..\..\..\Desktop\Urun Yonetim Ekrani.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +91,7 @@ Global
 		{5EFED3C2-7914-4192-8578-407A4E99763A} = {CFDCFBC6-7531-4863-A31A-85DCAAE4B900}
 		{8BD9B616-7C19-486B-8B79-08E3060243DE} = {CFDCFBC6-7531-4863-A31A-85DCAAE4B900}
 		{3DC98464-71AD-46A2-B6D9-5A70DBD504A0} = {A37FF3D9-2E38-49B3-88D3-502D45B9E244}
+		{1D5326E6-139C-4D9B-8499-F475B5B6126B} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0E3977D-457A-4D1F-86F8-1ABC6B490C2F}
