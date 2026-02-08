@@ -12,8 +12,10 @@ Personel Yönetim Ekranı
 <img width="1900" height="953" alt="Alim Faturasi Olusturma Ve Duzenleme Ekrani" src="https://github.com/user-attachments/assets/09b3ffff-513b-46cc-abaf-45eea6afac3b" />
 Tedarikçi Yönetim Ekranı
 <img width="1887" height="935" alt="Tedarikçi Yönetim Ekrani" src="https://github.com/user-attachments/assets/c3ce5180-fc3a-4038-9238-705e62698dbe" />
+
 Solution Explorer Görseli
 <img width="421" height="935" alt="Solution Explorer" src="https://github.com/user-attachments/assets/7e950c96-2a11-4bea-adad-11956cc24ad3" />
+
 Sipariş Olusturma Gif'i
 ![Siparis Olusturma](https://github.com/user-attachments/assets/fbd2c968-d671-4d8e-800d-b422b0877b34)
 
