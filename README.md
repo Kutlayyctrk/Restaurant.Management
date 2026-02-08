@@ -3,7 +3,10 @@
 > **BilgeAdam Akademi** kurs bitirme projesi kapsamında geliştirilen, rol bazlı panellere sahip bir **Restaurant Yönetim Sistemi**.
 
 Bu repository; **Onion Architecture** yaklaşımıyla katmanlara ayrılmış, **.NET 8** üzerinde çalışan bir Restaurant Management uygulamasıdır. Proje; ürün/kategori/birim yönetimi, menü & reçete yönetimi, sipariş/fatura akışları ve en önemlisi **stok takip algoritması** gibi işlevleri kapsar.
+
 Projeye Ait Görseller
+
+
 Personel Yönetim Ekranı
 <img width="1898" height="948" alt="Personel Yonetim Ekrani" src="https://github.com/user-attachments/assets/21a8e82f-43fa-474b-a909-36d0a0668733" />
 Ürün Yönetim Ekranı
