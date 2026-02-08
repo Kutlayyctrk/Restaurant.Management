@@ -3,11 +3,18 @@
 > **BilgeAdam Akademi** kurs bitirme projesi kapsamında geliştirilen, rol bazlı panellere sahip bir **Restaurant Yönetim Sistemi**.
 
 Bu repository; **Onion Architecture** yaklaşımıyla katmanlara ayrılmış, **.NET 8** üzerinde çalışan bir Restaurant Management uygulamasıdır. Proje; ürün/kategori/birim yönetimi, menü & reçete yönetimi, sipariş/fatura akışları ve en önemlisi **stok takip algoritması** gibi işlevleri kapsar.
+Projeye Ait Görseller
+Personel Yönetim Ekranı
 <img width="1898" height="948" alt="Personel Yonetim Ekrani" src="https://github.com/user-attachments/assets/21a8e82f-43fa-474b-a909-36d0a0668733" />
+Ürün Yönetim Ekranı
 <img width="1922" height="962" alt="Urun Yonetim Ekrani" src="https://github.com/user-attachments/assets/713b6822-4b15-4a3c-b8b4-0298425605ff" />
+ Alım Faturası Yönetim Ekranı
 <img width="1900" height="953" alt="Alim Faturasi Olusturma Ve Duzenleme Ekrani" src="https://github.com/user-attachments/assets/09b3ffff-513b-46cc-abaf-45eea6afac3b" />
+Tedarikçi Yönetim Ekranı
 <img width="1887" height="935" alt="Tedarikçi Yönetim Ekrani" src="https://github.com/user-attachments/assets/c3ce5180-fc3a-4038-9238-705e62698dbe" />
+Solution Explorer Görseli
 <img width="421" height="935" alt="Solution Explorer" src="https://github.com/user-attachments/assets/7e950c96-2a11-4bea-adad-11956cc24ad3" />
+Sipariş Olusturma Gif'i
 ![Siparis Olusturma](https://github.com/user-attachments/assets/fbd2c968-d671-4d8e-800d-b422b0877b34)
 
 
