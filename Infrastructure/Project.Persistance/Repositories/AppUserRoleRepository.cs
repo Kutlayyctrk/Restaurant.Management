@@ -17,39 +17,38 @@ namespace Project.Persistance.Repositories
             _myContext = myContext;
         }
 
-      
+
         public async Task<AppUserRole> GetByCompositeKeyAsync(int userId, int roleId)
         {
             return await _myContext.AppUserRoles.FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
         }
 
-    
+
         public async Task<int> DeleteByUserAndRoleAsync(int userId, int roleId)
         {
-            
+
             return await _myContext.Set<AppUserRole>()
                                    .Where(x => x.UserId == userId && x.RoleId == roleId)
                                    .ExecuteDeleteAsync();
         }
 
-       
+
         public AppUserRole GetLocalTrackedEntity(int userId, int roleId)
         {
             return _myContext.AppUserRoles.Local.FirstOrDefault(x => x.UserId == userId && x.RoleId == roleId);
         }
 
-      
+
         public override async Task<AppUserRole> GetByIdAsync(int id)
         {
             List<AppUserRole> list = await WhereAsync(x => x.Id == id);
             return list.FirstOrDefault();
         }
 
-     
+
         public async Task UpdateByCompositeKeyAsync(AppUserRole entity)
         {
             _myContext.Entry(entity).State = EntityState.Modified;
-            await _myContext.SaveChangesAsync();
         }
 
         public async Task<IList<int>> GetRoleIdsByUserIdAsync(int userId)

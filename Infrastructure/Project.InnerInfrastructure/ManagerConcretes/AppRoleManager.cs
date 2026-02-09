@@ -17,17 +17,20 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IValidator<AppRoleDTO> _appRoleValidator;
         private readonly IMapper _mapper;
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AppRoleManager(
             IAppRoleRepository appRoleRepository,
             IMapper mapper,
             IValidator<AppRoleDTO> appRoleValidator,
-            RoleManager<AppRole> roleManager
-        ) : base(appRoleRepository, mapper, appRoleValidator)
+            RoleManager<AppRole> roleManager,
+            IUnitOfWork unitOfWork
+        ) : base(appRoleRepository, unitOfWork, mapper, appRoleValidator)
         {
             _appRoleValidator = appRoleValidator;
             _mapper = mapper;
             _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
 
         public override async Task<OperationStatus> CreateAsync(AppRoleDTO dto)
@@ -59,7 +62,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 return OperationStatus.NotFound;
             }
 
-            if (role.Status != Project.Domain.Enums.DataStatus.Deleted)
+            if (role.Status != Domain.Enums.DataStatus.Deleted)
             {
                 return OperationStatus.Failed;
             }

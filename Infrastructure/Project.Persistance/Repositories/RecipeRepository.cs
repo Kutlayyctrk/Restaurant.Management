@@ -19,20 +19,21 @@ namespace Project.Persistance.Repositories
         public override async Task<List<Recipe>> GetAllAsync()
         {
             return await _context.Recipes
-                .Include(r => r.Product)              
-                .Include(r => r.Category)             
-                .Include(r => r.RecipeItems)          
-                    .ThenInclude(ri => ri.Product)    
+                .Include(r => r.Product)
+                .Include(r => r.Category)
                 .Include(r => r.RecipeItems)
-                    .ThenInclude(ri => ri.Unit)       
+                    .ThenInclude(ri => ri.Product)
+                .Include(r => r.RecipeItems)
+                    .ThenInclude(ri => ri.Unit)
                 .ToListAsync();
         }
+
         public override async Task CreateAsync(Recipe entity)
         {
             await _context.Recipes.AddAsync(entity);
-            await _context.SaveChangesAsync();
         }
-        public  async Task UpdateAsync(Recipe entity)
+
+        public async Task UpdateAsync(Recipe entity)
         {
             Recipe existingRecipe = await _context.Recipes
                 .Include(r => r.RecipeItems)
@@ -40,23 +41,21 @@ namespace Project.Persistance.Repositories
 
             if (existingRecipe == null) return;
 
-           
+
             _context.Entry(existingRecipe).CurrentValues.SetValues(entity);
 
 
 
             foreach (RecipeItem item in entity.RecipeItems)
             {
-            bool exists = existingRecipe.RecipeItems.Any(ri =>
-           ri.ProductId == item.ProductId && ri.UnitId == item.UnitId);
-                if(!exists)
+                bool exists = existingRecipe.RecipeItems.Any(ri =>
+               ri.ProductId == item.ProductId && ri.UnitId == item.UnitId);
+                if (!exists)
                 {
                     existingRecipe.RecipeItems.Add(item);
                 }
 
             }
-
-            await _context.SaveChangesAsync();
         }
 
         public async Task<Recipe?> GetByProductIdAsync(int productId)

@@ -14,9 +14,10 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class ProductManager(IProductRepository productRepository, IMapper mapper, IValidator<ProductDTO> productValidator, IStockTransActionManager stockTransActionManager) : BaseManager<Product, ProductDTO>(productRepository, mapper, productValidator), IProductManager
+    public class ProductManager(IProductRepository productRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<ProductDTO> productValidator, IStockTransActionManager stockTransActionManager) : BaseManager<Product, ProductDTO>(productRepository, unitOfWork, mapper, productValidator), IProductManager
     {
         private readonly IProductRepository _productRepository = productRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
         private readonly IStockTransActionManager _stockTransActionManager = stockTransActionManager;
 
@@ -38,32 +39,29 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<List<ProductDTO>>(products);
         }
 
-        public  async  Task IncreaseStockAsync(int productId, decimal quantity)
+        public async Task IncreaseStockAsync(int productId, decimal quantity)
         {
             Product product = await _productRepository.GetByIdAsync(productId);
             if (product != null)
             {
-                product.Quantity += quantity; 
-                await _productRepository.UpdateAsync(product); 
+                product.Quantity += quantity;
+                await _productRepository.UpdateAsync(product);
+                await _unitOfWork.CommitAsync();
             }
         }
 
         public async Task ReduceStockAfterSaleAsync(int productId, decimal orderQuantity, int orderDetailId)
         {
-          
             Product product = await _productRepository.GetProductWithRecipeAsync(productId);
 
             if (product == null) throw new Exception("Ürün bulunamadı!");
 
-           
             if (product.Recipe != null && product.Recipe.RecipeItems != null && product.Recipe.RecipeItems.Any())
             {
                 foreach (RecipeItem item in product.Recipe.RecipeItems)
                 {
-                    
                     decimal totalDeduction = item.Quantity * orderQuantity;
 
-                   
                     Product ingredient = item.Product;
                     ingredient.Quantity -= totalDeduction;
 
@@ -72,18 +70,17 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                         ProductId = ingredient.Id,
                         Quantity = totalDeduction,
                         OrderDetailId = orderDetailId,
-                        Type = TransActionType.Sale, 
+                        Type = TransActionType.Sale,
                         Description = $"{product.ProductName} satışı nedeniyle reçeteden düşüldü.",
                         UnitPrice = ingredient.UnitPrice,
                         InsertedDate = DateTime.Now
                     };
 
-                   
                     await _productRepository.UpdateAsync(ingredient);
+                    await _unitOfWork.CommitAsync();
                     await _stockTransActionManager.CreateAsync(stockAction);
                 }
             }
-          
             else
             {
                 product.Quantity -= orderQuantity;
@@ -100,6 +97,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 };
 
                 await _productRepository.UpdateAsync(product);
+                await _unitOfWork.CommitAsync();
                 await _stockTransActionManager.CreateAsync(stockAction);
             }
         }

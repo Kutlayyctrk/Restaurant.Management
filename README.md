@@ -1,55 +1,4 @@
-# Restaurant.Management — Restaurant Management System (Onion Architecture)
 
-> **BilgeAdam Akademi** kurs bitirme projesi kapsamında geliştirilen, rol bazlı panellere sahip bir **Restaurant Yönetim Sistemi**.
-
----
-
-## 📸 Live Preview
-
-&lt;p align="center"&gt;
-  &lt;img src="Solution%20Items/ScreenShots/Solution%20Explorer.png" alt="Solution Explorer - Onion Architecture" width="300"/&gt;
-&lt;/p&gt;
-&lt;p align="center"&gt;
-  &lt;em&gt;Solution Explorer - Onion Architecture katman yapısı&lt;/em&gt;
-&lt;/p&gt;
-
-### 🎬 Sistem Akışı (GIF)
-
-&lt;p align="center"&gt;
-  &lt;img src="Solution%20Items/ScreenShots/Siparis%20Olusturma.gif" alt="Sipariş Oluşturma Akışı" width="800"/&gt;
-&lt;/p&gt;
-&lt;p align="center"&gt;
-  &lt;em&gt;Sipariş Oluşturma ve Stok Takip Algoritması'nın çalışması&lt;/em&gt;
-&lt;/p&gt;
-
-&lt;details&gt;
-&lt;summary&gt;🖼️ Tüm Ekran Görüntüleri&lt;/summary&gt;
-
-### Ürün Yönetimi Ekranı
-&lt;p align="center"&gt;
-  &lt;img src="Solution%20Items/ScreenShots/Urun%20Yonetim%20Ekrani.png" alt="Ürün Yönetimi" width="800"/&gt;
-&lt;/p&gt;
-
-### Personel Yönetimi Ekranı
-&lt;p align="center"&gt;
-  &lt;img src="Solution%20Items/ScreenShots/Personel%20Yonetim%20Ekrani.png" alt="Personel Yönetimi" width="800"/&gt;
-&lt;/p&gt;
-
-### Tedarikçi Yönetimi Ekranı
-&lt;p align="center"&gt;
-  &lt;img src="Solution%20Items/ScreenShots/Tedarikci%20Yonetim%20Ekrani.png" alt="Tedarikçi Yönetimi" width="800"/&gt;
-&lt;/p&gt;
-
-### Alım Faturası Oluşturma ve Düzenleme
-&lt;p align="center"&gt;
-  &lt;img src="Solution%20Items/ScreenShots/Alim%20Faturasi%20Olusturma%20Ve%20Duzenleme%20Ekrani.png" alt="Alım Faturası Yönetimi" width="800"/&gt;
-&lt;/p&gt;
-
-&lt;/details&gt;
-
----
-
-## ✨ Overview
  # Restaurant.Management — Restaurant Management System (Onion Architecture)
 
 > **BilgeAdam Akademi** kurs bitirme projesi kapsamında geliştirilen, rol bazlı panellere sahip bir **Restaurant Yönetim Sistemi**.
@@ -91,6 +40,13 @@ Solution yapısı Onion Architecture’a uygun olarak katmanlara ayrılmıştır
   - `Project.UI`: Web arayüzü (Areas ile modüler paneller)
 
 ---
+## 🛠️ Design Pattern: Unit of Work
+
+Veri tutarlılığını (Data Integrity) en üst düzeye çıkarmak için projede **Unit of Work** deseni kullanılmıştır.
+
+* **Atomicity:** Birden fazla repository işleminin tek bir "Transaction" olarak ele alınmasını sağlar. Örneğin; bir sipariş oluşturulurken aynı anda stok düşülmesi gerekir; bu işlemlerden biri başarısız olursa tüm süreç geri alınır (Rollback).
+* **Merkezi Yönetim:** `_unitOfWork.CommitAsync()` metodu sayesinde veritabanı üzerindeki değişiklikler tek bir merkezden yönetilir ve veritabanı trafiği optimize edilir.
+* **Consistency:** Farklı servislerin aynı `DbContext` örneğini paylaşmasını garanti ederek veri tutarsızlıklarının önüne geçer.
 
 ## 🚀 Key Feature: Stock Tracking Algorithm (Project Core)
 

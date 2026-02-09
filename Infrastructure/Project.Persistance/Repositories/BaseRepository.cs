@@ -19,10 +19,10 @@ namespace Project.Persistance.Repositories
         }
 
        
-        public virtual async Task CreateAsync(T entity)
+        public virtual  Task CreateAsync(T entity)
         {
             _myContext.Set<T>().Add(entity);
-            await _myContext.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
        
@@ -42,18 +42,18 @@ namespace Project.Persistance.Repositories
            return _myContext.Set<T>().AsQueryable();
         }
 
-        public async Task HardDeleteAsync(T entity)
+        public  Task HardDeleteAsync(T entity)
         {
             _myContext.Set<T>().Remove(entity);
-            await _myContext.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
     
-        public virtual async Task UpdateAsync(T entity)
+        public virtual  Task UpdateAsync(T entity)
         {
            
             _myContext.Set<T>().Update(entity);
-            await _myContext.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
      

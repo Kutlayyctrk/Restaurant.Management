@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class SupplierManager(ISupplierRepository supplierRepository,IMapper mapper,IValidator<SupplierDTO> supplierValidator):BaseManager<Supplier,SupplierDTO>(supplierRepository,mapper,supplierValidator),ISupplierManager
+    public class SupplierManager(ISupplierRepository supplierRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<SupplierDTO> supplierValidator):BaseManager<Supplier,SupplierDTO>(supplierRepository,unitOfWork,mapper,supplierValidator),ISupplierManager
     {
     }
 }

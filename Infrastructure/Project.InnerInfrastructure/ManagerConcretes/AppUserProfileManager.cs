@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class AppUserProfileManager(IAppUserProfileRepository appUserProfileRepository,IMapper mapper,IValidator<AppUserProfileDTO> appUserProfileValidator):BaseManager<AppUserProfile,AppUserProfileDTO>(appUserProfileRepository,mapper,appUserProfileValidator),IAppUserProfileManager
+    public class AppUserProfileManager(IAppUserProfileRepository appUserProfileRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<AppUserProfileDTO> appUserProfileValidator):BaseManager<AppUserProfile,AppUserProfileDTO>(appUserProfileRepository,unitOfWork,mapper,appUserProfileValidator),IAppUserProfileManager
     {
     }
 }

@@ -26,9 +26,11 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IConfiguration _configuration;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAppUserRepository _appUserRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AppUserManager(
             IAppUserRepository appUserRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<AppUserDTO> appUserValidator,
             UserManager<AppUser> userManager,
@@ -36,7 +38,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             IMailSender mailSender,
             IConfiguration configuration,
             SignInManager<AppUser> signInManager
-        ) : base(appUserRepository, mapper, appUserValidator)
+        ) : base(appUserRepository, unitOfWork, mapper, appUserValidator)
         {
             _mapper = mapper;
             _appUserValidator = appUserValidator;
@@ -46,6 +48,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _configuration = configuration;
             _signInManager = signInManager;
             _appUserRepository = appUserRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public override async Task<OperationStatus> CreateAsync(AppUserDTO dto)

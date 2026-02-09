@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class RecipeItemManager(IRecipeItemRepository recipeItemRepository,IMapper mapper,IValidator<RecipeItemDTO> recipeItemValidator):BaseManager<RecipeItem,RecipeItemDTO>(recipeItemRepository,mapper,recipeItemValidator),IRecipeItemManager
+    public class RecipeItemManager(IRecipeItemRepository recipeItemRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<RecipeItemDTO> recipeItemValidator):BaseManager<RecipeItem,RecipeItemDTO>(recipeItemRepository,unitOfWork,mapper,recipeItemValidator),IRecipeItemManager
     {
     }
 }

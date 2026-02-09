@@ -12,14 +12,15 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class CategoryManager(ICategoryRepository categoryRepository, IMapper mapper, IValidator<CategoryDTO> categoryValidator) : BaseManager<Category, CategoryDTO>(categoryRepository, mapper, categoryValidator), ICategoryManager
+    public class CategoryManager(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<CategoryDTO> categoryValidator) : BaseManager<Category, CategoryDTO>(categoryRepository, unitOfWork, mapper, categoryValidator), ICategoryManager
     {
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IMapper _mapper = mapper;
+
         public async Task<List<CategoryDTO>> GetRootCategoriesAsync()
         {
             List<Category> categories = await _categoryRepository.GetRootsAsync();
-            return _mapper.Map<List<CategoryDTO>>(categories); ;
+            return _mapper.Map<List<CategoryDTO>>(categories);
         }
 
         public async Task<List<CategoryDTO>> GetSubCategoriesByParentIdAsync(int parentId)

@@ -7,15 +7,14 @@ using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class MenuProductManager(IMenuProductRepository menuProductRepository,IMapper mapper,IValidator<MenuProductDTO> validator):BaseManager<MenuProduct,MenuProductDTO>(menuProductRepository,mapper,validator), IMenuProductManager
+    public class MenuProductManager(IMenuProductRepository menuProductRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<MenuProductDTO> validator) : BaseManager<MenuProduct, MenuProductDTO>(menuProductRepository, unitOfWork, mapper, validator), IMenuProductManager
     {
         private readonly IMenuProductRepository _menuProductRepository = menuProductRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
 
         public async Task<List<MenuProductDTO>> GetWithMenuAndProduct()
@@ -30,20 +29,17 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             if (entity == null)
                 return OperationStatus.NotFound;
 
-            
             _mapper.Map(newDto, entity);
 
-           
             entity.UnitPrice = newDto.UnitPrice;
 
             entity.Status = Domain.Enums.DataStatus.Updated;
             entity.UpdatedDate = DateTime.Now;
 
             await _menuProductRepository.UpdateAsync(entity);
+            await _unitOfWork.CommitAsync();
+
             return OperationStatus.Success;
-
         }
-
-       
     }
 }

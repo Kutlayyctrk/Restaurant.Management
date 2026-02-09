@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
@@ -16,12 +15,14 @@ namespace Project.InnerInfrastructure.ManagerConcretes
     {
         private readonly IRecipeRepository _recipeRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RecipeManager(IRecipeRepository recipeRepository, IMapper mapper, IValidator<RecipeDTO> recipeValidator)
-            : base(recipeRepository, mapper, recipeValidator)
+        public RecipeManager(IRecipeRepository recipeRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<RecipeDTO> recipeValidator)
+            : base(recipeRepository, unitOfWork, mapper, recipeValidator)
         {
             _recipeRepository = recipeRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public override async Task<List<RecipeDTO>> GetAllAsync()
@@ -46,24 +47,24 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public async Task<RecipeDTO?> GetByIdWithItemsAsync(int id)
         {
-           Recipe? recipe = await _recipeRepository.GetByIdWithItemsAsync(id);
-           if (recipe == null)
-               return null;
+            Recipe? recipe = await _recipeRepository.GetByIdWithItemsAsync(id);
+            if (recipe == null)
+                return null;
 
-           return new RecipeDTO
-           {
-               Id = recipe.Id,
-               Name = recipe.Name,
-               Description = recipe.Description,
-               ProductId = recipe.ProductId,
-               CategoryId = recipe.CategoryId,
-               RecipeItems = recipe.RecipeItems.Select(ri => new RecipeItemDTO
-               {
-                   ProductId = ri.ProductId,
-                   Quantity = ri.Quantity,
-                   UnitId = ri.UnitId
-               }).ToList()
-           };
+            return new RecipeDTO
+            {
+                Id = recipe.Id,
+                Name = recipe.Name,
+                Description = recipe.Description,
+                ProductId = recipe.ProductId,
+                CategoryId = recipe.CategoryId,
+                RecipeItems = recipe.RecipeItems.Select(ri => new RecipeItemDTO
+                {
+                    ProductId = ri.ProductId,
+                    Quantity = ri.Quantity,
+                    UnitId = ri.UnitId
+                }).ToList()
+            };
         }
 
         public async Task<RecipeDTO?> GetByProductIdAsync(int productId)
@@ -73,7 +74,6 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             if (recipe == null)
                 return null;
 
-            
             return new RecipeDTO
             {
                 Id = recipe.Id,
@@ -92,18 +92,18 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public override async Task<OperationStatus> UpdateAsync(RecipeDTO originalDto, RecipeDTO newDto)
         {
-           
             Recipe originalEntity = await _recipeRepository.GetByIdAsync(originalDto.Id);
             if (originalEntity == null)
                 return OperationStatus.NotFound;
 
-           
             _mapper.Map(newDto, originalEntity);
 
             originalEntity.Status = Project.Domain.Enums.DataStatus.Updated;
             originalEntity.UpdatedDate = System.DateTime.Now;
 
             await _recipeRepository.UpdateAsync(originalEntity);
+            await _unitOfWork.CommitAsync();
+
             return OperationStatus.Success;
         }
     }

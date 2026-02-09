@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Project.Persistance.Repositories
 {
-    public class OrderDetailRepository(MyContext myContext):BaseRepository<OrderDetail>(myContext),IOrderDetailRepository
+    public class OrderDetailRepository(MyContext myContext) : BaseRepository<OrderDetail>(myContext), IOrderDetailRepository
     {
         private readonly MyContext _context = myContext;
         public async Task UpdateDetailStateAsync(int detailId, OrderDetailStatus newState)
@@ -20,7 +20,6 @@ namespace Project.Persistance.Repositories
             if (detail != null)
             {
                 detail.DetailState = newState;
-                await _context.SaveChangesAsync();
             }
 
         }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
@@ -18,22 +17,24 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly RoleManager<AppRole> _roleManager;
         private readonly IAppUserRoleRepository _appUserRoleRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AppUserRoleManager(
             IAppUserRoleRepository appUserRoleRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<AppUserRoleDTO> appUserRoleValidator,
             UserManager<AppUser> userManager,
             RoleManager<AppRole> roleManager
-        ) : base(appUserRoleRepository, mapper, appUserRoleValidator)
+        ) : base(appUserRoleRepository, unitOfWork, mapper, appUserRoleValidator)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _appUserRoleRepository = appUserRoleRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
-        
         public override async Task<OperationStatus> CreateAsync(AppUserRoleDTO dto)
         {
             AppUser user = await _userManager.FindByIdAsync(dto.UserId.ToString());
@@ -42,25 +43,23 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             AppRole role = await _roleManager.FindByIdAsync(dto.RoleId.ToString());
             if (role == null) return OperationStatus.NotFound;
 
-         
             AppUserRole existing = await _appUserRoleRepository.GetByCompositeKeyAsync(dto.UserId, dto.RoleId);
             if (existing != null) return OperationStatus.AlreadyExists;
 
-           
             IdentityResult result = await _userManager.AddToRoleAsync(user, role.Name);
             if (!result.Succeeded) return OperationStatus.Failed;
 
-          
             AppUserRole domainEntity = _mapper.Map<AppUserRole>(dto);
             domainEntity.InsertedDate = DateTime.Now;
             domainEntity.Status = Project.Domain.Enums.DataStatus.Inserted;
 
-          
             AppUserRole trackedEntity = _appUserRoleRepository.GetLocalTrackedEntity(dto.UserId, dto.RoleId);
             if (trackedEntity == null)
             {
                 await _appUserRoleRepository.CreateAsync(domainEntity);
             }
+
+            await _unitOfWork.CommitAsync();
 
             return OperationStatus.Success;
         }
@@ -71,7 +70,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<AppUserRoleDTO>(entity);
         }
 
-        public async  Task<IList<int>> GetRoleIdsByUserIdAsync(int userId)
+        public async Task<IList<int>> GetRoleIdsByUserIdAsync(int userId)
         {
             return await _appUserRoleRepository.GetRoleIdsByUserIdAsync(userId);
         }
@@ -87,17 +86,14 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             AppRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return OperationStatus.NotFound;
 
-           
             IdentityResult result = await _userManager.RemoveFromRoleAsync(user, role.Name);
             if (!result.Succeeded) return OperationStatus.Failed;
 
-         
             await _appUserRoleRepository.DeleteByUserAndRoleAsync(userId, roleId);
 
             return OperationStatus.Success;
         }
 
-     
         public async Task<OperationStatus> SoftDeleteByCompositeKeyAsync(int userId, int roleId)
         {
             AppUserRole entity = await _appUserRoleRepository.GetByCompositeKeyAsync(userId, roleId);
@@ -109,20 +105,18 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             AppRole role = await _roleManager.FindByIdAsync(roleId.ToString());
             if (role == null) return OperationStatus.NotFound;
 
-          
             IdentityResult result = await _userManager.RemoveFromRoleAsync(user, role.Name);
             if (!result.Succeeded) return OperationStatus.Failed;
 
-          
             entity.Status = Project.Domain.Enums.DataStatus.Deleted;
             entity.DeletionDate = DateTime.Now;
 
             await _appUserRoleRepository.UpdateByCompositeKeyAsync(entity);
+            await _unitOfWork.CommitAsync();
 
             return OperationStatus.Success;
         }
 
-    
         public async Task<OperationStatus> UpdateByCompositeKeyAsync(AppUserRoleDTO dto)
         {
             AppUserRole entity = await _appUserRoleRepository.GetByCompositeKeyAsync(dto.UserId, dto.RoleId);
@@ -133,6 +127,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             entity.UpdatedDate = DateTime.Now;
 
             await _appUserRoleRepository.UpdateByCompositeKeyAsync(entity);
+            await _unitOfWork.CommitAsync();
 
             return OperationStatus.Success;
         }

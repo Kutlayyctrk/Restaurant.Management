@@ -19,12 +19,14 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         where TDto : BaseDto
     {
         private readonly IRepository<TEntity> _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<TDto> _validator;
 
-        public BaseManager(IRepository<TEntity> repository, IMapper mapper, IValidator<TDto> validator)
+        public BaseManager(IRepository<TEntity> repository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<TDto> validator)
         {
             _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validator = validator;
         }
@@ -40,6 +42,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             domainEntity.Status = DataStatus.Inserted;
 
             await _repository.CreateAsync(domainEntity);
+            await _unitOfWork.CommitAsync();
+
             return OperationStatus.Success;
         }
 
@@ -77,6 +81,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 return OperationStatus.Failed;
 
             await _repository.HardDeleteAsync(domainEntity);
+            await _unitOfWork.CommitAsync();
+
             return OperationStatus.Success;
         }
 
@@ -89,7 +95,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             originalEntity.Status = DataStatus.Deleted;
             originalEntity.DeletionDate = DateTime.Now;
 
-            await _repository.UpdateAsync(originalEntity); 
+            await _repository.UpdateAsync(originalEntity);
+            await _unitOfWork.CommitAsync();
 
             return OperationStatus.Success;
         }
@@ -110,6 +117,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             originalEntity.UpdatedDate = DateTime.Now;
 
             await _repository.UpdateAsync(originalEntity);
+            await _unitOfWork.CommitAsync();
 
             return OperationStatus.Success;
         }

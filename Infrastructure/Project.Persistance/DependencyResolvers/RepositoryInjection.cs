@@ -30,6 +30,7 @@ namespace Project.Persistance.DependencyResolvers
             services.AddScoped<IUnitRepository, UnitRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IMenuProductRepository, MenuProductRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }
 }

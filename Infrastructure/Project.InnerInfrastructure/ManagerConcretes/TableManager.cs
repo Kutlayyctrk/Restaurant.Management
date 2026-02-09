@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class TableManager(ITableRepository tableRepository,IMapper mapper,IValidator<TableDTO> tableValidator):BaseManager<Table,TableDTO>(tableRepository,mapper,tableValidator),ITableManager
+    public class TableManager(ITableRepository tableRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<TableDTO> tableValidator):BaseManager<Table,TableDTO>(tableRepository,unitOfWork,mapper,tableValidator),ITableManager
     {
         private readonly ITableRepository _tableRepository = tableRepository;
         private readonly IMapper _mapper = mapper;

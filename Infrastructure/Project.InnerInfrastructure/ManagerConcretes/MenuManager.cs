@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class MenuManager(IMenuRepository menuRepository,IMapper mapper, IValidator<MenuDTO> validator):BaseManager<Menu,MenuDTO>(menuRepository,mapper,validator),IMenuManager
+    public class MenuManager(IMenuRepository menuRepository,IUnitOfWork unitOfWork,IMapper mapper, IValidator<MenuDTO> validator):BaseManager<Menu,MenuDTO>(menuRepository,unitOfWork,mapper,validator),IMenuManager
     {
     }
 }

@@ -10,26 +10,24 @@ using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
 using System;
 using System.Collections.Generic;
-
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class OrderManager(IOrderRepository orderRepository, IMapper mapper, IValidator<OrderDTO> orderValidator, IStockTransActionManager stockTransActionManager,IProductManager productManager) : BaseManager<Order, OrderDTO>(orderRepository, mapper, orderValidator), IOrderManager
+    public class OrderManager(IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<OrderDTO> orderValidator, IStockTransActionManager stockTransActionManager, IProductManager productManager) : BaseManager<Order, OrderDTO>(orderRepository, unitOfWork, mapper, orderValidator), IOrderManager
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
         private readonly IValidator<OrderDTO> _validator = orderValidator;
         private readonly IStockTransActionManager _stockTransActionManager = stockTransActionManager;
         private readonly IProductManager _productManager = productManager;
+
         public async Task ChangeOrderStateAsync(int orderId, OrderDetailStatus newState)
         {
             await _orderRepository.UpdateOrderStateAsync(orderId, newState);
-
-
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<List<OrderDTO>> GetActiveSaleOrdersForKitchenAndBarAsync()
@@ -49,9 +47,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
             if (originalEntity == null) return OperationStatus.NotFound;
 
-            List<OrderDetail> newlyAddedDetails = new List<OrderDetail>();
+            List<OrderDetail> newlyAddedDetails = new();
 
-            
             originalEntity.SupplierId = newDto.SupplierId;
             originalEntity.TableId = newDto.TableId;
             originalEntity.WaiterId = newDto.WaiterId;
@@ -62,7 +59,6 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             originalEntity.Status = DataStatus.Updated;
             originalEntity.UpdatedDate = DateTime.Now;
 
-         
             List<OrderDetail> detailsRemove = originalEntity.OrderDetails
                 .Where(z => !newDto.OrderDetails.Any(x => x.Id == z.Id)).ToList();
 
@@ -72,7 +68,6 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 originalEntity.OrderDetails.Remove(toRemove);
             }
 
-      
             foreach (OrderDetailDTO dto in newDto.OrderDetails)
             {
                 OrderDetail existingDetail = originalEntity.OrderDetails
@@ -80,19 +75,14 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
                 if (existingDetail != null)
                 {
-               
                     decimal oldQuantity = existingDetail.Quantity;
-
-                
                     decimal quantityDiff = dto.Quantity - oldQuantity;
 
                     if (quantityDiff != 0)
                     {
-                       
                         await _stockTransActionManager.CreateUpdateOrderActionAsync(existingDetail, quantityDiff, originalEntity.Type);
                     }
 
-                 
                     _mapper.Map(dto, existingDetail);
                     existingDetail.Status = DataStatus.Updated;
                     existingDetail.UpdatedDate = DateTime.Now;
@@ -110,6 +100,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             }
 
             await _orderRepository.UpdateAsync(originalEntity);
+            await _unitOfWork.CommitAsync();
 
             foreach (OrderDetail freshDetail in newlyAddedDetails)
             {
@@ -124,6 +115,11 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             ValidationResult validationResult = await _validator.ValidateAsync(dto);
             if (!validationResult.IsValid) return OperationStatus.Failed;
 
+            if (dto.OrderDetails == null || dto.OrderDetails.Count == 0)
+            {
+                return OperationStatus.Failed;
+            }
+
             Order order = _mapper.Map<Order>(dto);
             order.Status = DataStatus.Inserted;
             order.InsertedDate = DateTime.Now;
@@ -134,31 +130,36 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 detail.InsertedDate = DateTime.Now;
             }
 
-          
             await _orderRepository.CreateAsync(order);
+            await _unitOfWork.CommitAsync();
 
-      
-            foreach (OrderDetail detail in order.OrderDetails)
+            Order persistedOrder = await _orderRepository.GetQuery()
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.Id == order.Id);
+
+            if (persistedOrder == null)
             {
-             
-                await _stockTransActionManager.CreateInitialOrderActionAsync(detail, order.Type);
+                return OperationStatus.Failed;
+            }
 
-              
-                if (order.Type == OrderType.Purchase)
+            foreach (OrderDetail detail in persistedOrder.OrderDetails)
+            {
+                await _stockTransActionManager.CreateInitialOrderActionAsync(detail, persistedOrder.Type);
+
+                if (persistedOrder.Type == OrderType.Purchase)
                 {
-                
                     await _productManager.IncreaseStockAsync(detail.ProductId, detail.Quantity);
                 }
-                else if (order.Type == OrderType.Sale)
+                else if (persistedOrder.Type == OrderType.Sale)
                 {
-                  
                     await _productManager.ReduceStockAfterSaleAsync(detail.ProductId, detail.Quantity, detail.Id);
                 }
             }
+
             return OperationStatus.Success;
         }
 
-        public  async   Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId)
+        public async Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId)
         {
             Order order = await _orderRepository.GetActiveOrderByTableIdAsync(tableId);
             return order != null ? _mapper.Map<OrderDTO>(order) : null;
@@ -166,11 +167,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
         public async Task CloseOrderState(int orderId)
         {
-          Order order= await _orderRepository.GetActiveOrderByTableIdAsync(orderId);
-            if(order!=null)
-            {
-                await _orderRepository.CloseOrderState(orderId);
-            }
+            await _orderRepository.CloseOrderState(orderId);
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<List<OrderDTO>> GetACtiveSaleOrderForWaiterAsync()

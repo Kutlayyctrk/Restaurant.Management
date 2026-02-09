@@ -17,17 +17,16 @@ namespace Project.Persistance.Repositories
 
         public async Task CloseOrderState(int orderId)
         {
-          Order order= await _context.Orders.FirstOrDefaultAsync(o=>o.Id == orderId);
+            Order order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
 
-            if(order!=null)
+            if (order != null)
             {
-                if(order.OrderState!=null)
+                if (order.OrderState != null)
                 {
                     order.OrderState = OrderStatus.Closed;
-                    order.WaiterId= null;
+                    order.WaiterId = null;
                 }
             }
-            await _context.SaveChangesAsync();
         }
 
         public async Task<Order?> GetActiveOrderByTableIdAsync(int tableId)
@@ -35,14 +34,14 @@ namespace Project.Persistance.Repositories
             return await _context.Orders
            .Include(x => x.OrderDetails)
            .ThenInclude(x => x.Product)
-           .FirstOrDefaultAsync(x => x.TableId == tableId && x.OrderState == OrderStatus.SentToKitchen );
+           .FirstOrDefaultAsync(x => x.TableId == tableId && x.OrderState == OrderStatus.SentToKitchen);
         }
 
         public async Task<List<Order>> GetACtiveSaleOrderForWaiterAsync()
         {
             return await _context.Set<Order>()
 
-         .Include(o => o.OrderDetails.Where(od => od.DetailState == OrderDetailStatus.SendToKitchen && od.DetailState== OrderDetailStatus.SendToTheTable))
+         .Include(o => o.OrderDetails.Where(od => od.DetailState == OrderDetailStatus.SendToKitchen && od.DetailState == OrderDetailStatus.SendToTheTable))
              .ThenInclude(od => od.Product)
          .Include(o => o.Supplier)
          .Where(o =>
@@ -54,22 +53,21 @@ namespace Project.Persistance.Repositories
         public async Task<List<Order>> GetActiveSaleOrdersForKitchenAndBarAsync()
         {
             return await _context.Set<Order>()
-         
+
          .Include(o => o.OrderDetails.Where(od => od.DetailState == OrderDetailStatus.SendToKitchen))
              .ThenInclude(od => od.Product)
          .Include(o => o.Supplier)
          .Where(o =>
-             (o.OrderState == OrderStatus.SentToKitchen )
+             (o.OrderState == OrderStatus.SentToKitchen)
              && o.Type == OrderType.Sale)
          .ToListAsync();
         }
 
         public async Task UpdateOrderStateAsync(int orderId, OrderDetailStatus newDetailState)
         {
-           
             Order order = await _context.Set<Order>()
-        .Include(o => o.OrderDetails)
-        .FirstOrDefaultAsync(o => o.Id == orderId);
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order != null)
             {
@@ -80,7 +78,6 @@ namespace Project.Persistance.Repositories
                         detail.DetailState = newDetailState;
                     }
                 }
-                await _context.SaveChangesAsync();
             }
         }
     }
