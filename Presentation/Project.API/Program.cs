@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Project.Domain.Entities.Concretes;
 using Project.Persistance.ContextClasses;
 using Project.Persistance.DependencyResolvers;
@@ -73,6 +74,27 @@ namespace Project.API
             });
 
             WebApplication app = builder.Build();
+
+            // Docker container içinde çalýþýrken veritabanýný otomatik oluþtur/güncelle
+            if (runningInContainer)
+            {
+                using (IServiceScope scope = app.Services.CreateScope())
+                {
+                    MyContext db = scope.ServiceProvider.GetRequiredService<MyContext>();
+                    ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                    try
+                    {
+                        logger.LogInformation("Applying database migrations...");
+                        db.Database.Migrate();
+                        logger.LogInformation("Database migrations applied successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "An error occurred while applying database migrations.");
+                        throw;
+                    }
+                }
+            }
 
             
             if (app.Environment.IsDevelopment())

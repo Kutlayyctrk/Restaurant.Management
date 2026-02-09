@@ -15,6 +15,19 @@ namespace Project.UI
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+            bool runningInContainer = string.Equals(
+                Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+                "true", StringComparison.OrdinalIgnoreCase);
+
+            if (runningInContainer)
+            {
+                string? dockerCs = builder.Configuration.GetConnectionString("OnionDb_Docker");
+                if (!string.IsNullOrWhiteSpace(dockerCs))
+                {
+                    builder.Configuration["ConnectionStrings:OnionDb"] = dockerCs;
+                }
+            }
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpClient();

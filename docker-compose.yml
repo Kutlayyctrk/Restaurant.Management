@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: restaurant-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=DockerSql.2024!
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "DockerSql.2024!" -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  project-api:
+    image: ${DOCKER_REGISTRY-}project-api
+    container_name: restaurant-api
+    build:
+      context: .
+      dockerfile: Presentation/Project.API/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - ConnectionStrings__OnionDb=Server=sqlserver;Database=OnionArchDb;User Id=sa;Password=DockerSql.2024!;TrustServerCertificate=true;
+      - ConnectionStrings__OnionDb_Docker=Server=sqlserver;Database=OnionArchDb;User Id=sa;Password=DockerSql.2024!;TrustServerCertificate=true;
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  project-ui:
+    image: ${DOCKER_REGISTRY-}project-ui
+    container_name: restaurant-ui
+    build:
+      context: .
+      dockerfile: Presentation/Project.UI/Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - ConnectionStrings__OnionDb=Server=sqlserver;Database=OnionArchDb;User Id=sa;Password=DockerSql.2024!;TrustServerCertificate=true;
+      - ConnectionStrings__OnionDb_Docker=Server=sqlserver;Database=OnionArchDb;User Id=sa;Password=DockerSql.2024!;TrustServerCertificate=true;
+      - AppUrl__BaseUrl=http://project-api:8080
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      project-api:
+        condition: service_started
+
+volumes:
+  sqlserver-data:
