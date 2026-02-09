@@ -131,7 +131,11 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             }
 
             await _orderRepository.CreateAsync(order);
-            await _unitOfWork.CommitAsync();
+            int commitResult = await _unitOfWork.CommitAsync();
+            if (commitResult <= 0)
+            {
+                return OperationStatus.Failed;
+            }
 
             Order persistedOrder = await _orderRepository.GetQuery()
                 .Include(o => o.OrderDetails)
