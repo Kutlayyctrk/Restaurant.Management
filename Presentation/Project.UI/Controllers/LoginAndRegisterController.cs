@@ -79,6 +79,14 @@ namespace Project.UI.Controllers
             return RedirectToAction("AccessDenied", "LoginAndRegister");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _appUserManager.LogoutAsync();
+            return RedirectToAction("Login", "LoginAndRegister");
+        }
+
         public IActionResult Register()
         {
             return View();

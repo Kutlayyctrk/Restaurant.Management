@@ -158,5 +158,10 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
             return OperationStatus.Failed;
         }
+
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
     }
 }

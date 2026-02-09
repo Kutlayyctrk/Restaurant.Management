@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Project.Application.Managers
 {
-    public interface IAppUserManager:IManager<AppUser,AppUserDTO>
+    public interface IAppUserManager : IManager<AppUser, AppUserDTO>
     {
-        Task<OperationStatus> LoginAsync(AppUserDTO dto); //Giriş işlemi için yazıldı
-        Task<OperationStatus> ConfirmEmailAsync(string userId, string token); //Mail onaylama işlemi için yazıldı
-        Task<List<AppUserDTO>> GetConfirmedUsersAsync();//Maili onaylanmış kullanıcıları getirmek için yazıldı
-
+        Task<OperationStatus> LoginAsync(AppUserDTO dto);
+        Task LogoutAsync();
+        Task<OperationStatus> ConfirmEmailAsync(string userId, string token);
+        Task<List<AppUserDTO>> GetConfirmedUsersAsync();
     }
 }
