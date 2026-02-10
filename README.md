@@ -37,7 +37,7 @@
 | **Logging** | Serilog (Console + Rolling File) |
 | **Caching** | In-Memory Cache (`IMemoryCache`) |
 | **Testing** | xUnit, Moq, FluentAssertions, EF Core InMemory |
-| **Container** | Docker (Dockerfile per project) |
+| **Container** | Docker, Docker Compose |
 | **Mail** | SMTP (`IMailSender` abstraction) |
 
 ---
@@ -247,7 +247,29 @@ dotnet run --project Presentation/Project.UI
 dotnet run --project Presentation/Project.API
 ```
 
-### 5) Docker
+### 5) Docker Compose
+
+Tum servisleri (SQL Server + API + UI) tek komutla ayaga kaldirabilirsiniz:
+
+```bash
+docker compose up --build -d
+```
+
+| Servis | URL |
+|--------|-----|
+| **UI** | http://localhost:5001 |
+| **API (Swagger)** | http://localhost:5000/swagger |
+| **SQL Server** | localhost:1433 (sa / DockerSql.2024!) |
+
+Durdurmak icin:
+
+```bash
+docker compose down
+```
+
+> **Not:** API container baslangicta veritabanini otomatik olusturur/gunceller (EF Core Migrate). Ilk calistirmada SQL Server'in hazir olmasini bekler (healthcheck).
+
+#### Tek Tek Calistirma (Opsiyonel)
 
 ```bash
 # UI
@@ -301,11 +323,10 @@ Proje ogrenme odakli gelistirildigi icin tespit edilen teknik borclar:
 
 | # | Borc | Aciklama | Etki |
 |---|------|----------|------|
-| 8 | **docker-compose.yml eksik** | Dockerfilelar var ama orchestration yok. | DevOps |
-| 9 | **API versioning yok** | /api/v1/... yapisi tanimsiz. | Ileriye uyumluluk |
-| 10 | **Health check endpoint eksik** | Container senaryolari icin /health yok. | Monitoring |
-| 11 | **Response compression yok** | Compression middleware aktif degil. | Bant genisligi |
-| 12 | **Pagination UIda kullanilmiyor** | Backendde pagination altyapisi hazir ama UI controllerlari tum veriyi cekiyor. | Performans |
+| 8 | **API versioning yok** | /api/v1/... yapisi tanimsiz. | Ileriye uyumluluk |
+| 9 | **Health check endpoint eksik** | Container senaryolari icin /health yok. | Monitoring |
+| 10 | **Response compression yok** | Compression middleware aktif degil. | Bant genisligi |
+| 11 | **Pagination UIda kullanilmiyor** | Backendde pagination altyapisi hazir ama UI controllerlari tum veriyi cekiyor. | Performans |
 
 ---
 
@@ -341,6 +362,7 @@ Restaurant.Management/
 |   +-- Project.UnitTests/
 |   +-- Project.IntegrationTests/
 |
++-- docker-compose.yml
 +-- README.md
 ```
 
