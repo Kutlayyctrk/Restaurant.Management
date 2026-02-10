@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class TableManager(ITableRepository tableRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<TableDTO> tableValidator):BaseManager<Table,TableDTO>(tableRepository,unitOfWork,mapper,tableValidator),ITableManager
+    public class TableManager(ITableRepository tableRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<TableDTO> tableValidator, ILogger<TableManager> logger):BaseManager<Table,TableDTO>(tableRepository,unitOfWork,mapper,tableValidator, logger),ITableManager
     {
         private readonly ITableRepository _tableRepository = tableRepository;
         private readonly IMapper _mapper = mapper;

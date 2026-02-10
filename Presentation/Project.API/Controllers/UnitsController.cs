@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 
 namespace Project.API.Controllers
@@ -37,8 +38,8 @@ namespace Project.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UnitDTO dto)
         {
-            OperationStatus result = await _unitManager.CreateAsync(dto);
-            if (result != OperationStatus.Success)
+            Result result = await _unitManager.CreateAsync(dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Birim oluþturulamadý. Durum: {result}"));
 
             return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<UnitDTO>.Ok(dto, "Birim baþarýyla oluþturuldu."));
@@ -51,8 +52,8 @@ namespace Project.API.Controllers
             if (original == null)
                 return NotFound(ApiResponse<string>.Fail("Birim bulunamadý."));
 
-            OperationStatus result = await _unitManager.UpdateAsync(original, dto);
-            if (result != OperationStatus.Success)
+            Result result = await _unitManager.UpdateAsync(original, dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Birim güncellenemedi. Durum: {result}"));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Birim baþarýyla güncellendi."));
@@ -61,8 +62,8 @@ namespace Project.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            OperationStatus result = await _unitManager.SoftDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _unitManager.SoftDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Birim bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Birim silindi (soft delete)."));

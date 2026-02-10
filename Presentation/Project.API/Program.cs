@@ -1,6 +1,9 @@
 
+
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Project.API.Middleware;
 using Project.Domain.Entities.Concretes;
 using Project.Persistance.ContextClasses;
 using Project.Persistance.DependencyResolvers;
@@ -8,7 +11,9 @@ using Project.Application.DependencyResolvers;
 using Project.InnerInfrastructure.DependencyResolvers;
 using Project.OuterInfrastructure.DependencyResolvers;
 using Project.Validator.DependencyResolvers;
+using Serilog;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace Project.API
 {
@@ -16,7 +21,21 @@ namespace Project.API
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+                .WriteTo.Console()
+                .WriteTo.File("Logs/api-log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            try
+            {
+            Log.Information("API uygulamasý baþlatýlýyor...");
+
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSerilog();
 
            
             bool runningInContainer = string.Equals(
@@ -43,7 +62,23 @@ namespace Project.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-           
+            // In-Memory Caching
+            builder.Services.AddMemoryCache();
+
+            // Rate Limiting
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                options.AddFixedWindowLimiter("fixed", limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = 100;
+                    limiterOptions.Window = TimeSpan.FromMinutes(1);
+                    limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    limiterOptions.QueueLimit = 10;
+                });
+            });
+
             builder.Services.AddDbContextInjection(builder.Configuration);
             builder.Services
                .AddIdentity<AppUser, AppRole>(options =>
@@ -97,6 +132,11 @@ namespace Project.API
             }
 
             
+            // Global Exception Handler
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+            app.UseSerilogRequestLogging();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -104,12 +144,22 @@ namespace Project.API
             }
 
             app.UseCors("AllowAll");
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.MapControllers().RequireRateLimiting("fixed");
 
             app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "API uygulamasý baþlatýlýrken hata oluþtu.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
     }
 }

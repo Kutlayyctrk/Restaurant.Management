@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class CategoryManager(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<CategoryDTO> categoryValidator) : BaseManager<Category, CategoryDTO>(categoryRepository, unitOfWork, mapper, categoryValidator), ICategoryManager
+    public class CategoryManager(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<CategoryDTO> categoryValidator, ILogger<CategoryManager> logger) : BaseManager<Category, CategoryDTO>(categoryRepository, unitOfWork, mapper, categoryValidator, logger), ICategoryManager
     {
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IMapper _mapper = mapper;

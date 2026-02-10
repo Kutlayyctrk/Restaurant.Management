@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
+using Project.Application.Results;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
 using System.Collections.Generic;
@@ -17,8 +19,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RecipeManager(IRecipeRepository recipeRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<RecipeDTO> recipeValidator)
-            : base(recipeRepository, unitOfWork, mapper, recipeValidator)
+        public RecipeManager(IRecipeRepository recipeRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<RecipeDTO> recipeValidator, ILogger<RecipeManager> logger)
+            : base(recipeRepository, unitOfWork, mapper, recipeValidator, logger)
         {
             _recipeRepository = recipeRepository;
             _mapper = mapper;
@@ -90,11 +92,11 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             };
         }
 
-        public override async Task<OperationStatus> UpdateAsync(RecipeDTO originalDto, RecipeDTO newDto)
+        public override async Task<Result> UpdateAsync(RecipeDTO originalDto, RecipeDTO newDto)
         {
             Recipe originalEntity = await _recipeRepository.GetByIdAsync(originalDto.Id);
             if (originalEntity == null)
-                return OperationStatus.NotFound;
+                return Result.Failure(OperationStatus.NotFound, "Reçete bulunamadı.");
 
             _mapper.Map(newDto, originalEntity);
 
@@ -104,7 +106,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             await _recipeRepository.UpdateAsync(originalEntity);
             await _unitOfWork.CommitAsync();
 
-            return OperationStatus.Success;
+            return Result.Succeed("Reçete güncellendi.");
         }
     }
 }

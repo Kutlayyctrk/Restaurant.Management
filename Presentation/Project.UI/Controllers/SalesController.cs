@@ -1,7 +1,8 @@
-ï»¿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 using Project.UI.Models.SaleOrderVms;
 using System.Security.Claims;
@@ -69,7 +70,7 @@ namespace Project.UI.Controllers
 
             if (table.WaiterId.HasValue && table.WaiterId.Value.ToString() != userId)
             {
-                TempData["Error"] = "Bu masa ÅŸu an baÅŸka bir garson tarafÄ±ndan yÃ¶netiliyor!";
+                TempData["Error"] = "Bu masa þu an baþka bir garson tarafýndan yönetiliyor!";
                 return RedirectToAction("Index");
             }
 
@@ -153,15 +154,15 @@ namespace Project.UI.Controllers
         public async Task<IActionResult> SubmitOrder([FromBody] OrderSubmitVm vm)
         {
             if (vm == null || !vm.Details.Any())
-                return Json(new { success = false, message = "Sepet boÅŸ!" });
+                return Json(new { success = false, message = "Sepet boþ!" });
 
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return Json(new { success = false, message = "Oturum hatasÄ±!" });
+            if (userId == null) return Json(new { success = false, message = "Oturum hatasý!" });
 
             try
             {
                 OrderDTO activeOrderDto = await _orderManager.GetActiveOrderForTableAsync(vm.TableId);
-                OperationStatus status;
+                Result status;
 
                 if (activeOrderDto == null)
                 {
@@ -202,7 +203,7 @@ namespace Project.UI.Controllers
                   
                 }
 
-                if (status == OperationStatus.Success)
+                if (status.IsSuccess)
                 {
                   
                     TableDTO tableDto = await _tableManager.GetByIdAsync(vm.TableId);
@@ -210,10 +211,10 @@ namespace Project.UI.Controllers
                     tableDto.WaiterId = int.Parse(userId);
                     await _tableManager.UpdateAsync(tableDto, tableDto);
 
-                    return Json(new { success = true, message = "Ä°ÅŸlem baÅŸarÄ±lÄ±." });
+                    return Json(new { success = true, message = "Ýþlem baþarýlý." });
                 }
 
-                return Json(new { success = false, message = "Ä°ÅŸlem baÅŸarÄ±sÄ±z oldu." });
+                return Json(new { success = false, message = "Ýþlem baþarýsýz oldu." });
             }
             catch (Exception ex)
             {
@@ -228,7 +229,7 @@ namespace Project.UI.Controllers
             {
                 OrderDTO orderDto = await _orderManager.GetActiveOrderForTableAsync(tableId);
                 if (orderDto == null)
-                    return Json(new { success = false, message = "KapatÄ±lacak aktif sipariÅŸ bulunamadÄ±." });
+                    return Json(new { success = false, message = "Kapatýlacak aktif sipariþ bulunamadý." });
 
                 await _orderManager.CloseOrderState(orderDto.Id);
 
@@ -240,7 +241,7 @@ namespace Project.UI.Controllers
                     await _tableManager.UpdateAsync(tableDto, tableDto);
                 }
 
-                return Json(new { success = true, message = "Hesap kapatÄ±ldÄ±." });
+                return Json(new { success = true, message = "Hesap kapatýldý." });
             }
             catch (Exception ex)
             {

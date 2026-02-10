@@ -1,4 +1,4 @@
-ï»¿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,9 +7,11 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Contract.Repositories;
 using Project.Application.Managers;
 using Project.Domain.Entities.Concretes;
@@ -42,7 +44,7 @@ namespace Project.UnitTests
                 mapperMock.Object,
                 validatorMock.Object,
                 stockMock.Object,
-                productMock.Object);
+                productMock.Object, Mock.Of<ILogger<OrderManager>>());
 
             OrderDTO dto = new OrderDTO
             {
@@ -50,10 +52,10 @@ namespace Project.UnitTests
             };
 
 
-            OperationStatus result = await manager.CreateAsync(dto);
+            Result result = await manager.CreateAsync(dto);
 
 
-            result.Should().Be(OperationStatus.Failed);
+            result.IsSuccess.Should().BeFalse();
         }
 
         [Fact]
@@ -81,7 +83,7 @@ namespace Project.UnitTests
                 mapperMock.Object,
                 validatorMock.Object,
                 stockMock.Object,
-                productMock.Object);
+                productMock.Object, Mock.Of<ILogger<OrderManager>>());
 
             OrderDTO dto = new OrderDTO
             {
@@ -92,9 +94,9 @@ namespace Project.UnitTests
                 }
             };
 
-            OperationStatus result = await manager.CreateAsync(dto);
+            Result result = await manager.CreateAsync(dto);
 
-            result.Should().Be(OperationStatus.Failed);
+            result.IsSuccess.Should().BeFalse();
             orderRepoMock.Verify(r => r.CreateAsync(It.IsAny<Order>()), Times.Never);
             uowMock.Verify(u => u.CommitAsync(default), Times.Never);
             stockMock.Verify(s => s.CreateInitialOrderActionAsync(It.IsAny<OrderDetail>(), It.IsAny<OrderType>()), Times.Never);
@@ -183,13 +185,13 @@ namespace Project.UnitTests
                 mapperMock.Object,
                 validatorMock.Object,
                 stockMock.Object,
-                productMock.Object);
+                productMock.Object, Mock.Of<ILogger<OrderManager>>());
 
 
-            OperationStatus result = await manager.CreateAsync(dto);
+            Result result = await manager.CreateAsync(dto);
 
 
-            result.Should().Be(OperationStatus.Success);
+            result.IsSuccess.Should().BeTrue();
 
 
             orderRepoMock.Verify(r => r.CreateAsync(It.IsAny<Order>()), Times.Once);
@@ -276,17 +278,17 @@ namespace Project.UnitTests
                 mapperMock.Object,
                 validatorMock.Object,
                 stockMock.Object,
-                productMock.Object);
+                productMock.Object, Mock.Of<ILogger<OrderManager>>());
 
-            OperationStatus result = await manager.CreateAsync(dto);
+            Result result = await manager.CreateAsync(dto);
 
-            result.Should().Be(OperationStatus.Failed);
+            result.IsSuccess.Should().BeFalse();
         }
 
         [Fact]
         public async Task UpdateAsync_WhenDetailRemoved_CreatesDeletionStockActionAndUpdatesRepository()
         {
-            // HazÄ±rlÄ±k
+            // Hazýrlýk
             Mock<IOrderRepository> orderRepoMock = new Mock<IOrderRepository>();
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
@@ -351,13 +353,13 @@ namespace Project.UnitTests
                 mapperMock.Object,
                 validatorMock.Object,
                 stockMock.Object,
-                productMock.Object);
+                productMock.Object, Mock.Of<ILogger<OrderManager>>());
 
 
-            OperationStatus result = await manager.UpdateAsync(originalDto, newDto);
+            Result result = await manager.UpdateAsync(originalDto, newDto);
 
 
-            result.Should().Be(OperationStatus.Success);
+            result.IsSuccess.Should().BeTrue();
 
 
             stockMock.Verify(s => s.CreateDeletionOrderActionAsync(It.Is<OrderDetail>(od => od.Id == 10 && od.ProductId == 2), originalOrder.Type), Times.Once);
@@ -404,11 +406,11 @@ namespace Project.UnitTests
                 mapperMock.Object,
                 validatorMock.Object,
                 stockMock.Object,
-                productMock.Object);
+                productMock.Object, Mock.Of<ILogger<OrderManager>>());
 
-            OperationStatus result = await manager.UpdateAsync(oldDto, newDto);
+            Result result = await manager.UpdateAsync(oldDto, newDto);
 
-            result.Should().Be(OperationStatus.Failed);
+            result.IsSuccess.Should().BeFalse();
             orderRepoMock.Verify(r => r.UpdateAsync(It.IsAny<Order>()), Times.Never);
             uowMock.Verify(u => u.CommitAsync(default), Times.Never);
             stockMock.Verify(s => s.CreateDeletionOrderActionAsync(It.IsAny<OrderDetail>(), It.IsAny<OrderType>()), Times.Never);

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
+using Project.Application.Results;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Abstract;
 using Project.Domain.Enums;
@@ -22,20 +24,26 @@ namespace Project.InnerInfrastructure.ManagerConcretes
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<TDto> _validator;
+        protected readonly ILogger _logger;
 
-        public BaseManager(IRepository<TEntity> repository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<TDto> validator)
+        public BaseManager(IRepository<TEntity> repository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<TDto> validator, ILogger logger)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validator = validator;
+            _logger = logger;
         }
 
-        public virtual async Task<OperationStatus> CreateAsync(TDto dto)
+        public virtual async Task<Result> CreateAsync(TDto dto)
         {
             ValidationResult validationResult = await _validator.ValidateAsync(dto);
             if (!validationResult.IsValid)
-                return OperationStatus.ValidationError;
+            {
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                _logger.LogWarning("Validation failed for {EntityType}: {Errors}", typeof(TEntity).Name, string.Join(", ", errors));
+                return Result.Failure(OperationStatus.ValidationError, errors);
+            }
 
             TEntity domainEntity = _mapper.Map<TEntity>(dto);
             domainEntity.InsertedDate = DateTime.Now;
@@ -44,7 +52,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             await _repository.CreateAsync(domainEntity);
             await _unitOfWork.CommitAsync();
 
-            return OperationStatus.Success;
+            _logger.LogInformation("{EntityType} created successfully.", typeof(TEntity).Name);
+            return Result.Succeed("Kayıt başarıyla oluşturuldu.");
         }
 
         public async Task<List<TDto>> GetActives()
@@ -65,32 +74,59 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<TDto>(entity);
         }
 
+        public async Task<PagedResult<TDto>> GetPagedAsync(int page, int pageSize)
+        {
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 10;
+            if (pageSize > 100) pageSize = 100;
+
+            (List<TEntity> items, int totalCount) = await _repository.GetPagedAsync(page, pageSize, x => x.Status != DataStatus.Deleted);
+
+            return new PagedResult<TDto>
+            {
+                Items = _mapper.Map<List<TDto>>(items),
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+        }
+
         public async Task<List<TDto>> GetPassives()
         {
             List<TEntity> passiveEntities = await _repository.WhereAsync(x => x.Status == DataStatus.Deleted);
             return _mapper.Map<List<TDto>>(passiveEntities);
         }
 
-        public virtual async Task<OperationStatus> HardDeleteByIdAsync(int id)
+        public virtual async Task<Result> HardDeleteByIdAsync(int id)
         {
             TEntity domainEntity = await _repository.GetByIdAsync(id);
             if (domainEntity == null)
-                return OperationStatus.NotFound;
+            {
+                _logger.LogWarning("{EntityType} with Id {Id} not found for hard delete.", typeof(TEntity).Name, id);
+                return Result.Failure(OperationStatus.NotFound, "Kayıt bulunamadı.");
+            }
 
             if (domainEntity.Status != DataStatus.Deleted)
-                return OperationStatus.Failed;
+            {
+                _logger.LogWarning("{EntityType} with Id {Id} is not soft-deleted, cannot hard delete.", typeof(TEntity).Name, id);
+                return Result.Failure(OperationStatus.Failed, "Önce soft delete yapılmalıdır.");
+            }
 
             await _repository.HardDeleteAsync(domainEntity);
             await _unitOfWork.CommitAsync();
 
-            return OperationStatus.Success;
+            _logger.LogInformation("{EntityType} with Id {Id} hard deleted.", typeof(TEntity).Name, id);
+            return Result.Succeed("Kayıt kalıcı olarak silindi.");
         }
 
-        public virtual async Task<OperationStatus> SoftDeleteByIdAsync(int id)
+        public virtual async Task<Result> SoftDeleteByIdAsync(int id)
         {
             TEntity originalEntity = await _repository.GetByIdAsync(id);
             if (originalEntity == null)
-                return OperationStatus.NotFound;
+            {
+                _logger.LogWarning("{EntityType} with Id {Id} not found for soft delete.", typeof(TEntity).Name, id);
+                return Result.Failure(OperationStatus.NotFound, "Kayıt bulunamadı.");
+            }
 
             originalEntity.Status = DataStatus.Deleted;
             originalEntity.DeletionDate = DateTime.Now;
@@ -98,18 +134,26 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             await _repository.UpdateAsync(originalEntity);
             await _unitOfWork.CommitAsync();
 
-            return OperationStatus.Success;
+            _logger.LogInformation("{EntityType} with Id {Id} soft deleted.", typeof(TEntity).Name, id);
+            return Result.Succeed("Kayıt silindi.");
         }
 
-        public virtual async Task<OperationStatus> UpdateAsync(TDto originalDto, TDto newDto)
+        public virtual async Task<Result> UpdateAsync(TDto originalDto, TDto newDto)
         {
             ValidationResult validationResult = await _validator.ValidateAsync(newDto);
             if (!validationResult.IsValid)
-                return OperationStatus.ValidationError;
+            {
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                _logger.LogWarning("Validation failed for {EntityType} update: {Errors}", typeof(TEntity).Name, string.Join(", ", errors));
+                return Result.Failure(OperationStatus.ValidationError, errors);
+            }
 
             TEntity originalEntity = await _repository.GetByIdAsync(originalDto.Id);
             if (originalEntity == null)
-                return OperationStatus.NotFound;
+            {
+                _logger.LogWarning("{EntityType} with Id {Id} not found for update.", typeof(TEntity).Name, originalDto.Id);
+                return Result.Failure(OperationStatus.NotFound, "Kayıt bulunamadı.");
+            }
 
             _mapper.Map(newDto, originalEntity);
 
@@ -119,7 +163,8 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             await _repository.UpdateAsync(originalEntity);
             await _unitOfWork.CommitAsync();
 
-            return OperationStatus.Success;
+            _logger.LogInformation("{EntityType} with Id {Id} updated successfully.", typeof(TEntity).Name, originalDto.Id);
+            return Result.Succeed("Kayıt başarıyla güncellendi.");
         }
 
         public async Task<List<TDto>> WhereAsync(Expression<Func<TEntity, bool>> expression)

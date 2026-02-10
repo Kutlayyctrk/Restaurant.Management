@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 using Project.Domain.Enums;
 
@@ -23,6 +24,13 @@ namespace Project.API.Controllers
         {
             List<OrderDTO> orders = await _orderManager.GetActives();
             return Ok(ApiResponse<List<OrderDTO>>.Ok(orders));
+        }
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            PagedResult<OrderDTO> pagedResult = await _orderManager.GetPagedAsync(page, pageSize);
+            return Ok(ApiResponse<PagedResult<OrderDTO>>.Ok(pagedResult));
         }
 
         [HttpGet("{id}")]
@@ -62,8 +70,8 @@ namespace Project.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] OrderDTO dto)
         {
-            OperationStatus result = await _orderManager.CreateAsync(dto);
-            if (result != OperationStatus.Success)
+            Result result = await _orderManager.CreateAsync(dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Sipariþ oluþturulamadý. Durum: {result}"));
 
             return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<OrderDTO>.Ok(dto, "Sipariþ baþarýyla oluþturuldu."));
@@ -86,8 +94,8 @@ namespace Project.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            OperationStatus result = await _orderManager.SoftDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _orderManager.SoftDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Sipariþ bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Sipariþ silindi (soft delete)."));

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Project.API.Models;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 
 namespace Project.API.Controllers
@@ -11,10 +13,12 @@ namespace Project.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductManager _productManager;
+        private readonly IMemoryCache _cache;
 
-        public ProductsController(IProductManager productManager)
+        public ProductsController(IProductManager productManager, IMemoryCache cache)
         {
             _productManager = productManager;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -22,6 +26,20 @@ namespace Project.API.Controllers
         {
             List<ProductDTO> products = await _productManager.GetActives();
             return Ok(ApiResponse<List<ProductDTO>>.Ok(products));
+        }
+
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            string cacheKey = $"products_page_{page}_size_{pageSize}";
+
+            if (!_cache.TryGetValue(cacheKey, out PagedResult<ProductDTO> pagedResult))
+            {
+                pagedResult = await _productManager.GetPagedAsync(page, pageSize);
+                _cache.Set(cacheKey, pagedResult, TimeSpan.FromMinutes(5));
+            }
+
+            return Ok(ApiResponse<PagedResult<ProductDTO>>.Ok(pagedResult));
         }
 
         [HttpGet("{id}")]
@@ -58,8 +76,8 @@ namespace Project.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProductDTO dto)
         {
-            OperationStatus result = await _productManager.CreateAsync(dto);
-            if (result != OperationStatus.Success)
+            Result result = await _productManager.CreateAsync(dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Ürün oluþturulamadý. Durum: {result}"));
 
             return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<ProductDTO>.Ok(dto, "Ürün baþarýyla oluþturuldu."));
@@ -72,8 +90,8 @@ namespace Project.API.Controllers
             if (original == null)
                 return NotFound(ApiResponse<string>.Fail("Ürün bulunamadý."));
 
-            OperationStatus result = await _productManager.UpdateAsync(original, dto);
-            if (result != OperationStatus.Success)
+            Result result = await _productManager.UpdateAsync(original, dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Ürün güncellenemedi. Durum: {result}"));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Ürün baþarýyla güncellendi."));
@@ -82,8 +100,8 @@ namespace Project.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            OperationStatus result = await _productManager.SoftDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _productManager.SoftDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Ürün bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Ürün silindi (soft delete)."));
@@ -92,8 +110,8 @@ namespace Project.API.Controllers
         [HttpDelete("{id}/hard")]
         public async Task<IActionResult> HardDelete(int id)
         {
-            OperationStatus result = await _productManager.HardDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _productManager.HardDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Ürün bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Ürün kalýcý olarak silindi."));

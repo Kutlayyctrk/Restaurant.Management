@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class RecipeItemManager(IRecipeItemRepository recipeItemRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<RecipeItemDTO> recipeItemValidator):BaseManager<RecipeItem,RecipeItemDTO>(recipeItemRepository,unitOfWork,mapper,recipeItemValidator),IRecipeItemManager
+    public class RecipeItemManager(IRecipeItemRepository recipeItemRepository,IUnitOfWork unitOfWork,IMapper mapper,IValidator<RecipeItemDTO> recipeItemValidator, ILogger<RecipeItemManager> logger):BaseManager<RecipeItem,RecipeItemDTO>(recipeItemRepository,unitOfWork,mapper,recipeItemValidator, logger),IRecipeItemManager
     {
     }
 }

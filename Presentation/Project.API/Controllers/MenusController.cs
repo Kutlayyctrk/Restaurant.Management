@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 
 namespace Project.API.Controllers
@@ -39,8 +40,8 @@ namespace Project.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] MenuDTO dto)
         {
-            OperationStatus result = await _menuManager.CreateAsync(dto);
-            if (result != OperationStatus.Success)
+            Result result = await _menuManager.CreateAsync(dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Menü oluþturulamadý. Durum: {result}"));
 
             return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<MenuDTO>.Ok(dto, "Menü baþarýyla oluþturuldu."));
@@ -53,8 +54,8 @@ namespace Project.API.Controllers
             if (original == null)
                 return NotFound(ApiResponse<string>.Fail("Menü bulunamadý."));
 
-            OperationStatus result = await _menuManager.UpdateAsync(original, dto);
-            if (result != OperationStatus.Success)
+            Result result = await _menuManager.UpdateAsync(original, dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Menü güncellenemedi. Durum: {result}"));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Menü baþarýyla güncellendi."));
@@ -63,8 +64,8 @@ namespace Project.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            OperationStatus result = await _menuManager.SoftDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _menuManager.SoftDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Menü bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Menü silindi (soft delete)."));
@@ -92,8 +93,8 @@ namespace Project.API.Controllers
         [HttpPost("products")]
         public async Task<IActionResult> CreateMenuProduct([FromBody] MenuProductDTO dto)
         {
-            OperationStatus result = await _menuProductManager.CreateAsync(dto);
-            if (result != OperationStatus.Success)
+            Result result = await _menuProductManager.CreateAsync(dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Menü ürünü oluþturulamadý. Durum: {result}"));
 
             return Ok(ApiResponse<MenuProductDTO>.Ok(dto, "Menü ürünü baþarýyla oluþturuldu."));
@@ -102,8 +103,8 @@ namespace Project.API.Controllers
         [HttpDelete("products/{id}")]
         public async Task<IActionResult> SoftDeleteMenuProduct(int id)
         {
-            OperationStatus result = await _menuProductManager.SoftDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _menuProductManager.SoftDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Menü ürünü bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Menü ürünü silindi (soft delete)."));

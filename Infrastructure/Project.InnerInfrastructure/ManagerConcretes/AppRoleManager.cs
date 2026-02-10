@@ -2,9 +2,11 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Enums;   
 using Project.Application.Managers;
+using Project.Application.Results;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
 using System.Linq;
@@ -24,8 +26,9 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             IMapper mapper,
             IValidator<AppRoleDTO> appRoleValidator,
             RoleManager<AppRole> roleManager,
-            IUnitOfWork unitOfWork
-        ) : base(appRoleRepository, unitOfWork, mapper, appRoleValidator)
+            IUnitOfWork unitOfWork,
+            ILogger<AppRoleManager> logger
+        ) : base(appRoleRepository, unitOfWork, mapper, appRoleValidator, logger)
         {
             _appRoleValidator = appRoleValidator;
             _mapper = mapper;
@@ -33,12 +36,13 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _unitOfWork = unitOfWork;
         }
 
-        public override async Task<OperationStatus> CreateAsync(AppRoleDTO dto)
+        public override async Task<Result> CreateAsync(AppRoleDTO dto)
         {
             ValidationResult validationResult = await _appRoleValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
-                return OperationStatus.ValidationError;
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return Result.Failure(OperationStatus.ValidationError, errors);
             }
 
             AppRole role = _mapper.Map<AppRole>(dto);
@@ -48,32 +52,32 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             IdentityResult createResult = await _roleManager.CreateAsync(role);
             if (!createResult.Succeeded)
             {
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Rol oluşturulamadı.");
             }
 
-            return OperationStatus.Success;
+            return Result.Succeed("Rol oluşturuldu.");
         }
 
-        public override async Task<OperationStatus> HardDeleteByIdAsync(int id)
+        public override async Task<Result> HardDeleteByIdAsync(int id)
         {
             AppRole role = await _roleManager.FindByIdAsync(id.ToString());
             if (role == null)
             {
-                return OperationStatus.NotFound;
+                return Result.Failure(OperationStatus.NotFound, "Rol bulunamadı.");
             }
 
             if (role.Status != Domain.Enums.DataStatus.Deleted)
             {
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Önce soft delete yapılmalıdır.");
             }
 
             IdentityResult deleteResult = await _roleManager.DeleteAsync(role);
             if (!deleteResult.Succeeded)
             {
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Rol silinemedi.");
             }
 
-            return OperationStatus.Success;
+            return Result.Succeed("Rol silindi.");
         }
     }
 }

@@ -3,10 +3,12 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Enums;  
 using Project.Application.MailService;
 using Project.Application.Managers;
+using Project.Application.Results;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
 using Microsoft.AspNetCore.WebUtilities;
@@ -37,8 +39,9 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             RoleManager<AppRole> roleManager,
             IMailSender mailSender,
             IConfiguration configuration,
-            SignInManager<AppUser> signInManager
-        ) : base(appUserRepository, unitOfWork, mapper, appUserValidator)
+            SignInManager<AppUser> signInManager,
+            ILogger<AppUserManager> logger
+        ) : base(appUserRepository, unitOfWork, mapper, appUserValidator, logger)
         {
             _mapper = mapper;
             _appUserValidator = appUserValidator;
@@ -51,11 +54,14 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             _unitOfWork = unitOfWork;
         }
 
-        public override async Task<OperationStatus> CreateAsync(AppUserDTO dto)
+        public override async Task<Result> CreateAsync(AppUserDTO dto)
         {
             ValidationResult validationResult = await _appUserValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
-                return OperationStatus.ValidationError;
+            {
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return Result.Failure(OperationStatus.ValidationError, errors);
+            }
 
             AppUser user = _mapper.Map<AppUser>(dto);
             user.InsertedDate = DateTime.Now;
@@ -63,7 +69,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
             IdentityResult createResult = await _userManager.CreateAsync(user, dto.Password);
             if (!createResult.Succeeded)
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Kullanıcı oluşturulamadı.");
 
             if (dto.RoleIds is { Count: > 0 })
             {
@@ -74,7 +80,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                     {
                         IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, role.Name);
                         if (!addToRoleResult.Succeeded)
-                            return OperationStatus.Failed;
+                            return Result.Failure(OperationStatus.Failed, "Rol atanamadı.");
                     }
                 }
             }
@@ -91,7 +97,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 await _mailSender.SendActivationMailAsync(user.Email, activationLink);
             }
 
-            return OperationStatus.Success;
+            return Result.Succeed("Kullanıcı oluşturuldu.");
         }
         public async Task<List<AppUserDTO>> GetConfirmedUsersAsync()
         {
@@ -102,61 +108,64 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<List<AppUserDTO>>(confirmedUsers);
         }
 
-        public override async Task<OperationStatus> HardDeleteByIdAsync(int id)
+        public override async Task<Result> HardDeleteByIdAsync(int id)
         {
             AppUser user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
-                return OperationStatus.NotFound;
+                return Result.Failure(OperationStatus.NotFound, "Kullanıcı bulunamadı.");
 
             if (user.Status != Project.Domain.Enums.DataStatus.Deleted)
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Önce soft delete yapılmalıdır.");
 
             IdentityResult identityResult = await _userManager.DeleteAsync(user);
             if (!identityResult.Succeeded)
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Kullanıcı silinemedi.");
 
-            return OperationStatus.Success;
+            return Result.Succeed("Kullanıcı silindi.");
         }
 
-        public async Task<OperationStatus> LoginAsync(AppUserDTO dto)
+        public async Task<Result> LoginAsync(AppUserDTO dto)
         {
             ValidationResult validationResult = await _appUserValidator.ValidateAsync(dto,
                 options => options.IncludeRuleSets("Login"));
             if (!validationResult.IsValid)
-                return OperationStatus.ValidationError;
+            {
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return Result.Failure(OperationStatus.ValidationError, errors);
+            }
 
             AppUser user = await _userManager.FindByNameAsync(dto.UserName);
             if (user == null)
-                return OperationStatus.NotFound;
+                return Result.Failure(OperationStatus.NotFound, "Kullanıcı bulunamadı.");
 
             if (!user.EmailConfirmed)
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "E-posta onaylanmamış.");
 
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, dto.Password, false, false);
             if (!signInResult.Succeeded)
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Geçersiz kullanıcı adı veya şifre.");
 
             IList<string> roles = await _userManager.GetRolesAsync(user);
             if (roles == null || roles.Count == 0)
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Kullanıcıya atanmış rol bulunamadı.");
 
-            return OperationStatus.Success;
+            return Result.Succeed("Giriş başarılı.");
         }
 
-        public async Task<OperationStatus> ConfirmEmailAsync(string encodedUserId, string encodedToken)
+        public async Task<Result> ConfirmEmailAsync(string encodedUserId, string encodedToken)
         {
             string decodedUserId = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedUserId));
             string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
 
             AppUser user = await _userManager.FindByIdAsync(decodedUserId);
             if (user == null)
-                return OperationStatus.NotFound;
+                return Result.Failure(OperationStatus.NotFound, "Kullanıcı bulunamadı.");
 
             IdentityResult result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (result.Succeeded)
-                return OperationStatus.Success;
+                return Result.Succeed("E-posta onaylandı.");
 
-            return OperationStatus.Failed;
+            return Result.Failure(OperationStatus.Failed, "E-posta onaylanamadı.");
         }
 
         public async Task LogoutAsync()

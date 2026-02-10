@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class StockTransActionManager(IStockTransActionRepository stockTransActionRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<StockTransActionDTO> stockTransActionValidator) : BaseManager<StockTransAction, StockTransActionDTO>(stockTransActionRepository, unitOfWork, mapper, stockTransActionValidator), IStockTransActionManager
+    public class StockTransActionManager(IStockTransActionRepository stockTransActionRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<StockTransActionDTO> stockTransActionValidator, ILogger<StockTransActionManager> logger) : BaseManager<StockTransAction, StockTransActionDTO>(stockTransActionRepository, unitOfWork, mapper, stockTransActionValidator, logger), IStockTransActionManager
     {
         private readonly IStockTransActionRepository _stockTransActionRepository = stockTransActionRepository;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;

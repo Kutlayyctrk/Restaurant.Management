@@ -1,7 +1,8 @@
-ï»¿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 using Project.Domain.Enums;
 using Project.UI.Areas.Manager.Models.BarAndKitchenVMs;
@@ -125,14 +126,14 @@ public class BarController : Controller
 
         if (!await IsDrinkCategoryAsync(vm.CategoryId))
         {
-            ModelState.AddModelError("", "Sadece iÃ§ecek kategorisine ait Ã¼rÃ¼nler seÃ§ilebilir.");
+            ModelState.AddModelError("", "Sadece içecek kategorisine ait ürünler seçilebilir.");
             await SetViewBagsAsync();
             return View(vm);
         }
 
         if (vm.Items.Any(x => x.ProductId == vm.ProductId))
         {
-            ModelState.AddModelError("", "ReÃ§etenin ana Ã¼rÃ¼nÃ¼ ile malzeme olarak eklenen Ã¼rÃ¼nler aynÄ± olamaz.");
+            ModelState.AddModelError("", "Reçetenin ana ürünü ile malzeme olarak eklenen ürünler ayný olamaz.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -140,7 +141,7 @@ public class BarController : Controller
         RecipeDTO existingRecipe = await _recipeManager.GetByProductIdAsync(vm.ProductId);
         if (existingRecipe != null)
         {
-            ModelState.AddModelError("", "Bu Ã¼rÃ¼ne ait bir reÃ§ete zaten mevcut. AynÄ± Ã¼rÃ¼ne ikinci bir reÃ§ete ekleyemezsiniz.");
+            ModelState.AddModelError("", "Bu ürüne ait bir reçete zaten mevcut. Ayný ürüne ikinci bir reçete ekleyemezsiniz.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -154,11 +155,11 @@ public class BarController : Controller
             RecipeItems = vm.Items
         };
 
-        OperationStatus result = await _recipeManager.CreateAsync(dto);
+        Result result = await _recipeManager.CreateAsync(dto);
 
-        if (result != OperationStatus.Success)
+        if (!result.IsSuccess)
         {
-            ModelState.AddModelError("", "ReÃ§ete eklenemedi.");
+            ModelState.AddModelError("", "Reçete eklenemedi.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -198,14 +199,14 @@ public class BarController : Controller
 
         if (!await IsDrinkCategoryAsync(vm.CategoryId))
         {
-            ModelState.AddModelError("", "Sadece iÃ§ecek kategorisine ait Ã¼rÃ¼nler seÃ§ilebilir.");
+            ModelState.AddModelError("", "Sadece içecek kategorisine ait ürünler seçilebilir.");
             await SetViewBagsAsync();
             return View(vm);
         }
 
         if (vm.Items.Any(x => x.ProductId == vm.ProductId))
         {
-            ModelState.AddModelError("", "ReÃ§etenin ana Ã¼rÃ¼nÃ¼ ile malzeme olarak eklenen Ã¼rÃ¼nler aynÄ± olamaz.");
+            ModelState.AddModelError("", "Reçetenin ana ürünü ile malzeme olarak eklenen ürünler ayný olamaz.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -223,11 +224,11 @@ public class BarController : Controller
             RecipeItems = vm.Items
         };
 
-        OperationStatus result = await _recipeManager.UpdateAsync(existingDto, newDto);
+        Result result = await _recipeManager.UpdateAsync(existingDto, newDto);
 
-        if (result != OperationStatus.Success)
+        if (!result.IsSuccess)
         {
-            ModelState.AddModelError("", "ReÃ§ete gÃ¼ncellenemedi.");
+            ModelState.AddModelError("", "Reçete güncellenemedi.");
             await SetViewBagsAsync();
             return View(vm);
         }
@@ -267,7 +268,7 @@ public class BarController : Controller
         }
         catch
         {
-            ModelState.AddModelError("", "SipariÅŸ gÃ¼ncellenemedi.");
+            ModelState.AddModelError("", "Sipariþ güncellenemedi.");
         }
 
         return RedirectToAction("ActiveOrders");
@@ -339,7 +340,7 @@ public class BarController : Controller
 
         if (product == null || !await IsDrinkCategoryAsync(product.CategoryId))
         {
-            ModelState.AddModelError("", "Sadece iÃ§ecek kategorisine ait Ã¼rÃ¼nler seÃ§ilebilir.");
+            ModelState.AddModelError("", "Sadece içecek kategorisine ait ürünler seçilebilir.");
             List<MenuDTO> menus = await _menuManager.GetAllAsync();
             List<ProductDTO> products = await GetDrinkProductsAsync();
             ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
@@ -358,10 +359,10 @@ public class BarController : Controller
            
         };
 
-        OperationStatus result = await _menuProductManager.CreateAsync(dto);
-        if (result != OperationStatus.Success)
+        Result result = await _menuProductManager.CreateAsync(dto);
+        if (!result.IsSuccess)
         {
-            ModelState.AddModelError("", "ÃœrÃ¼n eklenemedi.");
+            ModelState.AddModelError("", "Ürün eklenemedi.");
             List<MenuDTO> menus = await _menuManager.GetAllAsync();
             List<ProductDTO> products = await GetDrinkProductsAsync();
             ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
@@ -387,14 +388,14 @@ public class BarController : Controller
             return RedirectToAction("MenuProducts");
 
         existingDto.IsActive = false;
-        OperationStatus result = await _menuProductManager.UpdateAsync(existingDto, existingDto);
+        Result result = await _menuProductManager.UpdateAsync(existingDto, existingDto);
 
-        if (result == OperationStatus.NotFound)
+        if (result.Status == OperationStatus.NotFound)
             return NotFound();
 
-        if (result == OperationStatus.ValidationError)
+        if (result.Status == OperationStatus.ValidationError)
         {
-            TempData["Error"] = "GÃ¼ncelleme sÄ±rasÄ±nda doÄŸrulama hatalarÄ± oluÅŸtu.";
+            TempData["Error"] = "Güncelleme sýrasýnda doðrulama hatalarý oluþtu.";
         }
 
         return RedirectToAction("MenuProducts");
@@ -415,14 +416,14 @@ public class BarController : Controller
             return RedirectToAction("MenuProducts");
 
         existingDto.IsActive = true;
-        OperationStatus result = await _menuProductManager.UpdateAsync(existingDto, existingDto);
+        Result result = await _menuProductManager.UpdateAsync(existingDto, existingDto);
 
-        if (result == OperationStatus.NotFound)
+        if (result.Status == OperationStatus.NotFound)
             return NotFound();
 
-        if (result == OperationStatus.ValidationError)
+        if (result.Status == OperationStatus.ValidationError)
         {
-            TempData["Error"] = "GÃ¼ncelleme sÄ±rasÄ±nda doÄŸrulama hatalarÄ± oluÅŸtu.";
+            TempData["Error"] = "Güncelleme sýrasýnda doðrulama hatalarý oluþtu.";
         }
 
         return RedirectToAction("MenuProducts");
@@ -441,10 +442,10 @@ public class BarController : Controller
 
         dto.IsActive = false;
 
-        OperationStatus result = await _menuProductManager.UpdateAsync(dto, dto);
+        Result result = await _menuProductManager.UpdateAsync(dto, dto);
 
-        if (result != OperationStatus.Success)
-            ModelState.AddModelError("", "MenÃ¼den Ã§Ä±karma iÅŸlemi baÅŸarÄ±sÄ±z.");
+        if (!result.IsSuccess)
+            ModelState.AddModelError("", "Menüden çýkarma iþlemi baþarýsýz.");
 
         return RedirectToAction("MenuProducts");
     }

@@ -5,7 +5,9 @@ using Project.Persistance.DependencyResolvers;
 using Project.Application.DependencyResolvers;
 using Project.OuterInfrastructure.DependencyResolvers;
 using Project.InnerInfrastructure.DependencyResolvers;
+using Project.UI.Middleware;
 using Project.Validator.DependencyResolvers;
+using Serilog;
 
 namespace Project.UI
 {
@@ -13,7 +15,21 @@ namespace Project.UI
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+                .WriteTo.Console()
+                .WriteTo.File("Logs/ui-log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            try
+            {
+            Log.Information("UI uygulaması başlatılıyor...");
+
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSerilog();
 
             bool runningInContainer = string.Equals(
                 Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
@@ -31,6 +47,9 @@ namespace Project.UI
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpClient();
+
+            // In-Memory Caching
+            builder.Services.AddMemoryCache();
 
             builder.Services.AddDbContextInjection(builder.Configuration);
             builder.Services
@@ -53,6 +72,10 @@ namespace Project.UI
             WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+            app.UseSerilogRequestLogging();
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -72,6 +95,15 @@ namespace Project.UI
                 pattern: "{controller=LoginAndRegister}/{action=Login}/{id?}");
 
             app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "UI uygulaması başlatılırken hata oluştu.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
     }
 }

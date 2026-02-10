@@ -1,7 +1,8 @@
-ï»¿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 using Project.Domain.Enums;
 using Project.UI.Areas.Manager.Models.HRVMs;
@@ -177,10 +178,10 @@ namespace Project.UI.Areas.Manager.Controllers
                 HireDate = vm.HireDate
             };
 
-            OperationStatus profileResult = await _appUserProfileManager.CreateAsync(profileDto);
-            if (profileResult != OperationStatus.Success)
+            Result profileResult = await _appUserProfileManager.CreateAsync(profileDto);
+            if (!profileResult.IsSuccess)
             {
-                TempData["Error"] = "Profil oluÅŸturulamadÄ±.";
+                TempData["Error"] = "Profil oluþturulamadý.";
                 return View(vm);
             }
 
@@ -193,18 +194,18 @@ namespace Project.UI.Areas.Manager.Controllers
                     RoleId = vm.SelectedRoleId
                 };
 
-                OperationStatus roleResult = await _appUserRoleManager.CreateAsync(roleDto);
+                Result roleResult = await _appUserRoleManager.CreateAsync(roleDto);
 
-                if (roleResult != OperationStatus.Success)
+                if (!roleResult.IsSuccess)
                 {
-                    TempData["Error"] = roleResult == OperationStatus.AlreadyExists
-                        ? "Bu rol zaten atanmÄ±ÅŸ."
-                        : "Rol atanamadÄ±.";
+                    TempData["Error"] = roleResult.Status == OperationStatus.AlreadyExists
+                        ? "Bu rol zaten atanmýþ."
+                        : "Rol atanamadý.";
                     return View(vm);
                 }
             }
 
-            TempData["Success"] = "Profil baÅŸarÄ±yla tamamlandÄ±.";
+            TempData["Success"] = "Profil baþarýyla tamamlandý.";
             return RedirectToAction("CompleteProfileList");
         }
 
@@ -272,17 +273,17 @@ namespace Project.UI.Areas.Manager.Controllers
             };
 
          
-            OperationStatus result = await _appRoleManager.CreateAsync(dto);
+            Result result = await _appRoleManager.CreateAsync(dto);
 
-            if (result == OperationStatus.Success)
+            if (result.IsSuccess)
             {
-                TempData["Success"] = "Rol baÅŸarÄ±yla oluÅŸturuldu.";
+                TempData["Success"] = "Rol baþarýyla oluþturuldu.";
                 return RedirectToAction("RoleList");
             }
 
-            TempData["Error"] = result == OperationStatus.AlreadyExists
+            TempData["Error"] = result.Status == OperationStatus.AlreadyExists
                 ? "Bu rol zaten mevcut."
-                : "Rol oluÅŸturulamadÄ±.";
+                : "Rol oluþturulamadý.";
 
             return View(vm);
         }
@@ -364,10 +365,10 @@ namespace Project.UI.Areas.Manager.Controllers
             };
 
             
-            OperationStatus updateResult = await _appUserProfileManager.UpdateAsync(originalProfile, newProfile);
-            if (updateResult != OperationStatus.Success)
+            Result updateResult = await _appUserProfileManager.UpdateAsync(originalProfile, newProfile);
+            if (!updateResult.IsSuccess)
             {
-                TempData["Error"] = updateResult switch
+                TempData["Error"] = updateResult.Status switch
                 {
                     OperationStatus.NotFound => "Profile not found.",
                     OperationStatus.ValidationError => "Validation failed.",
@@ -385,11 +386,11 @@ namespace Project.UI.Areas.Manager.Controllers
                     RoleId = vm.SelectedRoleId
                 };
 
-                OperationStatus addResult = await _appUserRoleManager.CreateAsync(newRoleDto);
+                Result addResult = await _appUserRoleManager.CreateAsync(newRoleDto);
 
-                if (addResult == OperationStatus.Success)
+                if (addResult.IsSuccess)
                     TempData["Success"] = "Role added successfully.";
-                else if (addResult == OperationStatus.AlreadyExists)
+                else if (addResult.Status == OperationStatus.AlreadyExists)
                     TempData["Error"] = "This role already exists.";
                 else
                     TempData["Error"] = "Failed to add role.";
@@ -408,11 +409,11 @@ namespace Project.UI.Areas.Manager.Controllers
                 return RedirectToAction("Edit", new { id = userId });
             }
 
-            OperationStatus result = await _appUserRoleManager.HardDeleteByCompositeKeyAsync(userId, roleId);
+            Result result = await _appUserRoleManager.HardDeleteByCompositeKeyAsync(userId, roleId);
 
-            if (result == OperationStatus.Success)
+            if (result.IsSuccess)
                 TempData["Success"] = "Role removed successfully.";
-            else if (result == OperationStatus.NotFound)
+            else if (result.Status == OperationStatus.NotFound)
                 TempData["Error"] = "Role not found.";
             else
                 TempData["Error"] = "Failed to remove role.";
@@ -433,9 +434,9 @@ namespace Project.UI.Areas.Manager.Controllers
             else if (roleId > 0)
             {
                 AppUserRoleDTO newRoleDto = new AppUserRoleDTO { UserId = userId, RoleId = roleId };
-                OperationStatus addResult = await _appUserRoleManager.CreateAsync(newRoleDto);
+                Result addResult = await _appUserRoleManager.CreateAsync(newRoleDto);
 
-                if (addResult == OperationStatus.Success)
+                if (addResult.IsSuccess)
                     TempData["Success"] = "Role added successfully.";
                 else
                     TempData["Error"] = "Failed to add role.";

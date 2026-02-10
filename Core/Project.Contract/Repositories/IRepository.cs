@@ -14,5 +14,6 @@ namespace Project.Contract.Repositories
         Task UpdateAsync(T entity);
         Task HardDeleteAsync(T entity);
         IQueryable<T> GetQuery();
+        Task<(List<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, Expression<Func<T, bool>>? filter = null);
     }
 }

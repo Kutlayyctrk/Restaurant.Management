@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class ProductManager(IProductRepository productRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<ProductDTO> productValidator, IStockTransActionManager stockTransActionManager) : BaseManager<Product, ProductDTO>(productRepository, unitOfWork, mapper, productValidator), IProductManager
+    public class ProductManager(IProductRepository productRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<ProductDTO> productValidator, IStockTransActionManager stockTransActionManager, ILogger<ProductManager> logger) : BaseManager<Product, ProductDTO>(productRepository, unitOfWork, mapper, productValidator, logger), IProductManager
     {
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;

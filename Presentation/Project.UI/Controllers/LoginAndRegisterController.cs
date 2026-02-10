@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.DTOs;
-using Project.Application.Enums;   
+using Project.Application.Enums;
+using Project.Application.Results;   
 using Project.Application.Managers;
 using Project.Domain.Entities.Concretes;
 using Project.UI.Models.LoginVMs;
@@ -40,21 +41,21 @@ namespace Project.UI.Controllers
                 RememberMe = vM.RememberMe
             };
 
-            OperationStatus result = await _appUserManager.LoginAsync(loginDTO);
+            Result result = await _appUserManager.LoginAsync(loginDTO);
 
-            if (result == OperationStatus.Failed)
+            if (result.Status == OperationStatus.Failed)
             {
                 ModelState.AddModelError("", "Invalid username or password, or email not confirmed.");
                 return View(vM);
             }
 
-            if (result == OperationStatus.ValidationError)
+            if (result.Status == OperationStatus.ValidationError)
             {
                 ModelState.AddModelError("", "Validation failed.");
                 return View(vM);
             }
 
-            if (result == OperationStatus.NotFound)
+            if (result.Status == OperationStatus.NotFound)
             {
                 ModelState.AddModelError("", "User not found.");
                 return View(vM);
@@ -108,9 +109,9 @@ namespace Project.UI.Controllers
                 RoleIds = new List<int> { vM.Role }
             };
 
-            OperationStatus result = await _appUserManager.CreateAsync(dto);
+            Result result = await _appUserManager.CreateAsync(dto);
 
-            if (result != OperationStatus.Success)
+            if (!result.IsSuccess)
             {
                 ModelState.AddModelError("", "Registration failed.");
                 return View(vM);
@@ -122,9 +123,9 @@ namespace Project.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            OperationStatus result = await _appUserManager.ConfirmEmailAsync(userId, token);
+            Result result = await _appUserManager.ConfirmEmailAsync(userId, token);
 
-            if (result == OperationStatus.Success)
+            if (result.IsSuccess)
                 return View("ConfirmEmail");
             else
                 return View("ConfirmEmailFailed");

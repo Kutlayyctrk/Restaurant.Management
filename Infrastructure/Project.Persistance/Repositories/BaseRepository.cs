@@ -61,5 +61,22 @@ namespace Project.Persistance.Repositories
         {
             return await _myContext.Set<T>().Where(expression).ToListAsync();
         }
+
+        public virtual async Task<(List<T> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = _myContext.Set<T>();
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            int totalCount = await query.CountAsync();
+            List<T> items = await query
+                .OrderByDescending(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
     }
 }

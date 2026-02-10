@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Application.Managers;
 
 namespace Project.API.Controllers
@@ -24,6 +25,13 @@ namespace Project.API.Controllers
             return Ok(ApiResponse<List<SupplierDTO>>.Ok(suppliers));
         }
 
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            PagedResult<SupplierDTO> pagedResult = await _supplierManager.GetPagedAsync(page, pageSize);
+            return Ok(ApiResponse<PagedResult<SupplierDTO>>.Ok(pagedResult));
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -37,8 +45,8 @@ namespace Project.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] SupplierDTO dto)
         {
-            OperationStatus result = await _supplierManager.CreateAsync(dto);
-            if (result != OperationStatus.Success)
+            Result result = await _supplierManager.CreateAsync(dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Tedarikçi oluþturulamadý. Durum: {result}"));
 
             return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<SupplierDTO>.Ok(dto, "Tedarikçi baþarýyla oluþturuldu."));
@@ -51,8 +59,8 @@ namespace Project.API.Controllers
             if (original == null)
                 return NotFound(ApiResponse<string>.Fail("Tedarikçi bulunamadý."));
 
-            OperationStatus result = await _supplierManager.UpdateAsync(original, dto);
-            if (result != OperationStatus.Success)
+            Result result = await _supplierManager.UpdateAsync(original, dto);
+            if (!result.IsSuccess)
                 return BadRequest(ApiResponse<string>.Fail($"Tedarikçi güncellenemedi. Durum: {result}"));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Tedarikçi baþarýyla güncellendi."));
@@ -61,8 +69,8 @@ namespace Project.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            OperationStatus result = await _supplierManager.SoftDeleteByIdAsync(id);
-            if (result == OperationStatus.NotFound)
+            Result result = await _supplierManager.SoftDeleteByIdAsync(id);
+            if (result.Status == OperationStatus.NotFound)
                 return NotFound(ApiResponse<string>.Fail("Tedarikçi bulunamadý."));
 
             return Ok(ApiResponse<string>.Ok("Baþarýlý", "Tedarikçi silindi (soft delete)."));

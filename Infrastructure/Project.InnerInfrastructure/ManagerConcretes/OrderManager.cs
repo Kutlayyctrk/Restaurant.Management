@@ -2,9 +2,11 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Enums;
 using Project.Application.Managers;
+using Project.Application.Results;
 using Project.Contract.Repositories;
 using Project.Domain.Entities.Concretes;
 using Project.Domain.Enums;
@@ -15,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class OrderManager(IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<OrderDTO> orderValidator, IStockTransActionManager stockTransActionManager, IProductManager productManager) : BaseManager<Order, OrderDTO>(orderRepository, unitOfWork, mapper, orderValidator), IOrderManager
+    public class OrderManager(IOrderRepository orderRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidator<OrderDTO> orderValidator, IStockTransActionManager stockTransActionManager, IProductManager productManager, ILogger<OrderManager> logger) : BaseManager<Order, OrderDTO>(orderRepository, unitOfWork, mapper, orderValidator, logger), IOrderManager
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -36,16 +38,20 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             return _mapper.Map<List<OrderDTO>>(orders);
         }
 
-        public override async Task<OperationStatus> UpdateAsync(OrderDTO originalDto, OrderDTO newDto)
+        public override async Task<Result> UpdateAsync(OrderDTO originalDto, OrderDTO newDto)
         {
             ValidationResult validationResult = await _validator.ValidateAsync(newDto);
-            if (!validationResult.IsValid) return OperationStatus.Failed;
+            if (!validationResult.IsValid)
+            {
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return Result.Failure(OperationStatus.ValidationError, errors);
+            }
 
             Order originalEntity = await _orderRepository.GetQuery()
                                              .Include(x => x.OrderDetails)
                                              .FirstOrDefaultAsync(x => x.Id == originalDto.Id);
 
-            if (originalEntity == null) return OperationStatus.NotFound;
+            if (originalEntity == null) return Result.Failure(OperationStatus.NotFound, "Sipariş bulunamadı.");
 
             List<OrderDetail> newlyAddedDetails = new();
 
@@ -107,17 +113,21 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 await _stockTransActionManager.CreateInitialOrderActionAsync(freshDetail, originalEntity.Type);
             }
 
-            return OperationStatus.Success;
+            return Result.Succeed("Sipariş güncellendi.");
         }
 
-        public async override Task<OperationStatus> CreateAsync(OrderDTO dto)
+        public async override Task<Result> CreateAsync(OrderDTO dto)
         {
             ValidationResult validationResult = await _validator.ValidateAsync(dto);
-            if (!validationResult.IsValid) return OperationStatus.Failed;
+            if (!validationResult.IsValid)
+            {
+                List<string> errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return Result.Failure(OperationStatus.ValidationError, errors);
+            }
 
             if (dto.OrderDetails == null || dto.OrderDetails.Count == 0)
             {
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Sipariş detayları boş olamaz.");
             }
 
             Order order = _mapper.Map<Order>(dto);
@@ -134,7 +144,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
             int commitResult = await _unitOfWork.CommitAsync();
             if (commitResult <= 0)
             {
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Sipariş kaydedilemedi.");
             }
 
             Order persistedOrder = await _orderRepository.GetQuery()
@@ -143,7 +153,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
 
             if (persistedOrder == null)
             {
-                return OperationStatus.Failed;
+                return Result.Failure(OperationStatus.Failed, "Sipariş doğrulanamadı.");
             }
 
             foreach (OrderDetail detail in persistedOrder.OrderDetails)
@@ -160,7 +170,7 @@ namespace Project.InnerInfrastructure.ManagerConcretes
                 }
             }
 
-            return OperationStatus.Success;
+            return Result.Succeed("Sipariş oluşturuldu.");
         }
 
         public async Task<OrderDTO?> GetActiveOrderForTableAsync(int tableId)

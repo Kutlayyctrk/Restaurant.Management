@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Project.Application.DTOs;
 using Project.Application.Managers;
 using Project.Contract.Repositories;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Project.InnerInfrastructure.ManagerConcretes
 {
-    public class MenuManager(IMenuRepository menuRepository,IUnitOfWork unitOfWork,IMapper mapper, IValidator<MenuDTO> validator):BaseManager<Menu,MenuDTO>(menuRepository,unitOfWork,mapper,validator),IMenuManager
+    public class MenuManager(IMenuRepository menuRepository,IUnitOfWork unitOfWork,IMapper mapper, IValidator<MenuDTO> validator, ILogger<MenuManager> logger):BaseManager<Menu,MenuDTO>(menuRepository,unitOfWork,mapper,validator, logger),IMenuManager
     {
     }
 }

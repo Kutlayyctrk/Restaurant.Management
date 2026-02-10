@@ -1,5 +1,6 @@
 ﻿using Project.Application.DTOs;
 using Project.Application.Enums;
+using Project.Application.Results;
 using Project.Domain.Entities.Abstract;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,14 @@ namespace Project.Application.Managers
         Task<List<TDto>> GetActives();
         Task<List<TDto>> GetPassives();
         Task<TDto> GetByIdAsync(int id);
+        Task<PagedResult<TDto>> GetPagedAsync(int page, int pageSize);
 
         Task<List<TDto>> WhereAsync(Expression<Func<TEntity, bool>> expression);
 
-        Task<OperationStatus> CreateAsync(TDto dto);
-        Task<OperationStatus> UpdateAsync(TDto originalDto, TDto newDto);
+        Task<Result> CreateAsync(TDto dto);
+        Task<Result> UpdateAsync(TDto originalDto, TDto newDto);
 
-        Task<OperationStatus> SoftDeleteByIdAsync(int id);
-        Task<OperationStatus> HardDeleteByIdAsync(int id);
+        Task<Result> SoftDeleteByIdAsync(int id);
+        Task<Result> HardDeleteByIdAsync(int id);
     }
 }
