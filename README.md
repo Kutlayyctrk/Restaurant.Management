@@ -316,17 +316,17 @@ Proje ogrenme odakli gelistirildigi icin tespit edilen teknik borclar:
 |---|------|----------|------|
 | 4 | **Dusuk test coverage** | Sadece OrderManagerTests ve OrderRepositoryIntegrationTests mevcut. 16+ manager/repo icin test eksik. | Kalite guvencesi |
 | 5 | **Caching tutarsizligi** | ProductsControllerda cache var, diger controllerlarda yok. Cache invalidation stratejisi tanimsiz. | Performans tutarsizligi |
-| 6 | **CategoriesController bos** | APIde dosya var ama icerigi bos. | Eksik endpoint |
-| 7 | **AutoMapper Core katmaninda** | Mapping konfigurasyonu Applicationda. Bazi mimarilerde sinir katmanlarinda olmasi tercih edilir. | Tartismali mimari karar |
+| 6 | **AutoMapper Core katmaninda** | Mapping konfigurasyonu Applicationda. Bazi mimarilerde sinir katmanlarinda olmasi tercih edilir. | Tartismali mimari karar |
+
 
 ### Dusuk Oncelik
 
 | # | Borc | Aciklama | Etki |
 |---|------|----------|------|
-| 8 | **API versioning yok** | /api/v1/... yapisi tanimsiz. | Ileriye uyumluluk |
-| 9 | **Health check endpoint eksik** | Container senaryolari icin /health yok. | Monitoring |
-| 10 | **Response compression yok** | Compression middleware aktif degil. | Bant genisligi |
-| 11 | **Pagination UIda kullanilmiyor** | Backendde pagination altyapisi hazir ama UI controllerlari tum veriyi cekiyor. | Performans |
+| 7 | **API versioning yok** | /api/v1/... yapisi tanimsiz. | Ileriye uyumluluk |
+| 8 | **Health check endpoint eksik** | Container senaryolari icin /health yok. | Monitoring |
+| 9 | **Response compression yok** | Compression middleware aktif degil. | Bant genisligi |
+| 10 | **Pagination UIda kullanilmiyor** | Backendde pagination altyapisi hazir ama UI controllerlari tum veriyi cekiyor. | Performans |
 
 ---
 
