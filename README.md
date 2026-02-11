@@ -360,7 +360,7 @@ Proje ogrenme odakli gelistirildigi icin tespit edilen teknik borclar:
 
 | # | Borc | Aciklama | Etki | Durum |
 |---|------|----------|------|-------|
-| 4 |~~ Dusuk test coverage~~ | ~~Sadece OrderManagerTests ve OrderRepositoryIntegrationTests mevcut. 16+ manager/repo icin test eksik.~~ | ~~Kalite guvencesi~~ | **Cozuldu** -- Test Sayısı Arttırıldı. |
+| 4 | ~~Dusuk Test  Coverrage~~ | ~~Sadece OrderManagerTests ve OrderRepositoryIntegrationTests mevcut. 16+ manager/repo icin test eksik.~~ | ~~Kalite guvencesi~~ | **Cozuldu** -- Test Sayısı Arttırıldı. |
 | 5 | **Caching tutarsizligi** | ProductsControllerda cache var, diger controllerlarda yok. Cache invalidation stratejisi tanimsiz. | Performans tutarsizligi | Acik |
 | 6 | **AutoMapper Core katmaninda** | Mapping konfigurasyonu Applicationda. Bazi mimarilerde sinir katmanlarinda olmasi tercih edilir. | Tartismali mimari karar | Acik |
 
