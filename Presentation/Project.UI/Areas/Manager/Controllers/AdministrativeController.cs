@@ -15,6 +15,7 @@ using Project.UI.Areas.Manager.Models.AdministrativeVMs.PersonnelManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.SupplierManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.TableManagement;
 using Project.UI.Areas.Manager.Models.AdministrativeVMs.UnitManagement;
+using Project.UI.Areas.Manager.Models.AdministrativeVMs.Reports;
 
 
 
@@ -2300,6 +2301,59 @@ namespace Project.UI.Areas.Manager.Controllers
             else
                 TempData["Success"] = "Masa başarıyla silindi.";
             return RedirectToAction("TableManagement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Reports(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            DateTime today = DateTime.Today;
+            DateTime filterStart = startDate ?? today;
+            DateTime filterEnd = endDate ?? today.AddDays(1).AddSeconds(-1);
+
+            List<AppUserDTO> users = await _appUserManager.GetConfirmedUsersAsync();
+            List<ProductDTO> products = await _productManager.GetAllAsync();
+            List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
+            List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
+            List<TableDTO> tables = await _tableManager.GetAllAsync();
+            List<MenuDTO> menus = await _menuManager.GetAllAsync();
+
+            List<OrderDTO> allOrders = await _orderManager.WhereAsync(o => true);
+
+            List<OrderDTO> activeOrders = allOrders
+                .Where(o => o.Type == OrderType.Sale && o.OrderState == OrderStatus.SentToKitchen)
+                .ToList();
+
+            List<OrderDTO> filteredSales = allOrders
+                .Where(o => o.Type == OrderType.Sale && o.OrderDate >= filterStart && o.OrderDate <= filterEnd)
+                .ToList();
+
+            List<OrderDTO> filteredPurchases = allOrders
+                .Where(o => o.Type == OrderType.Purchase && o.OrderDate >= filterStart && o.OrderDate <= filterEnd)
+                .ToList();
+
+            List<OrderDTO> todaySales = allOrders
+                .Where(o => o.Type == OrderType.Sale && o.OrderDate.Date == today)
+                .ToList();
+
+            AdminReportsVm vm = new AdminReportsVm
+            {
+                TotalPersonnelCount = users.Count,
+                TotalProductCount = products.Count,
+                TotalCategoryCount = categories.Count,
+                TotalSupplierCount = suppliers.Count,
+                TotalTableCount = tables.Count,
+                TotalMenuCount = menus.Count,
+                ActiveOrderCount = activeOrders.Count,
+                FilteredSaleOrderCount = filteredSales.Count,
+                FilteredPurchaseOrderCount = filteredPurchases.Count,
+                FilteredSaleTotalRevenue = filteredSales.Sum(o => o.TotalPrice),
+                FilteredPurchaseTotalCost = filteredPurchases.Sum(o => o.TotalPrice),
+                TodayRevenue = todaySales.Sum(o => o.TotalPrice),
+                StartDate = startDate,
+                EndDate = endDate
+            };
+
+            return View(vm);
         }
     }
 }

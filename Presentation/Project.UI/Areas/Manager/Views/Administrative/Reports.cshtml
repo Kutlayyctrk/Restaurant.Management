@@ -1,0 +1,128 @@
+@model AdminReportsVm
+@{
+    ViewData["Title"] = "Raporlar";
+}
+
+<div class="container-fluid mt-4 px-4">
+    <h2 class="fw-light mb-4">Raporlar</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <div class="fs-3 fw-bold text-primary">@Model.TotalPersonnelCount</div>
+                <small class="text-muted">Toplam Personel</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <div class="fs-3 fw-bold text-success">@Model.TotalProductCount</div>
+                <small class="text-muted">Toplam &#220;r&#252;n</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <div class="fs-3 fw-bold text-info">@Model.TotalCategoryCount</div>
+                <small class="text-muted">Toplam Kategori</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <div class="fs-3 fw-bold text-warning">@Model.TotalSupplierCount</div>
+                <small class="text-muted">Toplam Tedarik&#231;i</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <div class="fs-3 fw-bold text-secondary">@Model.TotalTableCount</div>
+                <small class="text-muted">Toplam Masa</small>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <div class="fs-3 fw-bold text-dark">@Model.TotalMenuCount</div>
+                <small class="text-muted">Toplam Men&#252;</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="fw-light mb-2">Bug&#252;nk&#252; Ciro</h5>
+                <div class="fs-2 fw-bold text-success">@Model.TodayRevenue.ToString("C2", new System.Globalization.CultureInfo("tr-TR"))</div>
+                <small class="text-muted">@DateTime.Today.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</small>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="fw-light mb-2">Aktif Sipari&#351;ler (Mutfakta)</h5>
+                <div class="fs-2 fw-bold text-danger">@Model.ActiveOrderCount</div>
+                <small class="text-muted">&#350;u an mutfa&#287;a g&#246;nderilmi&#351; sipari&#351;ler</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h5 class="fw-light mb-3">Tarih Aral&#305;&#287;&#305;na G&#246;re Sipari&#351; Raporu</h5>
+            <form method="get" asp-action="Reports" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Ba&#351;lang&#305;&#231; Tarihi</label>
+                    <input type="date" name="startDate" class="form-control"
+                           value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Biti&#351; Tarihi</label>
+                    <input type="date" name="endDate" class="form-control"
+                           value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary px-4">Filtrele</button>
+                    <a asp-action="Reports" class="btn btn-outline-secondary ms-2">Temizle</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.StartDate.HasValue || Model.EndDate.HasValue)
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 p-4">
+                    <h6 class="fw-light text-muted mb-1">Sat&#305;&#351; Sipari&#351;leri</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fs-4 fw-bold text-primary">@Model.FilteredSaleOrderCount</span>
+                            <small class="text-muted ms-1">sipari&#351;</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-5 fw-bold text-success">@Model.FilteredSaleTotalRevenue.ToString("C2", new System.Globalization.CultureInfo("tr-TR"))</span>
+                            <br /><small class="text-muted">toplam gelir</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 p-4">
+                    <h6 class="fw-light text-muted mb-1">Al&#305;m Sipari&#351;leri</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fs-4 fw-bold text-primary">@Model.FilteredPurchaseOrderCount</span>
+                            <small class="text-muted ms-1">sipari&#351;</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-5 fw-bold text-danger">@Model.FilteredPurchaseTotalCost.ToString("C2", new System.Globalization.CultureInfo("tr-TR"))</span>
+                            <br /><small class="text-muted">toplam maliyet</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info border-0 shadow-sm">
+            Tarih aral&#305;&#287;&#305; se&#231;erek sat&#305;&#351; ve al&#305;m sipari&#351; raporlar&#305;n&#305; g&#246;r&#252;nt&#252;leyebilirsiniz.
+        </div>
+    }
+</div>
