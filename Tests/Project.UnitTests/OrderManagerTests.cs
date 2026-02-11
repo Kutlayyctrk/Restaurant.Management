@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -288,7 +288,7 @@ namespace Project.UnitTests
         [Fact]
         public async Task UpdateAsync_WhenDetailRemoved_CreatesDeletionStockActionAndUpdatesRepository()
         {
-            // Hazýrlýk
+            // HazÄ±rlÄ±k
             Mock<IOrderRepository> orderRepoMock = new Mock<IOrderRepository>();
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();

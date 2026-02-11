@@ -1,4 +1,4 @@
-using AspNetCoreGeneratedDocument;
+ï»¿using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -74,10 +74,10 @@ namespace Project.UI.Areas.Manager.Controllers
 
             string[] filterRoles = filter switch
             {
-                PersonnelFilterType.Mutfak => new[] { "Mutfak Sefi", "Ascý", "Ascý Yardýmcýsý" },
+                PersonnelFilterType.Mutfak => new[] { "Mutfak Sefi", "AscÄ±", "AscÄ± YardÄ±mcÄ±sÄ±" },
                 PersonnelFilterType.Salon => new[] { "Garson", "Komi" },
-                PersonnelFilterType.Yönetim => new[] { "Insan Kaynaklari Muduru", "Restaurant Muduru", "Idari Personel" },
-                PersonnelFilterType.Hizmet => new[] { "Temizlikçi", "Bulaþýkçý" },
+                PersonnelFilterType.YÃ¶netim => new[] { "Insan Kaynaklari Muduru", "Restaurant Muduru", "Idari Personel" },
+                PersonnelFilterType.Hizmet => new[] { "TemizlikÃ§i", "BulaÅŸÄ±kÃ§Ä±" },
                 _ => Array.Empty<string>()
             };
 
@@ -156,7 +156,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result userResult = await _appUserManager.CreateAsync(userDto);
             if (!userResult.IsSuccess)
             {
-                ModelState.AddModelError("", "Kullanýcý eklenemedi. Lütfen kullanýcý adý, email ve þifreyi kontrol edin.");
+                ModelState.AddModelError("", "KullanÄ±cÄ± eklenemedi. LÃ¼tfen kullanÄ±cÄ± adÄ±, email ve ÅŸifreyi kontrol edin.");
                 List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
                 vm.Roles = roles.Select(r => new SelectListItem
                 {
@@ -171,7 +171,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (createdUser == null)
             {
-                ModelState.AddModelError("", "Kullanýcý eklenmiþ gibi görünüyor ama bulunamadý. Lütfen tekrar deneyin.");
+                ModelState.AddModelError("", "KullanÄ±cÄ± eklenmiÅŸ gibi gÃ¶rÃ¼nÃ¼yor ama bulunamadÄ±. LÃ¼tfen tekrar deneyin.");
                 List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
                 vm.Roles = roles.Select(r => new SelectListItem
                 {
@@ -194,7 +194,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result profileResult = await _appUserProfileManager.CreateAsync(profileDto);
             if (!profileResult.IsSuccess)
             {
-                ModelState.AddModelError("", "Profil eklenemedi. Lütfen tüm alanlarý kontrol edin.");
+                ModelState.AddModelError("", "Profil eklenemedi. LÃ¼tfen tÃ¼m alanlarÄ± kontrol edin.");
                 List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
                 vm.Roles = roles.Select(r => new SelectListItem
                 {
@@ -209,7 +209,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 AppUserRoleDTO existingRole = await _appUserRoleManager.GetByCompositeKeyAsync(createdUser.Id, vm.SelectedRoleId);
                 if (existingRole != null)
                 {
-                    ModelState.AddModelError("", "Bu kullanýcýya bu rol zaten atanmýþ.");
+                    ModelState.AddModelError("", "Bu kullanÄ±cÄ±ya bu rol zaten atanmÄ±ÅŸ.");
                     List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
                     vm.Roles = roles.Select(r => new SelectListItem
                     {
@@ -227,7 +227,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 Result roleResult = await _appUserRoleManager.CreateAsync(roleDto);
                 if (!roleResult.IsSuccess)
                 {
-                    ModelState.AddModelError("", "Rol atanamadý. Lütfen rol seçimini kontrol edin.");
+                    ModelState.AddModelError("", "Rol atanamadÄ±. LÃ¼tfen rol seÃ§imini kontrol edin.");
                     List<AppRoleDTO> roles = await _appRoleManager.GetAllAsync();
                     vm.Roles = roles.Select(r => new SelectListItem
                     {
@@ -238,7 +238,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 }
             }
 
-            TempData["Success"] = "Personel baþarýyla eklendi.";
+            TempData["Success"] = "Personel baÅŸarÄ±yla eklendi.";
             return RedirectToAction("PersonnelManagement");
         }
         [HttpGet]
@@ -335,7 +335,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 });
             }
 
-            TempData["Success"] = "Personel baþarýyla güncellendi.";
+            TempData["Success"] = "Personel baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("PersonnelManagement");
         }
         [HttpPost]
@@ -345,11 +345,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _appUserManager.SoftDeleteByIdAsync(id);
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Personel pasife alýndý.";
+                TempData["Success"] = "Personel pasife alÄ±ndÄ±.";
             }
             else
             {
-                TempData["Error"] = "Personel pasife alýnamadý.";
+                TempData["Error"] = "Personel pasife alÄ±namadÄ±.";
             }
             return RedirectToAction("PersonnelManagement");
         }
@@ -359,7 +359,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _appUserManager.HardDeleteByIdAsync(id);
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Personel kalýcý olarak silindi.";
+                TempData["Success"] = "Personel kalÄ±cÄ± olarak silindi.";
             }
             else
             {
@@ -388,7 +388,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Rol baþarýyla eklendi.";
+                TempData["Success"] = "Rol baÅŸarÄ±yla eklendi.";
                 return RedirectToAction("PersonnelManagement");
             }
 
@@ -424,7 +424,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 AppRoleDTO role = await _appRoleManager.GetByIdAsync(id);
                 if (role == null)
                 {
-                    TempData["Error"] = "Silinmek istenen rol bulunamadý.";
+                    TempData["Error"] = "Silinmek istenen rol bulunamadÄ±.";
                     return RedirectToAction("DeleteRole");
                 }
                 Result result = await _appRoleManager.SoftDeleteByIdAsync(role.Id);
@@ -433,11 +433,11 @@ namespace Project.UI.Areas.Manager.Controllers
 
                 if (result.IsSuccess)
                 {
-                    TempData["Success"] = "Rol baþarýyla silindi.";
+                    TempData["Success"] = "Rol baÅŸarÄ±yla silindi.";
                 }
                 else if (result.Status == OperationStatus.Failed)
                 {
-                    TempData["Error"] = "Rol silinemedi. Bu role baðlý kullanýcýlar olabilir.";
+                    TempData["Error"] = "Rol silinemedi. Bu role baÄŸlÄ± kullanÄ±cÄ±lar olabilir.";
                 }
                 else
                 {
@@ -636,16 +636,15 @@ namespace Project.UI.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public async Task<IActionResult> AddProduct(ProductCreateVm vm)
         {
          
             if (!ModelState.IsValid || vm.CategoryId < 1 || vm.UnitId < 1)
             {
                 if (vm.CategoryId < 1)
-                    ModelState.AddModelError("CategoryId", "Kategori seçimi zorunludur.");
+                    ModelState.AddModelError("CategoryId", "Kategori seÃ§imi zorunludur.");
                 if (vm.UnitId < 1)
-                    ModelState.AddModelError("UnitId", "Birim seçimi zorunludur.");
+                    ModelState.AddModelError("UnitId", "Birim seÃ§imi zorunludur.");
 
                 List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
                 List<UnitDTO> units = await _unitManager.GetAllAsync();
@@ -669,7 +668,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _productManager.CreateAsync(dto);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Ürün eklenemedi.");
+                ModelState.AddModelError("", "ÃœrÃ¼n eklenemedi.");
                 List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
                 List<UnitDTO> units = await _unitManager.GetAllAsync();
                 ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName");
@@ -677,7 +676,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Ürün baþarýyla eklendi.";
+            TempData["Success"] = "ÃœrÃ¼n baÅŸarÄ±yla eklendi.";
             return RedirectToAction("ProductManagement");
         }
         [HttpGet]
@@ -740,7 +739,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _productManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Ürün güncellenemedi.");
+                ModelState.AddModelError("", "ÃœrÃ¼n gÃ¼ncellenemedi.");
                 List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
                 List<UnitDTO> units = await _unitManager.GetAllAsync();
                 ViewBag.CategoryList = new SelectList(categories, "Id", "CategoryName", vm.CategoryId);
@@ -748,7 +747,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Ürün baþarýyla güncellendi.";
+            TempData["Success"] = "ÃœrÃ¼n baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("ProductManagement");
         }
 
@@ -761,7 +760,7 @@ namespace Project.UI.Areas.Manager.Controllers
             ProductDTO original = await _productManager.GetByIdAsync(id);
             if (original == null)
             {
-                TempData["Error"] = "Ürün bulunamadý.";
+                TempData["Error"] = "ÃœrÃ¼n bulunamadÄ±.";
                 return RedirectToAction("ProductManagement");
             }
 
@@ -786,9 +785,9 @@ namespace Project.UI.Areas.Manager.Controllers
 
             Result result = await _productManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
-                TempData["Error"] = "Ürün aktifleþtirilemedi.";
+                TempData["Error"] = "ÃœrÃ¼n aktifleÅŸtirilemedi.";
             else
-                TempData["Success"] = "Ürün aktifleþtirildi.";
+                TempData["Success"] = "ÃœrÃ¼n aktifleÅŸtirildi.";
             return RedirectToAction("ProductManagement");
         }
 
@@ -797,9 +796,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _productManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Ürün pasife alýnamadý.";
+                TempData["Error"] = "ÃœrÃ¼n pasife alÄ±namadÄ±.";
             else
-                TempData["Success"] = "Ürün pasife alýndý.";
+                TempData["Success"] = "ÃœrÃ¼n pasife alÄ±ndÄ±.";
             return RedirectToAction("ProductManagement");
         }
 
@@ -808,9 +807,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _productManager.HardDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Ürün silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "ÃœrÃ¼n silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Ürün kalýcý olarak silindi.";
+                TempData["Success"] = "ÃœrÃ¼n kalÄ±cÄ± olarak silindi.";
             return RedirectToAction("ProductManagement");
         }
         [HttpGet]
@@ -855,7 +854,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Birim baþarýyla eklendi.";
+            TempData["Success"] = "Birim baÅŸarÄ±yla eklendi.";
             return RedirectToAction("UnitManagement");
         }
 
@@ -895,11 +894,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _unitManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Birim güncellenemedi.");
+                ModelState.AddModelError("", "Birim gÃ¼ncellenemedi.");
                 return View(vm);
             }
 
-            TempData["Success"] = "Birim baþarýyla güncellendi.";
+            TempData["Success"] = "Birim baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("UnitManagement");
         }
 
@@ -925,9 +924,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _unitManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Birim silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "Birim silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Birim baþarýyla Pasife Alýndý.";
+                TempData["Success"] = "Birim baÅŸarÄ±yla Pasife AlÄ±ndÄ±.";
 
             return RedirectToAction("UnitManagement");
         }
@@ -938,9 +937,9 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _unitManager.HardDeleteByIdAsync(id);
             if(!result.IsSuccess)
             {
-                TempData["Error"] = "Birim Pasife alýnamadý";
+                TempData["Error"] = "Birim Pasife alÄ±namadÄ±";
             }
-            TempData["Success"] = "Birim  baþarýyla Silindi.";
+            TempData["Success"] = "Birim  baÅŸarÄ±yla Silindi.";
             return RedirectToAction("UnitManagement");
         }
         [HttpGet]
@@ -1035,7 +1034,7 @@ namespace Project.UI.Areas.Manager.Controllers
             List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
             List<SelectListItem> parentCategoryList = new List<SelectListItem>
             {
-                new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+                new SelectListItem { Value = "", Text = "Ãœst Kategori SeÃ§me" }
             };
             parentCategoryList.AddRange(allCategories.Select(c => new SelectListItem
             {
@@ -1060,7 +1059,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
                 List<SelectListItem> parentCategoryList = new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+                    new SelectListItem { Value = "", Text = "Ãœst Kategori SeÃ§me" }
                 };
                 parentCategoryList.AddRange(allCategories.Select(c => new SelectListItem
                 {
@@ -1081,11 +1080,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _categoryManager.CreateAsync(dto);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Kategori eklenemedi. Lütfen tüm alanlarý kontrol edin.");
+                ModelState.AddModelError("", "Kategori eklenemedi. LÃ¼tfen tÃ¼m alanlarÄ± kontrol edin.");
                 List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
                 List<SelectListItem> parentCategoryList = new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+                    new SelectListItem { Value = "", Text = "Ãœst Kategori SeÃ§me" }
                 };
                 parentCategoryList.AddRange(allCategories.Select(c => new SelectListItem
                 {
@@ -1096,7 +1095,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Kategori baþarýyla eklendi.";
+            TempData["Success"] = "Kategori baÅŸarÄ±yla eklendi.";
             return RedirectToAction("CategoryManagement");
         }
 
@@ -1111,7 +1110,7 @@ namespace Project.UI.Areas.Manager.Controllers
             List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
             List<SelectListItem> parentCategoryList = new List<SelectListItem>
             {
-                new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+                new SelectListItem { Value = "", Text = "Ãœst Kategori SeÃ§me" }
             };
             parentCategoryList.AddRange(allCategories
                 .Where(c => c.Id != id)
@@ -1157,11 +1156,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _categoryManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Kategori güncellenemedi. Lütfen tüm alanlarý kontrol edin.");
+                ModelState.AddModelError("", "Kategori gÃ¼ncellenemedi. LÃ¼tfen tÃ¼m alanlarÄ± kontrol edin.");
                 List<CategoryDTO> allCategories = await _categoryManager.GetAllAsync();
                 List<SelectListItem> parentCategoryList = new List<SelectListItem>
         {
-            new SelectListItem { Value = "", Text = "Üst Kategori Seçme" }
+            new SelectListItem { Value = "", Text = "Ãœst Kategori SeÃ§me" }
         };
                 parentCategoryList.AddRange(allCategories
                     .Where(c => c.Id != vm.Id)
@@ -1174,7 +1173,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Kategori baþarýyla güncellendi.";
+            TempData["Success"] = "Kategori baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("CategoryManagement");
         }
 
@@ -1244,9 +1243,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _categoryManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Kategori Pasife alýnamadý.";
+                TempData["Error"] = "Kategori Pasife alÄ±namadÄ±.";
             else
-                TempData["Success"] = "Kategori baþarýyla Pasife alýndý.";
+                TempData["Success"] = "Kategori baÅŸarÄ±yla Pasife alÄ±ndÄ±.";
             return RedirectToAction("CategoryManagement");
         }
 
@@ -1259,7 +1258,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 TempData["Error"] = "Kategori Silinemedi";
 
             }
-            TempData["Success"] = "Kategori Silme baþarýlý";
+            TempData["Success"] = "Kategori Silme baÅŸarÄ±lÄ±";
             return RedirectToAction("CategoryManagement");
         }
 
@@ -1304,11 +1303,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _menuManager.CreateAsync(dto);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Menü eklenemedi. Lütfen tüm alanlarý kontrol edin.");
+                ModelState.AddModelError("", "MenÃ¼ eklenemedi. LÃ¼tfen tÃ¼m alanlarÄ± kontrol edin.");
                 return View(vm);
             }
 
-            TempData["Success"] = "Menü baþarýyla eklendi.";
+            TempData["Success"] = "MenÃ¼ baÅŸarÄ±yla eklendi.";
             return RedirectToAction("MenuManagement");
         }
 
@@ -1352,11 +1351,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _menuManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Menü güncellenemedi. Lütfen tüm alanlarý kontrol edin.");
+                ModelState.AddModelError("", "MenÃ¼ gÃ¼ncellenemedi. LÃ¼tfen tÃ¼m alanlarÄ± kontrol edin.");
                 return View(vm);
             }
 
-            TempData["Success"] = "Menü baþarýyla güncellendi.";
+            TempData["Success"] = "MenÃ¼ baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("MenuManagement");
         }
 
@@ -1365,9 +1364,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _menuManager.HardDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Menü silinemedi.";
+                TempData["Error"] = "MenÃ¼ silinemedi.";
             else
-                TempData["Success"] = "Menü baþarýyla silindi.";
+                TempData["Success"] = "MenÃ¼ baÅŸarÄ±yla silindi.";
             return RedirectToAction("MenuManagement");
         }
 
@@ -1376,9 +1375,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _menuManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Menü pasife alýnamadý.";
+                TempData["Error"] = "MenÃ¼ pasife alÄ±namadÄ±.";
             else
-                TempData["Success"] = "Menü baþarýyla pasife alýndý.";
+                TempData["Success"] = "MenÃ¼ baÅŸarÄ±yla pasife alÄ±ndÄ±.";
             return RedirectToAction("MenuManagement");
         }
        
@@ -1495,7 +1494,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _menuProductManager.CreateAsync(dto);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Menü ürünü eklenemedi.");
+                ModelState.AddModelError("", "MenÃ¼ Ã¼rÃ¼nÃ¼ eklenemedi.");
                 List<MenuDTO> menus = await _menuManager.GetAllAsync();
                 List<ProductDTO> products = await _productManager.GetAllAsync();
                 vm.MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList();
@@ -1503,7 +1502,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Menü ürünü baþarýyla eklendi.";
+            TempData["Success"] = "MenÃ¼ Ã¼rÃ¼nÃ¼ baÅŸarÄ±yla eklendi.";
             return RedirectToAction("MenuProductManagement");
         }
 
@@ -1559,7 +1558,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _menuProductManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Menü ürünü güncellenemedi.");
+                ModelState.AddModelError("", "MenÃ¼ Ã¼rÃ¼nÃ¼ gÃ¼ncellenemedi.");
                 List<MenuDTO> menus = await _menuManager.GetAllAsync();
                 List<ProductDTO> products = await _productManager.GetAllAsync();
                 vm.MenuList = menus.Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.MenuName }).ToList();
@@ -1567,7 +1566,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Menü ürünü baþarýyla güncellendi.";
+            TempData["Success"] = "MenÃ¼ Ã¼rÃ¼nÃ¼ baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("MenuProductManagement");
         }
         [HttpPost]
@@ -1575,9 +1574,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _menuProductManager.HardDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Menü ürünü silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "MenÃ¼ Ã¼rÃ¼nÃ¼ silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Menü ürünü kalýcý olarak silindi.";
+                TempData["Success"] = "MenÃ¼ Ã¼rÃ¼nÃ¼ kalÄ±cÄ± olarak silindi.";
             return RedirectToAction("MenuProductManagement");
         }
 
@@ -1586,9 +1585,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _menuProductManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Menü ürünü pasife alýnamadý.";
+                TempData["Error"] = "MenÃ¼ Ã¼rÃ¼nÃ¼ pasife alÄ±namadÄ±.";
             else
-                TempData["Success"] = "Menü ürünü pasife alýndý.";
+                TempData["Success"] = "MenÃ¼ Ã¼rÃ¼nÃ¼ pasife alÄ±ndÄ±.";
             return RedirectToAction("MenuProductManagement");
         }
 
@@ -1733,7 +1732,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Alým faturasý baþarýyla eklendi.";
+            TempData["Success"] = "AlÄ±m faturasÄ± baÅŸarÄ±yla eklendi.";
             return RedirectToAction("PurchaseInvoiceList");
         }
         [HttpGet]
@@ -1744,7 +1743,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return NotFound();
             if (!invoice.SupplierId.HasValue)
             {
-                TempData["Error"] = "Alým faturasý için tedarikçi zorunludur. Lütfen eksik veriyi tamamlayýn.";
+                TempData["Error"] = "AlÄ±m faturasÄ± iÃ§in tedarikÃ§i zorunludur. LÃ¼tfen eksik veriyi tamamlayÄ±n.";
                 return RedirectToAction("PurchaseInvoiceList");
             }
             List<SupplierDTO> suppliers = await _supplierManager.GetAllAsync();
@@ -1826,12 +1825,12 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Fatura güncellenemedi.");
+                ModelState.AddModelError("", "Fatura gÃ¼ncellenemedi.");
                 await PopulatePurchaseLists(vm);
                 return View(vm);
             }
 
-            TempData["Success"] = "Alým faturasý baþarýyla güncellendi.";
+            TempData["Success"] = "AlÄ±m faturasÄ± baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("PurchaseInvoiceList");
         }
         [HttpPost]
@@ -1841,7 +1840,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result softResult = await _orderManager.SoftDeleteByIdAsync(id);
             if (!softResult.IsSuccess)
             {
-                TempData["Error"] = "Fatura silinemedi (soft delete baþarýsýz).";
+                TempData["Error"] = "Fatura silinemedi (soft delete baÅŸarÄ±sÄ±z).";
                 return RedirectToAction("EditPurchaseInvoice", new { id });
             }
 
@@ -1849,11 +1848,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result hardResult = await _orderManager.HardDeleteByIdAsync(id);
             if (!hardResult.IsSuccess)
             {
-                TempData["Error"] = "Fatura silinemedi (hard delete baþarýsýz).";
+                TempData["Error"] = "Fatura silinemedi (hard delete baÅŸarÄ±sÄ±z).";
                 return RedirectToAction("EditPurchaseInvoice", new { id });
             }
 
-            TempData["Success"] = "Fatura baþarýyla silindi.";
+            TempData["Success"] = "Fatura baÅŸarÄ±yla silindi.";
             return RedirectToAction("PurchaseInvoiceList");
         }
         [HttpGet]
@@ -1916,7 +1915,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (!invoice.TableId.HasValue || !invoice.WaiterId.HasValue)
             {
-                TempData["Error"] = "Satýþ faturasý için masa ve garson zorunludur. Lütfen eksik veriyi tamamlayýn.";
+                TempData["Error"] = "SatÄ±ÅŸ faturasÄ± iÃ§in masa ve garson zorunludur. LÃ¼tfen eksik veriyi tamamlayÄ±n.";
                 return RedirectToAction("SaleInvoiceList");
             }
 
@@ -1984,12 +1983,12 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Satýþ faturasý güncellenirken bir hata oluþtu.");
+                ModelState.AddModelError("", "SatÄ±ÅŸ faturasÄ± gÃ¼ncellenirken bir hata oluÅŸtu.");
                 await PopulateSaleLists(vm);
                 return View(vm);
             }
 
-            TempData["Success"] = "Satýþ faturasý baþarýyla güncellendi.";
+            TempData["Success"] = "SatÄ±ÅŸ faturasÄ± baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("SaleInvoiceList");
         }
         [HttpPost]
@@ -1998,18 +1997,18 @@ namespace Project.UI.Areas.Manager.Controllers
             Result softResult = await _orderManager.SoftDeleteByIdAsync(id);
             if (!softResult.IsSuccess)
             {
-                TempData["Error"] = "Fatura silinemedi (soft delete baþarýsýz).";
+                TempData["Error"] = "Fatura silinemedi (soft delete baÅŸarÄ±sÄ±z).";
                 return RedirectToAction("EditSaleInvoice", new { id });
             }
 
             Result hardResult = await _orderManager.HardDeleteByIdAsync(id);
             if (!hardResult.IsSuccess)
             {
-                TempData["Error"] = "Fatura silinemedi (hard delete baþarýsýz).";
+                TempData["Error"] = "Fatura silinemedi (hard delete baÅŸarÄ±sÄ±z).";
                 return RedirectToAction("EditSaleInvoice", new { id });
             }
 
-            TempData["Success"] = "Fatura baþarýyla silindi.";
+            TempData["Success"] = "Fatura baÅŸarÄ±yla silindi.";
             return RedirectToAction("SaleInvoiceList");
         }
         [HttpGet]
@@ -2076,11 +2075,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _supplierManager.CreateAsync(dto);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Tedarikçi eklenemedi. Lütfen bilgileri kontrol edin.");
+                ModelState.AddModelError("", "TedarikÃ§i eklenemedi. LÃ¼tfen bilgileri kontrol edin.");
                 return View(vm);
             }
 
-            TempData["Success"] = "Tedarikçi baþarýyla eklendi.";
+            TempData["Success"] = "TedarikÃ§i baÅŸarÄ±yla eklendi.";
             return RedirectToAction("SupplierManagement");
         }
 
@@ -2127,11 +2126,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _supplierManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Tedarikçi güncellenemedi. Lütfen bilgileri kontrol edin.");
+                ModelState.AddModelError("", "TedarikÃ§i gÃ¼ncellenemedi. LÃ¼tfen bilgileri kontrol edin.");
                 return View(vm);
             }
 
-            TempData["Success"] = "Tedarikçi baþarýyla güncellendi.";
+            TempData["Success"] = "TedarikÃ§i baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("SupplierManagement");
         }
 
@@ -2141,9 +2140,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _supplierManager.HardDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Tedarikçi silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "TedarikÃ§i silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Tedarikçi baþarýyla silindi.";
+                TempData["Success"] = "TedarikÃ§i baÅŸarÄ±yla silindi.";
 
             return RedirectToAction("SupplierManagement");
         }
@@ -2153,9 +2152,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _supplierManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Tedarikçi silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "TedarikÃ§i silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Tedarikçi baþarýyla silindi.";
+                TempData["Success"] = "TedarikÃ§i baÅŸarÄ±yla silindi.";
             return RedirectToAction("SupplierManagement");
         }
         [HttpGet]
@@ -2228,7 +2227,7 @@ namespace Project.UI.Areas.Manager.Controllers
                 return View(vm);
             }
 
-            TempData["Success"] = "Masa baþarýyla eklendi.";
+            TempData["Success"] = "Masa baÅŸarÄ±yla eklendi.";
             return RedirectToAction("TableManagement");
         }
 
@@ -2271,11 +2270,11 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _tableManager.UpdateAsync(original, updated);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Masa güncellenemedi.");
+                ModelState.AddModelError("", "Masa gÃ¼ncellenemedi.");
                 return View(vm);
             }
 
-            TempData["Success"] = "Masa baþarýyla güncellendi.";
+            TempData["Success"] = "Masa baÅŸarÄ±yla gÃ¼ncellendi.";
             return RedirectToAction("TableManagement");
         }
 
@@ -2285,9 +2284,9 @@ namespace Project.UI.Areas.Manager.Controllers
 
             Result result = await _tableManager.HardDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Masa silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "Masa silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Masa baþarýyla silindi.";
+                TempData["Success"] = "Masa baÅŸarÄ±yla silindi.";
 
             return RedirectToAction("TableManagement");
         }
@@ -2297,9 +2296,9 @@ namespace Project.UI.Areas.Manager.Controllers
         {
             Result result = await _tableManager.SoftDeleteByIdAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Masa silinemedi. Ýliþkili kayýtlar olabilir.";
+                TempData["Error"] = "Masa silinemedi. Ä°liÅŸkili kayÄ±tlar olabilir.";
             else
-                TempData["Success"] = "Masa baþarýyla silindi.";
+                TempData["Success"] = "Masa baÅŸarÄ±yla silindi.";
             return RedirectToAction("TableManagement");
         }
     }

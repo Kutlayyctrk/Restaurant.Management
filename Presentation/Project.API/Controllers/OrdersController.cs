@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
@@ -8,6 +9,7 @@ using Project.Domain.Enums;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrdersController : ControllerBase
@@ -38,7 +40,7 @@ namespace Project.API.Controllers
         {
             OrderDTO order = await _orderManager.GetByIdAsync(id);
             if (order == null)
-                return NotFound(ApiResponse<OrderDTO>.Fail("Sipariþ bulunamadý."));
+                return NotFound(ApiResponse<OrderDTO>.Fail("SipariÅŸ bulunamadÄ±."));
 
             return Ok(ApiResponse<OrderDTO>.Ok(order));
         }
@@ -62,7 +64,7 @@ namespace Project.API.Controllers
         {
             OrderDTO? order = await _orderManager.GetActiveOrderForTableAsync(tableId);
             if (order == null)
-                return NotFound(ApiResponse<OrderDTO>.Fail("Bu masaya ait aktif sipariþ bulunamadý."));
+                return NotFound(ApiResponse<OrderDTO>.Fail("Bu masaya ait aktif sipariÅŸ bulunamadÄ±."));
 
             return Ok(ApiResponse<OrderDTO>.Ok(order));
         }
@@ -72,23 +74,23 @@ namespace Project.API.Controllers
         {
             Result result = await _orderManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Sipariþ oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"SipariÅŸ oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<OrderDTO>.Ok(dto, "Sipariþ baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<OrderDTO>.Ok(dto, "SipariÅŸ baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}/state")]
         public async Task<IActionResult> ChangeOrderState(int id, [FromQuery] OrderDetailStatus newState)
         {
             await _orderManager.ChangeOrderStateAsync(id, newState);
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Sipariþ durumu güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "SipariÅŸ durumu gÃ¼ncellendi."));
         }
 
         [HttpPut("{id}/close")]
         public async Task<IActionResult> CloseOrder(int id)
         {
             await _orderManager.CloseOrderState(id);
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Sipariþ kapatýldý."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "SipariÅŸ kapatÄ±ldÄ±."));
         }
 
         [HttpDelete("{id}")]
@@ -96,9 +98,9 @@ namespace Project.API.Controllers
         {
             Result result = await _orderManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Sipariþ bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("SipariÅŸ bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Sipariþ silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "SipariÅŸ silindi (soft delete)."));
         }
     }
 }

@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
@@ -7,6 +8,7 @@ using Project.Application.Managers;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class RecipesController : ControllerBase
@@ -30,7 +32,7 @@ namespace Project.API.Controllers
         {
             RecipeDTO recipe = await _recipeManager.GetByIdAsync(id);
             if (recipe == null)
-                return NotFound(ApiResponse<RecipeDTO>.Fail("Reçete bulunamadý."));
+                return NotFound(ApiResponse<RecipeDTO>.Fail("ReÃ§ete bulunamadÄ±."));
 
             return Ok(ApiResponse<RecipeDTO>.Ok(recipe));
         }
@@ -40,9 +42,9 @@ namespace Project.API.Controllers
         {
             Result result = await _recipeManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Reçete oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"ReÃ§ete oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<RecipeDTO>.Ok(dto, "Reçete baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<RecipeDTO>.Ok(dto, "ReÃ§ete baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}")]
@@ -50,13 +52,13 @@ namespace Project.API.Controllers
         {
             RecipeDTO original = await _recipeManager.GetByIdAsync(id);
             if (original == null)
-                return NotFound(ApiResponse<string>.Fail("Reçete bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("ReÃ§ete bulunamadÄ±."));
 
             Result result = await _recipeManager.UpdateAsync(original, dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Reçete güncellenemedi. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"ReÃ§ete gÃ¼ncellenemedi. Durum: {result}"));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Reçete baþarýyla güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "ReÃ§ete baÅŸarÄ±yla gÃ¼ncellendi."));
         }
 
         [HttpDelete("{id}")]
@@ -64,9 +66,9 @@ namespace Project.API.Controllers
         {
             Result result = await _recipeManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Reçete bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("ReÃ§ete bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Reçete silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "ReÃ§ete silindi (soft delete)."));
         }
     }
 }

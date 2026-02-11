@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Project.API.Models;
@@ -8,6 +9,7 @@ using Project.Application.Managers;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -47,7 +49,7 @@ namespace Project.API.Controllers
         {
             ProductDTO product = await _productManager.GetByIdAsync(id);
             if (product == null)
-                return NotFound(ApiResponse<ProductDTO>.Fail("Ürün bulunamadý."));
+                return NotFound(ApiResponse<ProductDTO>.Fail("ÃœrÃ¼n bulunamadÄ±."));
 
             return Ok(ApiResponse<ProductDTO>.Ok(product));
         }
@@ -78,9 +80,9 @@ namespace Project.API.Controllers
         {
             Result result = await _productManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Ürün oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"ÃœrÃ¼n oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<ProductDTO>.Ok(dto, "Ürün baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<ProductDTO>.Ok(dto, "ÃœrÃ¼n baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}")]
@@ -88,13 +90,13 @@ namespace Project.API.Controllers
         {
             ProductDTO original = await _productManager.GetByIdAsync(id);
             if (original == null)
-                return NotFound(ApiResponse<string>.Fail("Ürün bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("ÃœrÃ¼n bulunamadÄ±."));
 
             Result result = await _productManager.UpdateAsync(original, dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Ürün güncellenemedi. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"ÃœrÃ¼n gÃ¼ncellenemedi. Durum: {result}"));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Ürün baþarýyla güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "ÃœrÃ¼n baÅŸarÄ±yla gÃ¼ncellendi."));
         }
 
         [HttpDelete("{id}")]
@@ -102,9 +104,9 @@ namespace Project.API.Controllers
         {
             Result result = await _productManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Ürün bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("ÃœrÃ¼n bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Ürün silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "ÃœrÃ¼n silindi (soft delete)."));
         }
 
         [HttpDelete("{id}/hard")]
@@ -112,16 +114,16 @@ namespace Project.API.Controllers
         {
             Result result = await _productManager.HardDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Ürün bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("ÃœrÃ¼n bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Ürün kalýcý olarak silindi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "ÃœrÃ¼n kalÄ±cÄ± olarak silindi."));
         }
 
         [HttpPost("{id}/increase-stock")]
         public async Task<IActionResult> IncreaseStock(int id, [FromQuery] decimal quantity)
         {
             await _productManager.IncreaseStockAsync(id, quantity);
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Stok artýrýldý."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Stok artÄ±rÄ±ldÄ±."));
         }
     }
 }

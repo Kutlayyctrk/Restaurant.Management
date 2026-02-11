@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server" />
   <img src="https://img.shields.io/badge/EF%20Core-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="EF Core 8" />
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/JWT-Bearer-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" />
   <img src="https://img.shields.io/badge/Serilog-Logging-3E3E3E?style=for-the-badge" alt="Serilog" />
 </p>
 
@@ -31,7 +32,7 @@
 | **Web UI** | ASP.NET Core MVC + Areas, Razor Views, HTML / CSS / JavaScript |
 | **REST API** | ASP.NET Core Web API, Swagger / OpenAPI |
 | **Database** | SQL Server, Entity Framework Core 8 (Code First) |
-| **Auth** | ASP.NET Core Identity (cookie-based) |
+| **Auth** | ASP.NET Core Identity (cookie-based UI), JWT Bearer Token (API) |
 | **Validation** | FluentValidation 12 |
 | **Mapping** | AutoMapper 13 |
 | **Logging** | Serilog (Console + Rolling File) |
@@ -191,6 +192,51 @@ Her iki presentation katmaninda ayri middleware:
 - `429 Too Many Requests` response
 - Queue destegi (10 bekleme kapasitesi)
 
+### JWT Authentication -- API
+
+API katmani **JWT Bearer Token** ile korunur. Tum controller endpointleri `[Authorize]` attribute ile guvenlik altindadir.
+
+**Akis:**
+
+```
+1. POST /api/auth/login  -->  { "userName": "...", "password": "..." }
+2. Response: { token, userName, email, roles, expiration }
+3. Sonraki istekler:  Authorization: Bearer <token>
+```
+
+**Swagger UI Kullanimi:**
+- Swagger sayfasinda `POST /api/auth/login` ile giris yapin
+- Donen `token` degerini kopyalayin
+- Sag ustteki **Authorize** butonuna tiklayin ve token'i yapistirinz
+- Artik tum korunmus endpointlere erisebilirsiniz
+
+| Bilesen | Dosya |
+|---------|-------|
+| JWT Ayarlari | `API/Models/JwtSettings.cs` |
+| Token Uretimi | `API/Services/TokenService.cs` |
+| Auth Controller | `API/Controllers/AuthController.cs` |
+| Konfigurasyon | `appsettings.json` --> `JwtSettings` bolumu |
+
+> **Guvenlik:** `SecretKey` degeri User Secrets ile yonetilir, source code'a dahil edilmez.
+
+### User Secrets -- Hassas Bilgi Yonetimi
+
+SMTP credentiallari ve JWT SecretKey gibi hassas bilgiler **User Secrets** ile yonetilir:
+
+```bash
+# Project.UI -- SMTP credentiallari
+cd Presentation/Project.UI
+dotnet user-secrets set "Smtp:UserName" "your-email@gmail.com"
+dotnet user-secrets set "Smtp:Password" "your-app-password"
+dotnet user-secrets set "Smtp:FromEmail" "your-email@gmail.com"
+
+# Project.API -- JWT SecretKey
+cd Presentation/Project.API
+dotnet user-secrets set "JwtSettings:SecretKey" "your-secure-secret-key-min-32-chars"
+```
+
+> **Docker ortaminda** bu degerler `docker-compose.yml` icindeki environment variable'lar ile saglanir.
+
 ---
 
 ## Kurulum ve Calistirma
@@ -294,7 +340,7 @@ E-posta aktivasyon akisi icin SMTP yapilandirmasi:
 | Implementasyon | `OuterInfrastructure/Tools/MailSender.cs` |
 | Sozlesme | `Application/MailService/IMailSender.cs` |
 
-> **Guvenlik:** Productionda SMTP credentiallari User Secrets veya environment variable ile yonetilmelidir. Mevcut yapi demo amaclidir.
+> **Guvenlik:** SMTP credentiallari **User Secrets** ile yonetilmektedir. Docker ortaminda environment variable olarak saglanir.
 
 ---
 
@@ -304,29 +350,29 @@ Proje ogrenme odakli gelistirildigi icin tespit edilen teknik borclar:
 
 ### Yuksek Oncelik
 
-| # | Borc | Aciklama | Etki |
-|---|------|----------|------|
-| 1 | **Domain katmaninda Identity bagimliligi** | Project.Domain icinde Microsoft.AspNetCore.Identity.EntityFrameworkCore paketi var. Onion Architectureda Domain katmani framework-agnostic olmalidir. | Mimari ihlal |
-| 2 | **SMTP credentiallari source codeda** | appsettings.json icinde acik SMTP sifresi. | Guvenlik riski |
-| 3 | **APIde Authorization eksikligi** | API controllerlarinda Authorize attribute yok. Tum endpointler anonim erisime acik. | Guvenlik riski |
+| # | Borc | Aciklama | Etki | Durum |
+|---|------|----------|------|-------|
+| 1 | **Domain katmaninda Identity bagimliligi** | Project.Domain icinde Microsoft.AspNetCore.Identity.EntityFrameworkCore paketi var. Onion Architectureda Domain katmani framework-agnostic olmalidir. | Mimari ihlal | Acik |
+| 2 | ~~SMTP credentiallari source codeda~~ | ~~appsettings.json icinde acik SMTP sifresi.~~ | ~~Guvenlik riski~~ | **Cozuldu** -- User Secrets'a tasindi |
+| 3 | ~~APIde Authorization eksikligi~~ | ~~API controllerlarinda Authorize attribute yok.~~ | ~~Guvenlik riski~~ | **Cozuldu** -- JWT Bearer Token eklendi |
 
 ### Orta Oncelik
 
-| # | Borc | Aciklama | Etki |
-|---|------|----------|------|
-| 4 | **Dusuk test coverage** | Sadece OrderManagerTests ve OrderRepositoryIntegrationTests mevcut. 16+ manager/repo icin test eksik. | Kalite guvencesi |
-| 5 | **Caching tutarsizligi** | ProductsControllerda cache var, diger controllerlarda yok. Cache invalidation stratejisi tanimsiz. | Performans tutarsizligi |
-| 6 | **AutoMapper Core katmaninda** | Mapping konfigurasyonu Applicationda. Bazi mimarilerde sinir katmanlarinda olmasi tercih edilir. | Tartismali mimari karar |
+| # | Borc | Aciklama | Etki | Durum |
+|---|------|----------|------|-------|
+| 4 | **Dusuk test coverage** | Sadece OrderManagerTests ve OrderRepositoryIntegrationTests mevcut. 16+ manager/repo icin test eksik. | Kalite guvencesi | Acik |
+| 5 | **Caching tutarsizligi** | ProductsControllerda cache var, diger controllerlarda yok. Cache invalidation stratejisi tanimsiz. | Performans tutarsizligi | Acik |
+| 6 | **AutoMapper Core katmaninda** | Mapping konfigurasyonu Applicationda. Bazi mimarilerde sinir katmanlarinda olmasi tercih edilir. | Tartismali mimari karar | Acik |
 
 
 ### Dusuk Oncelik
 
-| # | Borc | Aciklama | Etki |
-|---|------|----------|------|
-| 7 | **API versioning yok** | /api/v1/... yapisi tanimsiz. | Ileriye uyumluluk |
-| 8 | **Health check endpoint eksik** | Container senaryolari icin /health yok. | Monitoring |
-| 9 | **Response compression yok** | Compression middleware aktif degil. | Bant genisligi |
-| 10 | **Pagination UIda kullanilmiyor** | Backendde pagination altyapisi hazir ama UI controllerlari tum veriyi cekiyor. | Performans |
+| # | Borc | Aciklama | Etki | Durum |
+|---|------|----------|------|-------|
+| 7 | **API versioning yok** | /api/v1/... yapisi tanimsiz. | Ileriye uyumluluk | Acik |
+| 8 | **Health check endpoint eksik** | Container senaryolari icin /health yok. | Monitoring | Acik |
+| 9 | **Response compression yok** | Compression middleware aktif degil. | Bant genisligi | Acik |
+| 10 | **Pagination UIda kullanilmiyor** | Backendde pagination altyapisi hazir ama UI controllerlari tum veriyi cekiyor. | Performans | Acik |
 
 ---
 
@@ -357,6 +403,7 @@ Restaurant.Management/
 |       +-- Controllers/
 |       +-- Middleware/
 |       +-- Models/
+|       +-- Services/
 |
 +-- Tests/
 |   +-- Project.UnitTests/
@@ -382,6 +429,8 @@ Frontend tasariminda ve dinamik AJAX kullanim senaryolarinda gelistirme surecind
 - **Pagination** ve **Caching** altyapisi ile performans optimizasyonu uygulandi
 - **Rate Limiting** ile API guvenligi saglandi
 - **FluentValidation**, **AutoMapper**, **Identity** kutuphanelerinin surdurulebilir kod yapisina katkilari deneyimlendi
+- **JWT Bearer Token** ile API authentication/authorization saglandi
+- **User Secrets** ile hassas bilgi yonetimi uygulandi
 - **Docker** ile containerization altyapisi hazirlandi
 - **xUnit** + **Moq** ile test yazma pratigi kazanildi
 

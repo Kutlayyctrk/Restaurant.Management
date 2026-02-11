@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
@@ -181,7 +181,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result profileResult = await _appUserProfileManager.CreateAsync(profileDto);
             if (!profileResult.IsSuccess)
             {
-                TempData["Error"] = "Profil oluþturulamadý.";
+                TempData["Error"] = "Profil oluÅŸturulamadÄ±.";
                 return View(vm);
             }
 
@@ -199,13 +199,13 @@ namespace Project.UI.Areas.Manager.Controllers
                 if (!roleResult.IsSuccess)
                 {
                     TempData["Error"] = roleResult.Status == OperationStatus.AlreadyExists
-                        ? "Bu rol zaten atanmýþ."
-                        : "Rol atanamadý.";
+                        ? "Bu rol zaten atanmÄ±ÅŸ."
+                        : "Rol atanamadÄ±.";
                     return View(vm);
                 }
             }
 
-            TempData["Success"] = "Profil baþarýyla tamamlandý.";
+            TempData["Success"] = "Profil baÅŸarÄ±yla tamamlandÄ±.";
             return RedirectToAction("CompleteProfileList");
         }
 
@@ -277,13 +277,13 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["Success"] = "Rol baþarýyla oluþturuldu.";
+                TempData["Success"] = "Rol baÅŸarÄ±yla oluÅŸturuldu.";
                 return RedirectToAction("RoleList");
             }
 
             TempData["Error"] = result.Status == OperationStatus.AlreadyExists
                 ? "Bu rol zaten mevcut."
-                : "Rol oluþturulamadý.";
+                : "Rol oluÅŸturulamadÄ±.";
 
             return View(vm);
         }

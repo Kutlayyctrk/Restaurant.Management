@@ -31,6 +31,10 @@ services:
       - DOTNET_RUNNING_IN_CONTAINER=true
       - ConnectionStrings__OnionDb=Server=sqlserver;Database=OnionArchDb;User Id=sa;Password=DockerSql.2024!;TrustServerCertificate=true;
       - ConnectionStrings__OnionDb_Docker=Server=sqlserver;Database=OnionArchDb;User Id=sa;Password=DockerSql.2024!;TrustServerCertificate=true;
+      - JwtSettings__SecretKey=R3st4ur4ntM4n4g3m3ntD0ck3rS3cr3tK3y2024!@#SuperSecure
+      - JwtSettings__Issuer=RestaurantManagementAPI
+      - JwtSettings__Audience=RestaurantManagementClients
+      - JwtSettings__ExpirationInMinutes=60
     depends_on:
       sqlserver:
         condition: service_healthy

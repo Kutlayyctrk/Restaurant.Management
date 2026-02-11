@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Project.Application.DTOs;
 using Project.Application.Enums;
@@ -20,7 +20,7 @@ namespace Project.UI.Areas.Manager.Controllers
         private readonly IOrderManager _orderManager;
         private readonly IMenuManager _menuManager;
         private readonly IMenuProductManager _menuProductManager;
-        private const int FoodCategoryId = 1; //Kategorilerde yiyecekleri filtrelemek için Yiyecekler AnaKategori Id'sini tutuyorumm
+        private const int FoodCategoryId = 1; //Kategorilerde yiyecekleri filtrelemek iÃ§in Yiyecekler AnaKategori Id'sini tutuyorumm
 
         public KitchenController(IRecipeManager recipeManager, ICategoryManager categoryManager,
                                  IProductManager productManager, IUnitManager unitManager,
@@ -46,7 +46,7 @@ namespace Project.UI.Areas.Manager.Controllers
             return categories.Where(c => c.Id == FoodCategoryId || c.ParentCategoryId == FoodCategoryId).ToList();
         }
 
-        private async Task<List<ProductDTO>> GetFoodProductAsync() //Yiyecek kategorisine ait ürünleri getiriyorum
+        private async Task<List<ProductDTO>> GetFoodProductAsync() //Yiyecek kategorisine ait Ã¼rÃ¼nleri getiriyorum
         {
             List<ProductDTO> products = await _productManager.GetAllAsync();
             List<CategoryDTO> categories = await _categoryManager.GetAllAsync();
@@ -127,14 +127,14 @@ namespace Project.UI.Areas.Manager.Controllers
             }
             if (!await IsFoodCategoryAsync(vm.CategoryId))
             {
-                ModelState.AddModelError("", "Sadece yemek kategorisine ait ürünler seçilebilir.");
+                ModelState.AddModelError("", "Sadece yemek kategorisine ait Ã¼rÃ¼nler seÃ§ilebilir.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
 
             if (vm.Items.Any(x => x.ProductId == vm.ProductId))
             {
-                ModelState.AddModelError("", "Reçetenin ana ürünü ile malzeme olarak eklenen ürünler ayný olamaz.");
+                ModelState.AddModelError("", "ReÃ§etenin ana Ã¼rÃ¼nÃ¼ ile malzeme olarak eklenen Ã¼rÃ¼nler aynÄ± olamaz.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -142,7 +142,7 @@ namespace Project.UI.Areas.Manager.Controllers
             RecipeDTO existingRecipe = await _recipeManager.GetByProductIdAsync(vm.ProductId);
             if (existingRecipe != null)
             {
-                ModelState.AddModelError("", "Bu ürüne ait bir reçete zaten mevcut. Ayný ürüne ikinci bir reçete ekleyemezsiniz.");
+                ModelState.AddModelError("", "Bu Ã¼rÃ¼ne ait bir reÃ§ete zaten mevcut. AynÄ± Ã¼rÃ¼ne ikinci bir reÃ§ete ekleyemezsiniz.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -169,7 +169,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Reçete eklenemedi.");
+                ModelState.AddModelError("", "ReÃ§ete eklenemedi.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -209,14 +209,14 @@ namespace Project.UI.Areas.Manager.Controllers
             }
             if (!await IsFoodCategoryAsync(vm.CategoryId))
             {
-                ModelState.AddModelError("", "Sadece yemek kategorisine ait ürünler seçilebilir.");
+                ModelState.AddModelError("", "Sadece yemek kategorisine ait Ã¼rÃ¼nler seÃ§ilebilir.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
 
             if (vm.Items.Any(x => x.ProductId == vm.ProductId))
             {
-                ModelState.AddModelError("", "Reçetenin ana ürünü ile malzeme olarak eklenen ürünler ayný olamaz.");
+                ModelState.AddModelError("", "ReÃ§etenin ana Ã¼rÃ¼nÃ¼ ile malzeme olarak eklenen Ã¼rÃ¼nler aynÄ± olamaz.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -238,7 +238,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Reçete güncellenemedi.");
+                ModelState.AddModelError("", "ReÃ§ete gÃ¼ncellenemedi.");
                 await SetViewBagsAsync();
                 return View(vm);
             }
@@ -278,7 +278,7 @@ namespace Project.UI.Areas.Manager.Controllers
             }
             catch
             {
-                ModelState.AddModelError("", "Sipariþ güncellenemedi.");
+                ModelState.AddModelError("", "SipariÅŸ gÃ¼ncellenemedi.");
             }
 
             return RedirectToAction("ActiveOrders");
@@ -349,7 +349,7 @@ namespace Project.UI.Areas.Manager.Controllers
             ProductDTO product = await _productManager.GetByIdAsync(vm.ProductId);
             if (product == null || !await IsFoodCategoryAsync(product.CategoryId))
             {
-                ModelState.AddModelError("", "Sadece yemek kategorisine ait ürünler seçilebilir.");
+                ModelState.AddModelError("", "Sadece yemek kategorisine ait Ã¼rÃ¼nler seÃ§ilebilir.");
                 List<MenuDTO> menus = await _menuManager.GetAllAsync();
                 List<ProductDTO> products = await GetFoodProductAsync();
                 ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
@@ -369,7 +369,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _menuProductManager.CreateAsync(dto);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError("", "Ürün eklenemedi.");
+                ModelState.AddModelError("", "ÃœrÃ¼n eklenemedi.");
                 List<MenuDTO> menus = await _menuManager.GetAllAsync();
                 List<ProductDTO> products = await GetFoodProductAsync();
                 ViewBag.MenuList = new SelectList(menus, "Id", "MenuName");
@@ -402,7 +402,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (result.Status == OperationStatus.ValidationError)
             {
-                TempData["Error"] = "Güncelleme sýrasýnda doðrulama hatalarý oluþtu.";
+                TempData["Error"] = "GÃ¼ncelleme sÄ±rasÄ±nda doÄŸrulama hatalarÄ± oluÅŸtu.";
             }
 
             return RedirectToAction("MenuProducts");
@@ -430,7 +430,7 @@ namespace Project.UI.Areas.Manager.Controllers
 
             if (result.Status == OperationStatus.ValidationError)
             {
-                TempData["Error"] = "Güncelleme sýrasýnda doðrulama hatalarý oluþtu.";
+                TempData["Error"] = "GÃ¼ncelleme sÄ±rasÄ±nda doÄŸrulama hatalarÄ± oluÅŸtu.";
             }
 
             return RedirectToAction("MenuProducts");
@@ -452,7 +452,7 @@ namespace Project.UI.Areas.Manager.Controllers
             Result result = await _menuProductManager.UpdateAsync(dto, dto);
 
             if (!result.IsSuccess)
-                ModelState.AddModelError("", "Menüden çýkarma iþlemi baþarýsýz.");
+                ModelState.AddModelError("", "MenÃ¼den Ã§Ä±karma iÅŸlemi baÅŸarÄ±sÄ±z.");
 
             return RedirectToAction("MenuProducts");
         }

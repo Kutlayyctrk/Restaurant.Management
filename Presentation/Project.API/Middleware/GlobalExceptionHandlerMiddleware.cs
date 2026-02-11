@@ -1,4 +1,4 @@
-using System.Net;
+ï»¿using System.Net;
 using System.Text.Json;
 
 namespace Project.API.Middleware
@@ -22,7 +22,7 @@ namespace Project.API.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Beklenmeyen bir hata oluþtu. TraceId: {TraceId}", context.TraceIdentifier);
+                _logger.LogError(ex, "Beklenmeyen bir hata oluÅŸtu. TraceId: {TraceId}", context.TraceIdentifier);
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -35,7 +35,7 @@ namespace Project.API.Middleware
             var response = new
             {
                 success = false,
-                message = "Sunucuda beklenmeyen bir hata oluþtu.",
+                message = "Sunucuda beklenmeyen bir hata oluÅŸtu.",
                 traceId = context.TraceIdentifier
             };
 

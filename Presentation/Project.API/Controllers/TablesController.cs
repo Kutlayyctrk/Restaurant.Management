@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
@@ -7,6 +8,7 @@ using Project.Application.Managers;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TablesController : ControllerBase
@@ -37,7 +39,7 @@ namespace Project.API.Controllers
         {
             TableDTO table = await _tableManager.GetByIdAsync(id);
             if (table == null)
-                return NotFound(ApiResponse<TableDTO>.Fail("Masa bulunamadý."));
+                return NotFound(ApiResponse<TableDTO>.Fail("Masa bulunamadÄ±."));
 
             return Ok(ApiResponse<TableDTO>.Ok(table));
         }
@@ -47,9 +49,9 @@ namespace Project.API.Controllers
         {
             Result result = await _tableManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Masa oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"Masa oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<TableDTO>.Ok(dto, "Masa baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<TableDTO>.Ok(dto, "Masa baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}")]
@@ -57,13 +59,13 @@ namespace Project.API.Controllers
         {
             TableDTO original = await _tableManager.GetByIdAsync(id);
             if (original == null)
-                return NotFound(ApiResponse<string>.Fail("Masa bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Masa bulunamadÄ±."));
 
             Result result = await _tableManager.UpdateAsync(original, dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Masa güncellenemedi. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"Masa gÃ¼ncellenemedi. Durum: {result}"));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Masa baþarýyla güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Masa baÅŸarÄ±yla gÃ¼ncellendi."));
         }
 
         [HttpDelete("{id}")]
@@ -71,9 +73,9 @@ namespace Project.API.Controllers
         {
             Result result = await _tableManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Masa bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Masa bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Masa silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Masa silindi (soft delete)."));
         }
     }
 }

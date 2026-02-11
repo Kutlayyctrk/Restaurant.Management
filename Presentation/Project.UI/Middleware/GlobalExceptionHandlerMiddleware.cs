@@ -1,4 +1,4 @@
-using System.Net;
+ï»¿using System.Net;
 
 namespace Project.UI.Middleware
 {
@@ -21,14 +21,14 @@ namespace Project.UI.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Beklenmeyen bir hata oluþtu. TraceId: {TraceId}", context.TraceIdentifier);
+                _logger.LogError(ex, "Beklenmeyen bir hata oluÅŸtu. TraceId: {TraceId}", context.TraceIdentifier);
 
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                 if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
                     context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsJsonAsync(new { success = false, message = "Sunucuda bir hata oluþtu." });
+                    await context.Response.WriteAsJsonAsync(new { success = false, message = "Sunucuda bir hata oluÅŸtu." });
                 }
                 else
                 {

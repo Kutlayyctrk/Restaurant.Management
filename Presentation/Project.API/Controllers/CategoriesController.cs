@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Project.API.Models;
@@ -8,6 +9,7 @@ using Project.Application.Managers;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -47,7 +49,7 @@ namespace Project.API.Controllers
         {
             CategoryDTO category = await _categoryManager.GetByIdAsync(id);
             if (category == null)
-                return NotFound(ApiResponse<CategoryDTO>.Fail("Kategori bulunamadý."));
+                return NotFound(ApiResponse<CategoryDTO>.Fail("Kategori bulunamadÄ±."));
 
             return Ok(ApiResponse<CategoryDTO>.Ok(category));
         }
@@ -71,9 +73,9 @@ namespace Project.API.Controllers
         {
             Result result = await _categoryManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Kategori oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"Kategori oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<CategoryDTO>.Ok(dto, "Kategori baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<CategoryDTO>.Ok(dto, "Kategori baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}")]
@@ -81,13 +83,13 @@ namespace Project.API.Controllers
         {
             CategoryDTO original = await _categoryManager.GetByIdAsync(id);
             if (original == null)
-                return NotFound(ApiResponse<string>.Fail("Kategori bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Kategori bulunamadÄ±."));
 
             Result result = await _categoryManager.UpdateAsync(original, dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Kategori güncellenemedi. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"Kategori gÃ¼ncellenemedi. Durum: {result}"));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Kategori baþarýyla güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Kategori baÅŸarÄ±yla gÃ¼ncellendi."));
         }
 
         [HttpDelete("{id}")]
@@ -95,9 +97,9 @@ namespace Project.API.Controllers
         {
             Result result = await _categoryManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Kategori bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Kategori bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Kategori silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Kategori silindi (soft delete)."));
         }
 
         [HttpDelete("{id}/hard")]
@@ -105,9 +107,9 @@ namespace Project.API.Controllers
         {
             Result result = await _categoryManager.HardDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Kategori bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Kategori bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Kategori kalýcý olarak silindi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Kategori kalÄ±cÄ± olarak silindi."));
         }
     }
 }

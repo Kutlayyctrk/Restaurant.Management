@@ -1,9 +1,14 @@
+ï»¿
 
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Project.API.Middleware;
+using Project.API.Models;
+using Project.API.Services;
 using Project.Domain.Entities.Concretes;
 using Project.Persistance.ContextClasses;
 using Project.Persistance.DependencyResolvers;
@@ -12,6 +17,7 @@ using Project.InnerInfrastructure.DependencyResolvers;
 using Project.OuterInfrastructure.DependencyResolvers;
 using Project.Validator.DependencyResolvers;
 using Serilog;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
@@ -32,7 +38,7 @@ namespace Project.API
 
             try
             {
-            Log.Information("API uygulamasý baþlatýlýyor...");
+            Log.Information("API uygulamasÄ± baÅŸlatÄ±lÄ±yor...");
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSerilog();
@@ -60,7 +66,39 @@ namespace Project.API
                 });
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Restaurant Management API",
+                    Version = "v1"
+                });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT token'Ä±nÄ±zÄ± buraya girin. Ã–rnek: eyJhbGciOiJIUzI1NiIs..."
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             // In-Memory Caching
             builder.Services.AddMemoryCache();
@@ -91,6 +129,31 @@ namespace Project.API
                .AddEntityFrameworkStores<MyContext>()
                .AddDefaultTokenProviders();
 
+            // JWT Authentication
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+            builder.Services.AddScoped<ITokenService, TokenService>();
+
+            JwtSettings jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
             builder.Services.AddRepositoryServices();
             builder.Services.AddMapperService();
             builder.Services.AddManagerService();
@@ -110,7 +173,7 @@ namespace Project.API
 
             WebApplication app = builder.Build();
 
-            // Docker container içinde çalýþýrken veritabanýný otomatik oluþtur/güncelle
+            // Docker container iÃ§inde Ã§alÄ±ÅŸÄ±rken veritabanÄ±nÄ± otomatik oluÅŸtur/gÃ¼ncelle
             if (runningInContainer)
             {
                 using (IServiceScope scope = app.Services.CreateScope())
@@ -154,7 +217,7 @@ namespace Project.API
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "API uygulamasý baþlatýlýrken hata oluþtu.");
+                Log.Fatal(ex, "API uygulamasÄ± baÅŸlatÄ±lÄ±rken hata oluÅŸtu.");
             }
             finally
             {

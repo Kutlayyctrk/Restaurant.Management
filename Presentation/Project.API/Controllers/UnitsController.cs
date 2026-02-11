@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
@@ -7,6 +8,7 @@ using Project.Application.Managers;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UnitsController : ControllerBase
@@ -30,7 +32,7 @@ namespace Project.API.Controllers
         {
             UnitDTO unit = await _unitManager.GetByIdAsync(id);
             if (unit == null)
-                return NotFound(ApiResponse<UnitDTO>.Fail("Birim bulunamadý."));
+                return NotFound(ApiResponse<UnitDTO>.Fail("Birim bulunamadÄ±."));
 
             return Ok(ApiResponse<UnitDTO>.Ok(unit));
         }
@@ -40,9 +42,9 @@ namespace Project.API.Controllers
         {
             Result result = await _unitManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Birim oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"Birim oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<UnitDTO>.Ok(dto, "Birim baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<UnitDTO>.Ok(dto, "Birim baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}")]
@@ -50,13 +52,13 @@ namespace Project.API.Controllers
         {
             UnitDTO original = await _unitManager.GetByIdAsync(id);
             if (original == null)
-                return NotFound(ApiResponse<string>.Fail("Birim bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Birim bulunamadÄ±."));
 
             Result result = await _unitManager.UpdateAsync(original, dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Birim güncellenemedi. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"Birim gÃ¼ncellenemedi. Durum: {result}"));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Birim baþarýyla güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Birim baÅŸarÄ±yla gÃ¼ncellendi."));
         }
 
         [HttpDelete("{id}")]
@@ -64,9 +66,9 @@ namespace Project.API.Controllers
         {
             Result result = await _unitManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Birim bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("Birim bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Birim silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "Birim silindi (soft delete)."));
         }
     }
 }

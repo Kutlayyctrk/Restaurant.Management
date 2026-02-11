@@ -1,3 +1,4 @@
+ï»¿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.API.Models;
 using Project.Application.DTOs;
@@ -7,6 +8,7 @@ using Project.Application.Managers;
 
 namespace Project.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MenusController : ControllerBase
@@ -32,7 +34,7 @@ namespace Project.API.Controllers
         {
             MenuDTO menu = await _menuManager.GetByIdAsync(id);
             if (menu == null)
-                return NotFound(ApiResponse<MenuDTO>.Fail("Menü bulunamadý."));
+                return NotFound(ApiResponse<MenuDTO>.Fail("MenÃ¼ bulunamadÄ±."));
 
             return Ok(ApiResponse<MenuDTO>.Ok(menu));
         }
@@ -42,9 +44,9 @@ namespace Project.API.Controllers
         {
             Result result = await _menuManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Menü oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"MenÃ¼ oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<MenuDTO>.Ok(dto, "Menü baþarýyla oluþturuldu."));
+            return CreatedAtAction(nameof(GetById), new { id = dto.Id }, ApiResponse<MenuDTO>.Ok(dto, "MenÃ¼ baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpPut("{id}")]
@@ -52,13 +54,13 @@ namespace Project.API.Controllers
         {
             MenuDTO original = await _menuManager.GetByIdAsync(id);
             if (original == null)
-                return NotFound(ApiResponse<string>.Fail("Menü bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("MenÃ¼ bulunamadÄ±."));
 
             Result result = await _menuManager.UpdateAsync(original, dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Menü güncellenemedi. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"MenÃ¼ gÃ¼ncellenemedi. Durum: {result}"));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Menü baþarýyla güncellendi."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "MenÃ¼ baÅŸarÄ±yla gÃ¼ncellendi."));
         }
 
         [HttpDelete("{id}")]
@@ -66,12 +68,12 @@ namespace Project.API.Controllers
         {
             Result result = await _menuManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Menü bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("MenÃ¼ bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Menü silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "MenÃ¼ silindi (soft delete)."));
         }
 
-        // ---- Menü Ürünleri ----
+        // ---- MenÃ¼ ÃœrÃ¼nleri ----
 
         [HttpGet("products")]
         public async Task<IActionResult> GetAllMenuProducts()
@@ -85,7 +87,7 @@ namespace Project.API.Controllers
         {
             MenuProductDTO menuProduct = await _menuProductManager.GetByIdAsync(id);
             if (menuProduct == null)
-                return NotFound(ApiResponse<MenuProductDTO>.Fail("Menü ürünü bulunamadý."));
+                return NotFound(ApiResponse<MenuProductDTO>.Fail("MenÃ¼ Ã¼rÃ¼nÃ¼ bulunamadÄ±."));
 
             return Ok(ApiResponse<MenuProductDTO>.Ok(menuProduct));
         }
@@ -95,9 +97,9 @@ namespace Project.API.Controllers
         {
             Result result = await _menuProductManager.CreateAsync(dto);
             if (!result.IsSuccess)
-                return BadRequest(ApiResponse<string>.Fail($"Menü ürünü oluþturulamadý. Durum: {result}"));
+                return BadRequest(ApiResponse<string>.Fail($"MenÃ¼ Ã¼rÃ¼nÃ¼ oluÅŸturulamadÄ±. Durum: {result}"));
 
-            return Ok(ApiResponse<MenuProductDTO>.Ok(dto, "Menü ürünü baþarýyla oluþturuldu."));
+            return Ok(ApiResponse<MenuProductDTO>.Ok(dto, "MenÃ¼ Ã¼rÃ¼nÃ¼ baÅŸarÄ±yla oluÅŸturuldu."));
         }
 
         [HttpDelete("products/{id}")]
@@ -105,9 +107,9 @@ namespace Project.API.Controllers
         {
             Result result = await _menuProductManager.SoftDeleteByIdAsync(id);
             if (result.Status == OperationStatus.NotFound)
-                return NotFound(ApiResponse<string>.Fail("Menü ürünü bulunamadý."));
+                return NotFound(ApiResponse<string>.Fail("MenÃ¼ Ã¼rÃ¼nÃ¼ bulunamadÄ±."));
 
-            return Ok(ApiResponse<string>.Ok("Baþarýlý", "Menü ürünü silindi (soft delete)."));
+            return Ok(ApiResponse<string>.Ok("BaÅŸarÄ±lÄ±", "MenÃ¼ Ã¼rÃ¼nÃ¼ silindi (soft delete)."));
         }
     }
 }
