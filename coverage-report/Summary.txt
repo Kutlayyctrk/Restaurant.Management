@@ -1,0 +1,155 @@
+Summary
+  Generated on: 11.02.2026 - 23:22:25
+  Coverage date: 11.02.2026 - 23:22:21 - 11.02.2026 - 23:22:23
+  Parser: MultiReport (2x Cobertura)
+  Assemblies: 5
+  Classes: 125
+  Files: 124
+  Line coverage: 84.9%
+  Covered lines: 2478
+  Uncovered lines: 439
+  Coverable lines: 2917
+  Total lines: 5345
+  Branch coverage: 42.2% (93 of 220)
+  Covered branches: 93
+  Total branches: 220
+  Method coverage: 83.6% (369 of 441)
+  Full method coverage: 82.9% (366 of 441)
+  Covered methods: 369
+  Fully covered methods: 366
+  Total methods: 441
+
+Project.Application                                                         92.5%
+  Project.Application.DependencyResolvers.MapperServiceInjection               0%
+  Project.Application.DTOs.AppRoleDTO                                        100%
+  Project.Application.DTOs.AppUserDTO                                        100%
+  Project.Application.DTOs.AppUserProfileDTO                                 100%
+  Project.Application.DTOs.AppUserRoleDTO                                    100%
+  Project.Application.DTOs.BaseDto                                           100%
+  Project.Application.DTOs.CategoryDTO                                        75%
+  Project.Application.DTOs.MenuDTO                                           100%
+  Project.Application.DTOs.MenuProductDTO                                    100%
+  Project.Application.DTOs.OrderDetailDTO                                   88.8%
+  Project.Application.DTOs.OrderDTO                                         72.7%
+  Project.Application.DTOs.ProductDTO                                       84.6%
+  Project.Application.DTOs.RecipeDTO                                         100%
+  Project.Application.DTOs.RecipeItemDTO                                     100%
+  Project.Application.DTOs.StockTransActionDTO                              77.7%
+  Project.Application.DTOs.SupplierDTO                                       100%
+  Project.Application.DTOs.TableDTO                                          100%
+  Project.Application.DTOs.UnitDTO                                           100%
+  Project.Application.Mapping.MapProfile                                     100%
+  Project.Application.Results.PagedResult<T>                                 100%
+  Project.Application.Results.Result                                         100%
+  Project.Application.Results.Result<T>                                      100%
+
+Project.Domain                                                              93.7%
+  Project.Domain.Entities.Abstract.BaseEntity                                100%
+  Project.Domain.Entities.Concretes.AppRole                                  100%
+  Project.Domain.Entities.Concretes.AppUser                                  100%
+  Project.Domain.Entities.Concretes.AppUserProfile                           100%
+  Project.Domain.Entities.Concretes.AppUserRole                              100%
+  Project.Domain.Entities.Concretes.Category                                 100%
+  Project.Domain.Entities.Concretes.Menu                                     100%
+  Project.Domain.Entities.Concretes.MenuProduct                              100%
+  Project.Domain.Entities.Concretes.Order                                   81.8%
+  Project.Domain.Entities.Concretes.OrderDetail                               90%
+  Project.Domain.Entities.Concretes.Product                                 76.4%
+  Project.Domain.Entities.Concretes.Recipe                                   100%
+  Project.Domain.Entities.Concretes.RecipeItem                               100%
+  Project.Domain.Entities.Concretes.StockTransAction                          90%
+  Project.Domain.Entities.Concretes.Supplier                                 100%
+  Project.Domain.Entities.Concretes.Table                                    100%
+  Project.Domain.Entities.Concretes.Unit                                     100%
+
+Project.InnerInfrastructure                                                 58.6%
+  Project.InnerInfrastructure.DependencyResolvers.ManagerServiceInjection      0%
+  Project.InnerInfrastructure.ManagerConcretes.AppRoleManager                  0%
+  Project.InnerInfrastructure.ManagerConcretes.AppUserManager                  0%
+  Project.InnerInfrastructure.ManagerConcretes.AppUserProfileManager           0%
+  Project.InnerInfrastructure.ManagerConcretes.AppUserRoleManager              0%
+  Project.InnerInfrastructure.ManagerConcretes.BaseManager<T1, T2>          96.1%
+  Project.InnerInfrastructure.ManagerConcretes.CategoryManager              27.2%
+  Project.InnerInfrastructure.ManagerConcretes.MenuManager                     0%
+  Project.InnerInfrastructure.ManagerConcretes.MenuProductManager            100%
+  Project.InnerInfrastructure.ManagerConcretes.OrderDetailManager            100%
+  Project.InnerInfrastructure.ManagerConcretes.OrderManager                 58.5%
+  Project.InnerInfrastructure.ManagerConcretes.ProductManager                100%
+  Project.InnerInfrastructure.ManagerConcretes.RecipeItemManager               0%
+  Project.InnerInfrastructure.ManagerConcretes.RecipeManager                 100%
+  Project.InnerInfrastructure.ManagerConcretes.StockTransActionManager       100%
+  Project.InnerInfrastructure.ManagerConcretes.SupplierManager                 0%
+  Project.InnerInfrastructure.ManagerConcretes.TableManager                  100%
+  Project.InnerInfrastructure.ManagerConcretes.UnitManager                     0%
+
+Project.Persistance                                                         92.5%
+  MenuConfiguration                                                          100%
+  MenuProductConfiguration                                                   100%
+  Project.Persistance.Configuration.AppRoleConfiguration                     100%
+  Project.Persistance.Configuration.AppUserConfiguration                     100%
+  Project.Persistance.Configuration.AppUserProfileConfiguration              100%
+  Project.Persistance.Configuration.AppUserRoleConfiguration                 100%
+  Project.Persistance.Configuration.BaseConfiguration<T>                     100%
+  Project.Persistance.Configuration.CategoryConfiguration                    100%
+  Project.Persistance.Configuration.OrderConfiguration                       100%
+  Project.Persistance.Configuration.OrderDetailConfiguration                 100%
+  Project.Persistance.Configuration.RecipeConfiguration                      100%
+  Project.Persistance.Configuration.RecipeItemConfiguration                  100%
+  Project.Persistance.Configuration.StockTransActionConfiguration            100%
+  Project.Persistance.Configuration.SupplierConfiguration                    100%
+  Project.Persistance.Configuration.TableConfiguration                       100%
+  Project.Persistance.Configuration.UnitConfiguration                        100%
+  Project.Persistance.Configurations.ProductConfiguration                    100%
+  Project.Persistance.ContextClasses.MyContext                               100%
+  Project.Persistance.DependencyResolvers.DbContextInjection                   0%
+  Project.Persistance.DependencyResolvers.RepositoryInjection                  0%
+  Project.Persistance.Repositories.AppRoleRepository                           0%
+  Project.Persistance.Repositories.AppUserProfileRepository                    0%
+  Project.Persistance.Repositories.AppUserRepository                           0%
+  Project.Persistance.Repositories.AppUserRoleRepository                       0%
+  Project.Persistance.Repositories.BaseRepository<T>                         100%
+  Project.Persistance.Repositories.CategoryRepository                        100%
+  Project.Persistance.Repositories.MenuProductRepository                     100%
+  Project.Persistance.Repositories.MenuRepository                              0%
+  Project.Persistance.Repositories.OrderDetailRepository                     100%
+  Project.Persistance.Repositories.OrderRepository                          14.2%
+  Project.Persistance.Repositories.ProductRepository                         100%
+  Project.Persistance.Repositories.RecipeItemRepository                        0%
+  Project.Persistance.Repositories.RecipeRepository                         60.9%
+  Project.Persistance.Repositories.StockTransActionRepository                  0%
+  Project.Persistance.Repositories.SupplierRepository                          0%
+  Project.Persistance.Repositories.TableRepository                           100%
+  Project.Persistance.Repositories.UnitOfWork                                100%
+  Project.Persistance.Repositories.UnitRepository                              0%
+  Project.Persistance.SeedDatas.AppRoleDataSeed                              100%
+  Project.Persistance.SeedDatas.AppUserDataSeed                              100%
+  Project.Persistance.SeedDatas.AppUserProfileDataSeed                       100%
+  Project.Persistance.SeedDatas.AppUserRoleDataSeed                          100%
+  Project.Persistance.SeedDatas.CategoryDataSeed                             100%
+  Project.Persistance.SeedDatas.MenuProductDataSeed                          100%
+  Project.Persistance.SeedDatas.MenuSeedData                                 100%
+  Project.Persistance.SeedDatas.ProductDataSeed                              100%
+  Project.Persistance.SeedDatas.RecipeDataSeed                               100%
+  Project.Persistance.SeedDatas.RecipeItemDataSeed                           100%
+  Project.Persistance.SeedDatas.SupplierDataSeed                             100%
+  Project.Persistance.SeedDatas.TableDataSeed                                100%
+  Project.Persistance.SeedDatas.UnitDataSeed                                 100%
+
+Project.Validator                                                           98.5%
+  AppUserValidator                                                          97.8%
+  MenuProductValidator                                                       100%
+  MenuValidator                                                              100%
+  Project.Validator.DependencyResolvers.ValidationServiceInjection             0%
+  Project.Validator.Validations.AppRoleValidator                             100%
+  Project.Validator.Validations.AppUserProfileValidator                      100%
+  Project.Validator.Validations.AppUserRoleValidator                         100%
+  Project.Validator.Validations.CategoryValidator                            100%
+  Project.Validator.Validations.OrderDetailValidator                         100%
+  Project.Validator.Validations.OrderValidator                               100%
+  Project.Validator.Validations.ProductValidator                             100%
+  Project.Validator.Validations.RecipeItemValidator                          100%
+  Project.Validator.Validations.RecipeValidator                              100%
+  Project.Validator.Validations.StockTransActionValidator                    100%
+  Project.Validator.Validations.SupplierValidator                            100%
+  Project.Validator.Validations.TableValidator                               100%
+  Project.Validator.Validations.UnitValidator                                100%
