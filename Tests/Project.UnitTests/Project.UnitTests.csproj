@@ -21,9 +21,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Project.Application\Project.Application.csproj" />
+    <ProjectReference Include="..\..\Core\Project.Contract\Project.Contract.csproj" />
     <ProjectReference Include="..\..\Core\Project.Domain\Project.Domain.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Project.InnerInfrastructure\Project.InnerInfrastructure.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Project.Persistance\Project.Persistance.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Project.Validator\Project.Validator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
