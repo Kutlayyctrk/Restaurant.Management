@@ -19,7 +19,23 @@
 ---
 
 ## Ekran Goruntuleri
+Siparis Ekrani
+<img width="1920" height="868" alt="Sipariş Ekranı" src="https://github.com/user-attachments/assets/c5bc608e-6901-42ab-99ad-3fa7fe2b8033" />
 
+Urun Yonetimi Ekranı
+<img width="1905" height="848" alt="Ürün Yönetimi" src="https://github.com/user-attachments/assets/6efcbd54-28ee-45e3-aba7-1c620512c308" />
+
+Kategori Yonetimi Ekrani
+<img width="1901" height="844" alt="Kategori Yönetimi" src="https://github.com/user-attachments/assets/2a4e1362-c927-4003-92b0-644c69ca51aa" />
+
+Tedarikci Yonetimi Ekrani
+<img width="1667" height="833" alt="Tedarikçi Yönetimi" src="https://github.com/user-attachments/assets/a93312ed-96b8-491c-8c05-0caa5a3a0b9a" />
+
+Rapor Ekrani
+<img width="1897" height="836" alt="Rapor Ekranı" src="https://github.com/user-attachments/assets/77229771-1476-4b24-ac02-3301023a29a5" />
+
+Api Ekrani
+<img width="1902" height="862" alt="Swagger Api Ekranı" src="https://github.com/user-attachments/assets/28615708-bfa2-4ebe-88cb-9d901af64153" />
 
 
 ---
